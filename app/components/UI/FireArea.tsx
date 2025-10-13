@@ -29,6 +29,7 @@ export default function FireArea({
 			<div className="relative w-full">
 				<textarea
 					{...props}
+					autoFocus
 					className={`
             w-full px-4 py-3 pr-10 text-base text-neutral-800
             bg-white border-b-3 border-neutral-200 rounded-t-lg resize-none

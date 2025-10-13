@@ -1,6 +1,6 @@
 {
 	"name": "firechat",
-	"version": "2.0.0",
+	"version": "2.6.9",
 	"private": true,
 	"scripts": {
 		"dev": "next dev --turbopack",
@@ -15,7 +15,7 @@
 		"bcryptjs": "^3.0.2",
 		"firebase": "^12.3.0",
 		"firebase-admin": "^13.5.0",
-		"katex": "^0.16.23",
+		"katex": "^0.16.25",
 		"lodash-es": "^4.17.21",
 		"next": "15.5.4",
 		"react": "19.1.0",

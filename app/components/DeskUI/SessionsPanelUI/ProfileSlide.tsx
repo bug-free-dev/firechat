@@ -2,7 +2,6 @@
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
-	FaClock,
 	FaCoins,
 	FaFire,
 	FaGem,
@@ -75,7 +74,6 @@ const TAG_COLORS = [
 
 const getTagColor = (index: number): string => TAG_COLORS[index % TAG_COLORS.length];
 
-/* ==================== Profile Slide ==================== */
 
 interface UserProfileSlideProps {
 	user: FireCachedUser | null;
@@ -108,86 +106,87 @@ export default function ProfileSlide({ user, isOpen, onClose }: UserProfileSlide
 
 	return (
 		<FireSlide open={isOpen} onClose={onClose} size="md" header="" backdropStatic={false}>
-			<div className="flex flex-col gap-4 p-4">
-				{/* Header: avatar + name */}
-				<div className="flex items-center gap-4">
-					<div className="relative">
+			
+
+			<div className="flex flex-col gap-6 p-6">
+				{/* Header: avatar + name + kudos */}
+				<div className="animate-slide-in flex items-start gap-4">
+					<div className="relative flex-shrink-0">
 						<FireAvatar
 							seed={user.uid}
 							src={user.avatarUrl}
 							size={72}
-							className="ring-1 ring-neutral-100"
+							className="ring-2 ring-neutral-200 shadow-lg"
 						/>
-						{/* subtle presence */}
+						{/* Online indicator */}
 						<span
 							aria-hidden
-							className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-white flex items-center justify-center ${
-								online ? 'bg-lime-500 animate-ping-slow' : 'bg-neutral-300'
+							className={`absolute -bottom-2 -right-2 w-5 h-5 rounded-full border-3 border-white flex items-center justify-center transition-all duration-300 ${
+								online
+									? 'bg-gradient-to-r from-lime-400 to-lime-500 shadow-lg shadow-lime-500/50 animate-pulse'
+									: 'bg-neutral-300'
 							}`}
 							title={online ? 'Online' : `Last seen ${lastSeenLabel}`}
 						>
-							{online ? (
-								<FaFire className="w-2 h-2 text-white" />
-							) : (
-								<span className="w-2 h-2 rounded-full" />
-							)}
+							{online && <FaFire className="w-2 h-2 text-white animate-float" />}
 						</span>
 					</div>
 
 					<div className="flex-1 min-w-0">
-						<div className="flex items-center gap-2">
-							<h2 className="text-lg font-semibold text-neutral-900 truncate">
+						<div className="flex items-center gap-2 mb-1">
+							<h2 className="text-xl font-bold text-neutral-900 truncate">
 								{user.displayName}
 							</h2>
-							<FaStar className="w-3 h-3 text-neutral-400" />
+							<FaStar className="w-3.5 h-3.5 text-amber-400" />
 						</div>
-						<div className="flex items-center gap-3 text-xs text-neutral-500">
-							<span className="truncate">@{user.usernamey}</span>
-							<span aria-live="polite">• {online ? 'online' : lastSeenLabel}</span>
+						<div className="flex items-center gap-2 text-xs text-neutral-500 mb-3">
+							<span className="truncate font-medium">@{user.usernamey}</span>
+							<span className="w-1 h-1 rounded-full bg-neutral-300" />
+							<span aria-live="polite" className="font-medium">
+								{online ? '🔥 online' : lastSeenLabel}
+							</span>
 						</div>
-					</div>
 
-					{/* subtle kudos card */}
-					<div
-						className={`flex flex-col items-center justify-center px-3 py-2 rounded-lg border border-neutral-200 bg-white min-[72px] ${
-							kudosPulse
-								? 'scale-105 transform transition-transform duration-200'
-								: 'transform transition-transform duration-200'
-						}`}
-						aria-live="polite"
-					>
-						<FaCoins className="w-4 h-4 text-yellow-500" />
-						<span className="text-sm font-semibold text-neutral-900">{user.kudos}</span>
-						<span className="text-xs text-neutral-400">kudos</span>
+						{/* Kudos card - inline, elegant */}
+						<div
+							className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-amber-200 bg-gradient-to-r from-amber-50 to-yellow-50 transition-all duration-300 ${
+								kudosPulse ? 'scale-110 shadow-lg shadow-amber-200/50' : 'shadow-sm'
+							}`}
+							aria-live="polite"
+						>
+							<FaCoins className="w-3.5 h-3.5 text-yellow-500" />
+							<span className="text-sm font-bold text-amber-900">{user.kudos}</span>
+							<span className="text-xs font-medium text-amber-700">kudos</span>
+						</div>
 					</div>
 				</div>
 
-				{/* mood + status: subtle cards, side-by-side on md */}
+				{/* mood + status: subtle cards with better spacing */}
 				{(metadata.mood || metadata.status) && (
 					<div className="grid grid-cols-1 md:grid-cols-2 gap-3">
 						{metadata.mood && (
-							<div className="flex flex-col items-start gap-2 p-3 rounded-xl border border-neutral-100 bg-neutral-50/40">
-								<div className="flex items-center gap-2 text-neutral-700">
+							<div className="animate-slide-in stagger-delay-1 group p-3 rounded-xl border border-violet-100 bg-gradient-to-br from-violet-50 to-violet-50/50 hover:border-violet-200 transition-all duration-300 cursor-default">
+								<div className="flex items-center gap-2 text-violet-600 mb-2">
 									<FaGhost className="w-4 h-4" />
 									<span className="text-xs font-semibold uppercase tracking-wide">
 										Mood
 									</span>
 								</div>
-								<p className="text-sm text-neutral-900 font-medium truncate">
+								<p className="text-sm text-violet-900 font-medium">
 									{metadata.mood}
 								</p>
 							</div>
 						)}
 
 						{metadata.status && (
-							<div className="flex flex-col items-start gap-2 p-3 rounded-xl border border-blue-100 bg-blue-50/40">
-								<div className="flex items-center gap-2 text-blue-700">
+							<div className="animate-slide-in stagger-delay-2 group p-3 rounded-xl border border-blue-100 bg-gradient-to-br from-blue-50 to-blue-50/50 hover:border-blue-200 transition-all duration-300 cursor-default">
+								<div className="flex items-center gap-2 text-blue-600 mb-2">
 									<FaMagic className="w-4 h-4" />
 									<span className="text-xs font-semibold uppercase tracking-wide">
 										Status
 									</span>
 								</div>
-								<p className="text-sm text-blue-900 font-medium  truncate">
+								<p className="text-sm text-blue-900 font-medium">
 									{metadata.status}
 								</p>
 							</div>
@@ -197,33 +196,36 @@ export default function ProfileSlide({ user, isOpen, onClose }: UserProfileSlide
 
 				{/* About */}
 				{metadata.about && (
-					<div>
-						<div className="flex items-center gap-1.5 mb-1">
-							<FaInfoCircle className="w-3 h-3 text-neutral-400" />
-							<h3 className="text-sm font-semibold text-neutral-500 uppercase tracking-wide">
+					<div className="animate-slide-in stagger-delay-3">
+						<div className="flex items-center gap-2 mb-2">
+							<FaInfoCircle className="w-3.5 h-3.5 text-neutral-400" />
+							<h3 className="text-xs font-bold text-neutral-600 uppercase tracking-wider">
 								About
 							</h3>
 						</div>
-						<p className="text-xs text-neutral-600 leading-relaxed">{metadata.about}</p>
+						<p className="text-sm text-neutral-700 leading-relaxed bg-neutral-50/60 p-3 rounded-lg border border-neutral-100">
+							{metadata.about}
+						</p>
 					</div>
 				)}
 
-				{/* Tags */}
+				{/* Tags with better styling */}
 				{metadata.tags && metadata.tags.length > 0 && (
-					<div>
-						<div className="flex items-center gap-1.5 mb-1">
-							<FaTags className="w-3 h-3 text-neutral-400" />
-							<h3 className="text-sm font-semibold text-neutral-500 uppercase tracking-wide">
+					<div className="animate-slide-in stagger-delay-4">
+						<div className="flex items-center gap-2 mb-2.5">
+							<FaTags className="w-3.5 h-3.5 text-neutral-400" />
+							<h3 className="text-xs font-bold text-neutral-600 uppercase tracking-wider">
 								Tags
 							</h3>
 						</div>
-						<div className="flex flex-wrap gap-1.5">
+						<div className="flex flex-wrap gap-2">
 							{metadata.tags.map((tag, idx) => (
 								<span
 									key={idx}
-									className={`inline-flex items-center px-2 py-0.5 rounded-md text-sm font-medium border ${getTagColor(
+									className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold border transition-all duration-300 hover:shadow-md hover:scale-105 cursor-default ${getTagColor(
 										idx
 									)}`}
+									style={{ animationDelay: `${idx * 50}ms` }}
 								>
 									{tag}
 								</span>
@@ -235,43 +237,37 @@ export default function ProfileSlide({ user, isOpen, onClose }: UserProfileSlide
 				{/* Quirks */}
 				{metadata.quirks && metadata.quirks.length > 0 && (
 					<div>
-						<div className="flex items-center gap-1.5 mb-1">
-							<FaGem className="w-3 h-3 text-neutral-400" />
-							<h3 className="text-sm font-semibold text-neutral-500 uppercase tracking-wide">
+						<div className="flex items-center gap-2 mb-2.5">
+							<FaGem className="w-3.5 h-3.5 text-neutral-400" />
+							<h3 className="text-xs font-bold text-neutral-600 uppercase tracking-wider">
 								Quirks
 							</h3>
 						</div>
-						<div className="space-y-1.5">
+						<div className="space-y-2">
 							{metadata.quirks.map((quirk, idx) => (
 								<div
 									key={idx}
-									className="flex items-start gap-2 p-2 bg-violet-50/60 rounded-lg border border-violet-100"
+									className="animate-slide-in flex items-start gap-3 p-3 bg-gradient-to-r from-violet-50 to-purple-50 rounded-lg border border-violet-100 hover:border-violet-200 transition-all duration-300 cursor-default"
+									style={{ animationDelay: `${idx * 60}ms` }}
 								>
-									<span className="text-violet-400 text-xs mt-0.5">✦</span>
-									<span className="text-xs text-violet-800 flex-1">{quirk}</span>
+									<span className="text-violet-400 text-sm flex-shrink-0 mt-0.5">✦</span>
+									<span className="text-xs text-violet-800 flex-1 leading-relaxed">
+										{quirk}
+									</span>
 								</div>
 							))}
 						</div>
 					</div>
 				)}
 
-				{/* Stats */}
-				<div className="pt-2">
-					<div className="grid grid-cols-2 gap-2">
-						<div className="bg-neutral-50 rounded-lg p-2 text-center border border-neutral-200">
-							<FaCoins className="w-4 h-4 text-yellow-500 mx-auto mb-1" />
-							<p className="text-xl font-bold text-neutral-900">{user.kudos}</p>
-							<p className="text-sm text-neutral-500 font-medium mt-0.5">Kudos</p>
-						</div>
-						<div className="bg-neutral-50 rounded-lg p-2 text-center border border-neutral-200">
-							<FaClock className="w-4 h-4 text-lime-500 mx-auto mb-1" />
-							<p className="text-xs font-semibold text-neutral-700 mt-0.5">
-								{user.createdAt ? formatTime(user.createdAt) : 'Unknown'}
-							</p>
-							<p className="text-sm text-neutral-500 font-medium mt-0.5">Joined</p>
-						</div>
+				{/* Joined date - minimal inline */}
+				{user.createdAt && (
+					<div className="pt-2 border-t border-neutral-100">
+						<p className="text-xs text-neutral-500">
+							<span className="font-semibold text-neutral-600">Joined</span> {formatTime(user.createdAt)}
+						</p>
 					</div>
-				</div>
+				)}
 			</div>
 		</FireSlide>
 	);

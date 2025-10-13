@@ -9,12 +9,12 @@ import FirePrompt from '@/app/components/UI/FirePrompt';
 import { FireCachedUser, FireProfile, InboxThread, SessionDoc } from '@/app/lib/types';
 import { compare } from '@/app/lib/utils/time';
 
-import { FloatingActionButton } from './SessionPanel/ActionButton';
-import { ChatsTab } from './SessionPanel/ChatTab';
-import { DecorativeIcons } from './SessionPanel/DecorativeIcons';
-import { InboxTab } from './SessionPanel/InboxTab';
-import InvitePicker from './SessionPanel/InvitePicker';
-import { TabNavigation } from './SessionPanel/TabNavigation';
+import { FloatingActionButton } from './SessionsPanelUI/ActionButton';
+import { ChatsTab } from './SessionsPanelUI/ChatTab';
+import { DecorativeIcons } from './SessionsPanelUI/DecorativeIcons';
+import { InboxTab } from './SessionsPanelUI/InboxTab';
+import InvitePicker from './SessionsPanelUI/InvitePicker';
+import { TabNavigation } from './SessionsPanelUI/TabNavigation';
 import KudosBalance from './KudosBalance';
 
 export interface SessionsPanelProps {
@@ -23,17 +23,14 @@ export interface SessionsPanelProps {
 	invitedSessions?: SessionDoc[];
 	inboxThreads: InboxThread[];
 	kudosBalance: number;
-	frequentUsers?: FireCachedUser[]; // use your cached type
+	frequentUsers?: FireCachedUser[];
 	onCreateSession?: () => void;
-	/** joinSession(sessionId, optional identifierInput) */
 	onJoinSession?: (sessionId: string, identifierInput?: string) => void;
 	onLeaveSession?: (sessionId: string) => void;
 	onEndSession?: (sessionId: string) => void;
 	onLockSession?: (sessionId: string) => void;
 	onOpenInbox?: (threadId: string) => void;
 	loading?: boolean;
-
-	// invite: sessionId + list of user objects (friendly)
 	onInviteToUsers?: (sessionId: string, users: FireCachedUser[]) => Promise<void>;
 	verifyIdentifier?: (input: string) => Promise<boolean>;
 }
@@ -101,37 +98,42 @@ export default function SessionsPanel({
 		setInviteForSession(session);
 	};
 
-	// handle confirm from InvitePicker
 	const handleInviteConfirm = async (users: FireCachedUser[]) => {
 		if (!inviteForSession) return;
 		const sid = inviteForSession.id || '';
+		const link = `${typeof window !== 'undefined' ? window.location.origin : ''}/room/${sid}`;
+
 		try {
 			if (onInviteToUsers) {
 				await onInviteToUsers(sid, users);
-			} else {
-				// fallback: copy link to clipboard
-				const link = `${typeof window !== 'undefined' ? window.location.origin : ''}/room/${sid}`;
-				try {
-					await navigator.clipboard.writeText(link);
-				} catch {
-					/** Ignore */
-				}
 			}
+
+			await navigator.clipboard.writeText(link);
+			toast.success('🔗 Room link copied to clipboard!');
 		} catch {
+			/** Parent handles the error */
 		} finally {
 			setInviteForSession(null);
 		}
 	};
 
-	// join flow: if identifier required, open prompt; otherwise call onJoinSession
-	const handleJoinAttempt = (session: SessionDoc) => {
-		if (!session) return;
+	const handleJoinAttempt = (sessionId: string) => {
+		const session = [...sessions, ...invitedSessions].find((s) => s.id === sessionId);
+
+		if (!session) {
+			onJoinSession?.(sessionId);
+			return;
+		}
+
+		// Check if identifier is required
 		if (session.identifierRequired) {
 			setPromptForSession(session);
 			setPromptValue('');
 			return;
 		}
-		onJoinSession?.(session.id || '');
+
+		// No identifier required, join directly
+		onJoinSession?.(sessionId);
 	};
 
 	// verify submit
@@ -142,11 +144,15 @@ export default function SessionsPanel({
 		const attempts = attemptsMap[sid] || 0;
 
 		if (!verifyIdentifier) {
+			onJoinSession?.(sid, promptValue);
+			setPromptForSession(null);
+			setPromptValue('');
 			return;
 		}
 
 		try {
 			const ok = await verifyIdentifier(promptValue);
+
 			if (ok) {
 				setPromptForSession(null);
 				setPromptValue('');
@@ -173,7 +179,9 @@ export default function SessionsPanel({
 
 			const remaining = 3 - next;
 			toast.error(`Wrong identifier — ${remaining} attempt(s) left`);
-		} catch {}
+		} catch {
+			toast.error('Verification error. Please try again.');
+		}
 	};
 
 	return (
@@ -185,7 +193,7 @@ export default function SessionsPanel({
 				<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
 					<div>
 						<h1 className="font-dyna text-4xl font-bold text-neutral-800 flex items-center gap-3 justify-center text-center">
-							<FaComments className="text-lime-400" />
+							<FaComments className="text-lime-500" />
 							Sessions
 						</h1>
 						<p className="font-righteous text-sm text-neutral-500 mt-1 text-center">
@@ -232,11 +240,7 @@ export default function SessionsPanel({
 							isParticipant={isParticipant}
 							onCreateSession={onCreateSession}
 							onInvite={(s) => openInvitePicker(s)}
-							onJoinSession={(sid) => {
-								const s = sessions.find((x) => x.id === sid);
-								if (s) handleJoinAttempt(s);
-								else onJoinSession?.(sid);
-							}}
+							onJoinSession={handleJoinAttempt}
 							onLeaveSession={onLeaveSession}
 							onEndSession={onEndSession}
 							onLockSession={onLockSession}
@@ -276,13 +280,18 @@ export default function SessionsPanel({
 					onClose={() => {
 						setPromptForSession(null);
 						setPromptValue('');
+						// Clear attempts when closing
+						setAttemptsMap((m) => {
+							const copy = { ...m };
+							delete copy[promptForSession.id || ''];
+							return copy;
+						});
 					}}
 					header={`Enter identifier for ${promptForSession.title ?? 'session'}`}
 					value={promptValue}
 					onChange={setPromptValue}
 					placeholder="Your secret identifier"
 					onSubmit={handleVerifySubmit}
-					verify={verifyIdentifier}
 					size="md"
 				/>
 			)}

@@ -13,7 +13,7 @@ export interface MessageListProps {
 	profiles: Record<string, FireCachedUser>;
 	onReply: (message: ChatMessage) => void;
 	onToggleReaction: (messageId: string, emoji: string) => void;
-	onDeleteMessage: (messageId?: string) => void; // Add this
+	onDeleteMessage: (messageId?: string) => void;
 	onCopyMessage: (messageId?: string) => void;
 }
 
@@ -103,7 +103,7 @@ const MessageList: React.FC<MessageListProps> = React.memo(
 							currentUserId={currentUserUid}
 							onReply={() => onReply(g.message)}
 							onToggleReaction={(emoji: string) => onToggleReaction(g.message.id!, emoji)}
-							onCopy={() => onCopyMessage(g.message.id)}
+							onCopy={() => onCopyMessage(g.message?.text)}
 							onDelete={() => onDeleteMessage(g.message.id)}
 						/>
 					))}
@@ -113,7 +113,5 @@ const MessageList: React.FC<MessageListProps> = React.memo(
 		);
 	}
 );
-
-MessageList.displayName = 'MessageList';
 
 export default MessageList;

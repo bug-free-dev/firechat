@@ -7,7 +7,7 @@ import toast from 'react-hot-toast';
 import DeskTabs from '@/app/components/DeskUI/DeskTabs';
 import KudosPanel from '@/app/components/DeskUI/KudosPanel';
 import ProfilePanel from '@/app/components/DeskUI/ProfilePanel';
-import InvitePicker from '@/app/components/DeskUI/SessionPanel/InvitePicker';
+import InvitePicker from '@/app/components/DeskUI/SessionsPanelUI/InvitePicker';
 import SessionsPanel from '@/app/components/DeskUI/SessionsPanel';
 import FireButton from '@/app/components/UI/FireButton';
 import FireHeader from '@/app/components/UI/FireHeader';
@@ -37,7 +37,10 @@ export default function Desk() {
 	// Swipe tracking
 	const touchStartX = useRef<number | null>(null);
 	const touchEndX = useRef<number | null>(null);
-	const SWIPE_THRESHOLD = 50;
+	const touchStartY = useRef<number | null>(null);
+	const touchEndY = useRef<number | null>(null);
+	const SWIPE_THRESHOLD = 50; // horizontal distance required
+	const VERTICAL_THRESHOLD = 30; // vertical tolerance
 
 	// Kudos
 	const kudosHook = useKudos({ currentUser: profile ?? null });
@@ -107,36 +110,47 @@ export default function Desk() {
 	const [createInvited, setCreateInvited] = useState<FireCachedUser[]>([]);
 
 	/* ---------------------- SWIPE HANDLERS ---------------------- */
-
 	const handleTouchStart = (e: React.TouchEvent) => {
 		touchStartX.current = e.changedTouches[0].clientX;
+		touchStartY.current = e.changedTouches[0].clientY;
 	};
 
 	const handleTouchEnd = (e: React.TouchEvent) => {
 		touchEndX.current = e.changedTouches[0].clientX;
+		touchEndY.current = e.changedTouches[0].clientY;
 		handleSwipe();
 	};
 
 	const handleSwipe = () => {
-		if (touchStartX.current === null || touchEndX.current === null) return;
+		if (
+			touchStartX.current === null ||
+			touchEndX.current === null ||
+			touchStartY.current === null ||
+			touchEndY.current === null
+		)
+			return;
 
-		const diff = touchStartX.current - touchEndX.current;
+		const deltaX = touchEndX.current - touchStartX.current;
+		const deltaY = touchEndY.current - touchStartY.current;
+
+		// Ignore swipe if vertical movement is too big
+		if (Math.abs(deltaY) > VERTICAL_THRESHOLD) return;
+
 		const currentIndex = TAB_ORDER.indexOf(activeTab);
 
-		// Swipe left (positive diff) -> go to next tab
-		if (diff > SWIPE_THRESHOLD && currentIndex < TAB_ORDER.length - 1) {
-			setActiveTab(TAB_ORDER[currentIndex + 1]);
-		}
-
-		// Swipe right (negative diff) -> go to previous tab
-		if (diff < -SWIPE_THRESHOLD && currentIndex > 0) {
+		if (deltaX > SWIPE_THRESHOLD && currentIndex > 0) {
+			// swipe right -> previous tab
 			setActiveTab(TAB_ORDER[currentIndex - 1]);
+		} else if (deltaX < -SWIPE_THRESHOLD && currentIndex < TAB_ORDER.length - 1) {
+			// swipe left -> next tab
+			setActiveTab(TAB_ORDER[currentIndex + 1]);
 		}
 
 		touchStartX.current = null;
 		touchEndX.current = null;
+		touchStartY.current = null;
+		touchEndY.current = null;
 	};
-
 	const handleCreateClick = () => {
 		setTitle('');
 		setIdentifierRequired(false);

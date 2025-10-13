@@ -33,7 +33,7 @@ export function InboxThreadCard({ thread, currentUser, onOpenInbox }: InboxThrea
 				(otherParticipants || []).map(async (uid) => {
 					const u = await getUserByUid(uid);
 					mapAv[uid] = u?.avatarUrl || null;
-					mapNames[uid] = u?.displayName ? `@${u.displayName}` : `@${uid}`;
+					mapNames[uid] = u?.displayName ? `@${u.displayName}` : `@${u?.usernamey}`;
 				})
 			);
 

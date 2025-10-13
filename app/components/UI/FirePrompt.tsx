@@ -77,7 +77,7 @@ export default function FirePrompt({
 				{/* Floating decorative icons */}
 				<div className="absolute inset-0 pointer-events-none">
 					<FaLightbulb className="absolute top-5 left-5 text-yellow-400 w-10 h-10 animate-float opacity-50" />
-					<FaMagic className="absolute top-1/2 right-12 transform -translate-y-1/2 text-purple-500 w-10 h-10 animate-pulse opacity-60" />
+					<FaMagic className="absolute top-1/2 right-12 transform -translate-y-1/2 text-indigo-500 w-10 h-10 animate-pulse opacity-60" />
 					<FaBrain className="absolute bottom-16 left-10 text-lime-500 w-10 h-10 animate-float opacity-50" />
 				</div>
 
@@ -93,16 +93,16 @@ export default function FirePrompt({
 					</p>
 
 					<FireInput
-						label=""
+						label="Identifier"
 						value={value}
 						onChange={onChange}
 						placeholder={placeholder}
-						className="text-lg sm:text-xl py-4 text-center font-medium"
+						className="text-md sm:text-xl py-4 text-center font-medium"
 						onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
 					/>
 
 					<p className="text-neutral-500 text-sm flex items-center justify-center gap-2">
-						Tip: Keep it secret! <FaMagic className="w-4 h-4 text-purple-400" />
+						Tip: Keep it secret! <FaMagic className="w-4 h-4 text-indigo-400" />
 					</p>
 				</div>
 			</div>

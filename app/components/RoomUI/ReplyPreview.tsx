@@ -1,5 +1,6 @@
 'use client';
 
+import React, { useMemo } from 'react';
 import { FaReply, FaTimes } from 'react-icons/fa';
 
 import { ChatMessage, FireCachedUser } from '@/app/lib/types';
@@ -11,26 +12,10 @@ export interface ReplyPreviewProps {
 	compact?: boolean;
 }
 
-const truncateText = (text: string, maxLength: number = 80) => {
+const truncateText = (text: string, maxLength: number = 80): string => {
 	if (text.length <= maxLength) return text;
-	return text.slice(0, maxLength).trim() + '...';
+	return text.slice(0, maxLength).trim() + '…';
 };
-
-// Define a palette of 5 nice saturated colors
-const colors = [
-	{ from: 'from-lime-50', to: 'to-lime-100', border: 'border-l-lime-300', icon: 'text-lime-400' },
-	{
-		from: 'from-yellow-50',
-		to: 'to-yellow-100',
-		border: 'border-l-yellow-300',
-		icon: 'text-yellow-400',
-	},
-	{ from: 'from-rose-50', to: 'to-rose-100', border: 'border-l-rose-300', icon: 'text-rose-400' },
-	{ from: 'from-blue-50', to: 'to-blue-100', border: 'border-l-blue-300', icon: 'text-blue-400' },
-	{ from: 'from-rose-50', to: 'to-rose-100', border: 'border-l-rose-300', icon: 'text-rose-400' },
-];
-
-const getRandomColor = () => colors[Math.floor(Math.random() * colors.length)];
 
 const ReplyPreview: React.FC<ReplyPreviewProps> = ({
 	replyToMessage,
@@ -38,18 +23,20 @@ const ReplyPreview: React.FC<ReplyPreviewProps> = ({
 	onCancel,
 	compact,
 }) => {
-	if (!replyToMessage) return null;
+	const displayText = useMemo(() => {
+		if (!replyToMessage?.text) return '';
+		return truncateText(replyToMessage.text, compact ? 50 : 80);
+	}, [replyToMessage?.text, compact]);
 
-	const displayText = truncateText(replyToMessage.text, compact ? 50 : 80);
-	const color = getRandomColor();
+	if (!replyToMessage) return null;
 
 	return (
 		<div
-			className={`flex items-start gap-2 ${compact ? 'text-xs mb-1' : 'text-sm'} 
-        bg-gradient-to-r ${color.from} ${color.to} ${color.border} border-l-[3px] p-2 rounded-sm`}
+			className={`flex items-start gap-2 ${compact ? 'text-xs' : 'text-sm'} 
+        bg-neutral-50 border-l-4 border-neutral-400 p-2 rounded ${compact ? 'mb-1' : 'mb-2'}`}
 		>
 			<FaReply
-				className={`${compact ? 'w-2.5 h-2.5' : 'w-3 h-3'} ${color.icon} mt-0.5 flex-shrink-0`}
+				className={`${compact ? 'w-2.5 h-2.5' : 'w-3 h-3'} text-neutral-400 mt-0.5 flex-shrink-0`}
 			/>
 			<div className="flex-1 min-w-0">
 				<div
@@ -66,7 +53,8 @@ const ReplyPreview: React.FC<ReplyPreviewProps> = ({
 			{onCancel && (
 				<button
 					onClick={onCancel}
-					className="text-neutral-400 hover:text-neutral-600 flex-shrink-0"
+					className="text-neutral-400 hover:text-neutral-600 transition-colors duration-150 flex-shrink-0"
+					aria-label="Cancel reply"
 				>
 					<FaTimes className="w-3 h-3" />
 				</button>
@@ -75,4 +63,4 @@ const ReplyPreview: React.FC<ReplyPreviewProps> = ({
 	);
 };
 
-export default ReplyPreview;
+export default React.memo(ReplyPreview);

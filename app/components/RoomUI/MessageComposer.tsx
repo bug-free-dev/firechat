@@ -16,6 +16,9 @@ export interface MessageComposerProps {
 	onCancelReply?: () => void;
 }
 
+const MAX_HEIGHT = 150;
+const TYPING_TIMEOUT = 2000;
+
 const MessageComposer: React.FC<MessageComposerProps> = ({
 	onSend,
 	onTyping,
@@ -28,16 +31,19 @@ const MessageComposer: React.FC<MessageComposerProps> = ({
 	const [isTyping, setIsTyping] = useState(false);
 	const textareaRef = useRef<HTMLTextAreaElement>(null);
 	const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-	const MAX_HEIGHT = 250;
 
 	const handleSend = useCallback(() => {
 		if (!text.trim() || disabled) return;
+
 		onSend(text.trim(), replyingTo?.id);
 		setText('');
 		setIsTyping(false);
 		onTyping?.(false);
-		if (textareaRef.current) textareaRef.current.style.height = 'auto';
-		textareaRef.current?.focus();
+
+		if (textareaRef.current) {
+			textareaRef.current.style.height = 'auto';
+			textareaRef.current.focus();
+		}
 	}, [text, disabled, onSend, replyingTo, onTyping]);
 
 	const handleKeyDown = useCallback(
@@ -50,28 +56,34 @@ const MessageComposer: React.FC<MessageComposerProps> = ({
 		[handleSend]
 	);
 
-	const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-		const newValue = e.target.value;
-		setText(newValue);
+	const handleChange = useCallback(
+		(e: React.ChangeEvent<HTMLTextAreaElement>) => {
+			const newValue = e.target.value;
+			setText(newValue);
 
-		// Start typing
-		if (!isTyping) {
-			setIsTyping(true);
-			onTyping?.(true);
-		}
+			if (!isTyping) {
+				setIsTyping(true);
+				onTyping?.(true);
+			}
 
-		// Reset typing after 2s of inactivity
-		if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
-		typingTimeoutRef.current = setTimeout(() => {
-			setIsTyping(false);
-			onTyping?.(false);
-		}, 5000);
-	};
+			if (typingTimeoutRef.current) {
+				clearTimeout(typingTimeoutRef.current);
+			}
+
+			typingTimeoutRef.current = setTimeout(() => {
+				setIsTyping(false);
+				onTyping?.(false);
+			}, TYPING_TIMEOUT);
+		},
+		[isTyping, onTyping]
+	);
 
 	useEffect(() => {
 		if (!textareaRef.current) return;
+
 		textareaRef.current.style.height = 'auto';
 		const scrollHeight = textareaRef.current.scrollHeight;
+
 		if (scrollHeight > MAX_HEIGHT) {
 			textareaRef.current.style.height = `${MAX_HEIGHT}px`;
 			textareaRef.current.style.overflowY = 'auto';
@@ -81,41 +93,56 @@ const MessageComposer: React.FC<MessageComposerProps> = ({
 		}
 	}, [text]);
 
+	useEffect(() => {
+		return () => {
+			if (typingTimeoutRef.current) {
+				clearTimeout(typingTimeoutRef.current);
+			}
+		};
+	}, []);
+
 	return (
-		<div className="sticky bottom-0 z-50 bg-white px-4 sm:px-6 py-3 border-t border-neutral-200">
-			{replyingTo && (
-				<div className="mb-2">
-					<ReplyPreview
-						replyToMessage={replyingTo}
-						sender={replyToSender}
-						onCancel={onCancelReply}
-						compact
+		<div className="sticky bottom-0 z-50 bg-white border-t border-neutral-200">
+			<div className="max-w-4xl mx-auto px-4 sm:px-6 py-3">
+				{replyingTo && (
+					<div className="mb-2">
+						<ReplyPreview
+							replyToMessage={replyingTo}
+							sender={replyToSender}
+							onCancel={onCancelReply}
+							compact
+						/>
+					</div>
+				)}
+
+				<div className="flex items-end gap-3">
+					<textarea
+						ref={textareaRef}
+						value={text}
+						onChange={handleChange}
+						onKeyDown={handleKeyDown}
+						placeholder="message... (supports markdown)"
+						rows={1}
+						autoFocus
+						disabled={disabled}
+						className="flex-1 resize-none border border-neutral-200 bg-white focus:bg-white focus:ring-2 focus:ring-neutral-900/10 px-4 py-3 text-sm placeholder:text-neutral-400 rounded-lg transition-all outline-none disabled:opacity-50 disabled:cursor-not-allowed"
 					/>
+
+					<button
+						onClick={handleSend}
+						disabled={!text.trim() || disabled}
+						className="h-[44px] w-[44px] flex items-center justify-center bg-neutral-900 hover:bg-neutral-800 active:scale-95 disabled:bg-neutral-200 disabled:cursor-not-allowed text-white rounded-lg transition-all duration-150"
+					>
+						<FaPaperPlane className="w-4 h-4" />
+					</button>
 				</div>
-			)}
 
-			<div className="flex items-end gap-2">
-				<textarea
-					ref={textareaRef}
-					value={text}
-					onChange={handleChange}
-					onKeyDown={handleKeyDown}
-					placeholder="Message... (supports markdown)"
-					rows={2}
-					disabled={disabled}
-					className="flex-1 resize-none border-b-3 border-neutral-300 bg-neutral-100/60 focus:bg-neutral-100/35 focus:border-lime-400 px-3 py-2 text-sm placeholder:text-neutral-400 rounded-t-sm transition-all outline-none"
-				/>
-
-				<button
-					onClick={handleSend}
-					disabled={!text.trim() || disabled}
-					className="w-12 h-13.5 flex items-center justify-center bg-lime-500 hover:bg-lime-600 disabled:bg-lime-200 text-white rounded-sm transition-all"
-				>
-					<FaPaperPlane className="w-4 h-4" />
-				</button>
+				<div className="mt-2 text-xs text-neutral-400">
+					Press Enter to send, Shift+Enter for new line.
+				</div>
 			</div>
 		</div>
 	);
 };
 
-export default MessageComposer;
+export default React.memo(MessageComposer);

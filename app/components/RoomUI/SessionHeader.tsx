@@ -89,7 +89,7 @@ const SessionHeader: React.FC<SessionHeaderProps> = ({
 									autoFocus
 									placeholder="Session title"
 									disabled={saving}
-									className="flex-1 text-sm border-b-2 border-neutral-300 bg-neutral-100/50 focus:bg-white focus:border-lime-400 px-2 py-1 rounded-t-sm outline-none transition-all w-full"
+									className="flex-1 text-sm  bg-neutral-100/50 focus:bg-white focus:ring-neutral-300 ring-2 ring-neutral-100 px-2 py-1 rounded-t-sm focus:outline-none  border-none transition-all w-full"
 								/>
 								<FireButton
 									onClick={handleSaveEdit}

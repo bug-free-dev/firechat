@@ -43,7 +43,7 @@ export default function Home() {
 					router.push('/fireup');
 					break;
 			}
-		}, 5000);
+		}, 2000);
 
 		return () => clearTimeout(timer);
 	}, [authState, isLoading, router, redirecting]);
@@ -51,7 +51,7 @@ export default function Home() {
 	const handleWelcome = () => {
 		toast.success('Welcome to the Firechat community!');
 		setShowConfetti(true);
-		setTimeout(() => setShowConfetti(false), 5000);
+		setTimeout(() => setShowConfetti(false), 6000);
 	};
 
 	const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });

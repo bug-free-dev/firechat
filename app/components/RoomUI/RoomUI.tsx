@@ -122,6 +122,16 @@ const RoomUI: React.FC<RoomUIProps> = ({
 		[sendMsg]
 	);
 
+	const copyMessage = async (text: string) => {
+		if (!text) return toast.error('Nothing to copy');
+		try {
+			await navigator.clipboard.writeText(text);
+			toast.success('Message copied!');
+		} catch {
+			toast.error('Failed to copy message');
+		}
+	};
+
 	const handleDelete = useCallback(
 		async (messageId?: string) => {
 			if (!messageId) {
@@ -354,7 +364,7 @@ const RoomUI: React.FC<RoomUIProps> = ({
 							profiles={profiles}
 							onReply={(m) => setReplyingTo(m)}
 							onToggleReaction={(id, emoji) => void handleToggleReaction(id, emoji)}
-							onCopyMessage={(id) => toast.success(`Message ${id} copied`)}
+							onCopyMessage={(content) => copyMessage(content ?? '')}
 							onDeleteMessage={(id) => handleDelete(id)}
 						/>
 

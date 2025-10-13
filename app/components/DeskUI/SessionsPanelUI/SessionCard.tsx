@@ -45,6 +45,42 @@ export function SessionCard({
 	const router = useRouter();
 	const [menuOpen, setMenuOpen] = useState(false);
 	const [avatars, setAvatars] = useState<Record<string, string | null>>({});
+	const [creatorName, setCreatorName] = useState<string>('');
+
+	useEffect(() => {
+		if (!session.creator) {
+			setCreatorName('@unknown');
+			return;
+		}
+
+		let mounted = true;
+
+		void (async () => {
+			try {
+				const user = await getUserByUid(session.creator);
+				if (!mounted) return;
+
+				if (!user) {
+					setCreatorName('@unknown');
+					return;
+				}
+
+				if (user.usernamey && user.usernamey.trim().length > 0) {
+					setCreatorName(`@${user.usernamey}`);
+				} else if (user.displayName && user.displayName.trim().length > 0) {
+					setCreatorName(`@${user.displayName}`);
+				} else {
+					setCreatorName(`@${session.creator.slice(0, 6)}`);
+				}
+			} catch {
+				if (mounted) setCreatorName('@unknown');
+			}
+		})();
+
+		return () => {
+			mounted = false;
+		};
+	}, [session.creator]);
 
 	const participantIds = useMemo(
 		() => session.participants?.join(',') || '',
@@ -84,6 +120,23 @@ export function SessionCard({
 			? 'border-neutral-300 hover:border-neutral-400'
 			: 'border-neutral-200 hover:border-neutral-300';
 
+	const handleJoinClick = (e: React.MouseEvent) => {
+		e.preventDefault();
+		e.stopPropagation();
+
+		onJoinSession?.(session?.id ?? '');
+	};
+
+	// Close menu when clicking outside
+	useEffect(() => {
+		if (!menuOpen) return;
+
+		const handleClickOutside = () => setMenuOpen(false);
+		document.addEventListener('click', handleClickOutside);
+
+		return () => document.removeEventListener('click', handleClickOutside);
+	}, [menuOpen]);
+
 	return (
 		<div
 			className={`group relative bg-white rounded-xl p-5 border-2 transition-all duration-300 hover:shadow-sm ${borderClass} ${
@@ -104,6 +157,13 @@ export function SessionCard({
 				</div>
 			)}
 
+			{/* Debug badge - shows identifier requirement */}
+			{session.identifierRequired && (
+				<div className="absolute -top-2 left-16 px-2 py-1 bg-indigo-400 text-white text-xs font-semibold rounded-full shadow-sm">
+					🔐 Secure
+				</div>
+			)}
+
 			{/* Header: Time + Menu */}
 			<div className="flex items-start justify-between mb-4">
 				<div className="flex-1 min-w-0">
@@ -115,9 +175,13 @@ export function SessionCard({
 
 				{/* Menu button - only for creator, hidden for invited */}
 				{isCreator && !isInvited && (
-					<div className="relative no-navigate">
+					<div className="relative">
 						<button
-							onClick={() => setMenuOpen(!menuOpen)}
+							onClick={(e) => {
+								e.preventDefault();
+								e.stopPropagation();
+								setMenuOpen(!menuOpen);
+							}}
 							className="p-2 rounded-md hover:bg-neutral-100 transition"
 							aria-label="Session options"
 						>
@@ -125,14 +189,16 @@ export function SessionCard({
 						</button>
 
 						{menuOpen && (
-							<div className="absolute right-0 mt-2 w-40 bg-white rounded-lg shadow-sm border border-neutral-200 z-10">
+							<div className="absolute right-0 mt-2 w-40 bg-white rounded-lg shadow-lg border border-neutral-200 z-20">
 								{onEndSession && session.isActive && (
 									<button
-										onClick={() => {
+										onClick={(e) => {
+											e.preventDefault();
+											e.stopPropagation();
 											onEndSession(session.id || '');
 											setMenuOpen(false);
 										}}
-										className="w-full flex items-center gap-2 px-4 py-2 text-sm hover:bg-neutral-50 text-left"
+										className="w-full flex items-center gap-2 px-4 py-2 text-sm hover:bg-neutral-50 text-left rounded-t-lg"
 									>
 										<FaBan className="w-3 h-3" />
 										End Session
@@ -140,7 +206,9 @@ export function SessionCard({
 								)}
 								{onLockSession && session.isActive && (
 									<button
-										onClick={() => {
+										onClick={(e) => {
+											e.preventDefault();
+											e.stopPropagation();
 											onLockSession(session.id || '');
 											setMenuOpen(false);
 										}}
@@ -153,14 +221,16 @@ export function SessionCard({
 
 								{onInvite && (
 									<button
-										onClick={() => {
+										onClick={(e) => {
+											e.preventDefault();
+											e.stopPropagation();
 											onInvite(session);
 											setMenuOpen(false);
 										}}
-										className="w-full flex items-center gap-2 px-4 py-2 text-sm hover:bg-neutral-50 text-left"
+										className="w-full flex items-center gap-2 px-4 py-2 text-sm hover:bg-neutral-50 text-left rounded-b-lg"
 									>
 										<FaShare className="w-3 h-3" />
-										Invite
+										Invite & Copy link
 									</button>
 								)}
 							</div>
@@ -184,9 +254,7 @@ export function SessionCard({
 				<h3 className="font-semibold text-neutral-800 truncate text-base mb-1">
 					{session.title || 'Untitled Session'}
 				</h3>
-				{isInvited && (
-					<p className="text-xs text-neutral-600">Invited by @{String(session.creator)}</p>
-				)}
+				{isInvited && <p className="text-xs text-neutral-600">Invited by {creatorName}</p>}
 			</div>
 
 			{/* Participants section */}
@@ -212,14 +280,11 @@ export function SessionCard({
 			</div>
 
 			{/* Action buttons */}
-			<div className="flex gap-2 no-navigate">
+			<div className="flex gap-2">
 				{/* Invited user: "Join Now" button */}
 				{isInvited && session.isActive && onJoinSession && (
 					<button
-						onClick={(e) => {
-							e.stopPropagation();
-							onJoinSession(session.id || '');
-						}}
+						onClick={handleJoinClick}
 						className="flex-1 inline-flex items-center justify-center gap-1 px-2 py-2.5 text-sm font-semibold rounded-lg text-white bg-neutral-800 hover:shadow-md hover:bg-neutral-800/70 transition"
 					>
 						<FaFire className="w-3 h-3" />
@@ -231,6 +296,7 @@ export function SessionCard({
 				{isParticipant && !isInvited && session.isActive && onLeaveSession && (
 					<button
 						onClick={(e) => {
+							e.preventDefault();
 							e.stopPropagation();
 							onLeaveSession(session.id || '');
 						}}
@@ -244,10 +310,7 @@ export function SessionCard({
 				{/* Non-participant, non-invited: Join button */}
 				{!isParticipant && !isInvited && session.isActive && onJoinSession && (
 					<button
-						onClick={(e) => {
-							e.stopPropagation();
-							onJoinSession(session.id || '');
-						}}
+						onClick={handleJoinClick}
 						className="flex-1 inline-flex items-center justify-center gap-1 px-2 py-1 text-sm font-semibold rounded-lg text-white bg-neutral-800 hover:bg-neutral-700 transition"
 					>
 						<FaFire className="w-3 h-3" />
@@ -259,6 +322,7 @@ export function SessionCard({
 				{isParticipant && !isInvited && session.isActive && (
 					<button
 						onClick={(e) => {
+							e.preventDefault();
 							e.stopPropagation();
 							if (session.id) {
 								router.push(`/room/${session.id}`);

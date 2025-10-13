@@ -3,17 +3,8 @@ import { adminDb } from '@/app/lib/firebase/FireAdmin';
 import { FieldValue } from 'firebase-admin/firestore';
 
 const CRON_SECRET = process.env.CRON_SECRET;
-const BATCH_SIZE = 250;
+const BATCH_SIZE = 500;
 const RESET_AMOUNT = 500;
-
-const FUEL_MESSAGES = [
-	'🔋 FUEL TANK REFILLED! Time to spread the love again!',
-	"⚡ KUDOS RELOADED! You're all charged up! 🚀",
-	'💝 Fresh kudos incoming! Ready to uplift someone? ',
-	'🎯 Boom! Your kudos meter is back to MAXIMUM! 💪',
-	"Refuel complete! Go make someone's day! 🎉",
-	'🔥 KUDOS RESET TO 500! Time to shine bright! 💎',
-];
 
 export async function GET(req: NextRequest): Promise<NextResponse> {
 	const authHeader = req.headers.get('authorization') || '';
@@ -21,41 +12,51 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
 		return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 	}
 
+	const start = Date.now();
+	let updated = 0;
+	let failed = 0;
+
 	try {
-		const usersSnapshot = await adminDb.collection('users').select('__name__').get();
-		const userDocs = usersSnapshot.docs;
+		const userRefs = await adminDb.collection('users').listDocuments();
 
-		let updated = 0;
-		let failed = 0;
+		if (!userRefs || userRefs.length === 0) {
+			return NextResponse.json({
+				success: true,
+				updated: 0,
+				failed: 0,
+				note: 'no users found',
+				durationMs: Date.now() - start,
+			});
+		}
 
-		for (let i = 0; i < userDocs.length; i += BATCH_SIZE) {
-			const batch = adminDb.batch();
-			const end = Math.min(i + BATCH_SIZE, userDocs.length);
+		let batch = adminDb.batch();
+		let inBatch = 0;
 
-			for (let j = i; j < end; j++) {
-				const userId = userDocs[j].id;
-				const message = FUEL_MESSAGES[Math.floor(Math.random() * FUEL_MESSAGES.length)];
+		for (const docRef of userRefs) {
+			batch.update(docRef, {
+				kudos: RESET_AMOUNT,
+				lastRefillAt: FieldValue.serverTimestamp(),
+			});
+			inBatch++;
 
-				batch.update(adminDb.collection('users').doc(userId), {
-					kudos: RESET_AMOUNT,
-					lastSeen: FieldValue.serverTimestamp(),
-				});
-
-				batch.set(adminDb.collection('kudos').doc(), {
-					from: 'SYSTEM',
-					to: userId,
-					amount: RESET_AMOUNT,
-					type: 'system',
-					note: message,
-					createdAt: FieldValue.serverTimestamp(),
-				});
+			if (inBatch >= BATCH_SIZE) {
+				try {
+					await batch.commit();
+					updated += inBatch;
+				} catch {
+					failed += inBatch;
+				}
+				batch = adminDb.batch();
+				inBatch = 0;
 			}
+		}
 
+		if (inBatch > 0) {
 			try {
 				await batch.commit();
-				updated += end - i;
+				updated += inBatch;
 			} catch {
-				failed += end - i;
+				failed += inBatch;
 			}
 		}
 
@@ -63,12 +64,17 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
 			success: true,
 			updated,
 			failed,
+			totalCandidates: userRefs.length,
+			durationMs: Date.now() - start,
 			timestamp: new Date().toISOString(),
 		});
-	} catch {
-		return NextResponse.json({ success: false, error: 'Failed' }, { status: 500 });
+	} catch (err) {
+		return NextResponse.json(
+			{ success: false, error: 'Failed', details: (err as Error).message },
+			{ status: 500 }
+		);
 	}
 }
 
 export const runtime = 'nodejs';
-export const maxDuration = 60;
+export const maxDuration = 120;

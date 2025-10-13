@@ -12,8 +12,8 @@ export default function FlarePanel() {
 					Private & Playful & Amazing.
 				</h2>
 				<p className="font-righteous text-sm text-neutral-500 dark:text-neutral-300 leading-relaxed">
-					Firechat is your invite-only chat app for Class 9A — secret rooms, tiny Kudos
-					economy, and a respectful vibe.
+					Firechat is your invite-only chat app — secret rooms, tiny Kudos economy, and a
+					respectful vibe.
 				</p>
 				<div className="flex justify-center gap-2">
 					{[...Array(3)].map((_, i) => (
@@ -86,7 +86,7 @@ export default function FlarePanel() {
 				<p className="text-xs text-neutral-700 dark:text-neutral-200">
 					A short identifier (like{' '}
 					<span className="font-semibold text-[#ff3e00] bg-white px-2 py-0.5 rounded-md shadow-sm dark:bg-neutral-800">
-						LuckyStar7
+						You@Firechat
 					</span>
 					) makes joining faster.
 				</p>

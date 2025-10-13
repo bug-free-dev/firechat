@@ -82,7 +82,7 @@ export default function FireSlide({
 	return (
 		<div
 			aria-hidden={!open}
-			className={`fixed inset-0 z-50 pointer-events-none rounded-t-lg`}
+			className={`fixed inset-0 z-50 pointer-events-none`}
 			aria-modal={open}
 			role="dialog"
 			id={id}
@@ -105,11 +105,11 @@ export default function FireSlide({
 					// container transforms for slide effect, pointer-events enabled when open
 					className={`pointer-events-auto w-full sm:max-w-3xl transform transition-transform duration-300 ease-out
             ${open ? 'translate-y-0' : 'translate-y-full'}
-            ${size === 'full' ? 'h-full' : 'rounded-t-2xl'}
+            ${size === 'full' ? 'h-full' : ''}
           `}
 				>
 					{/* Small Firechat header */}
-					<div className="px-4 pt-3 pb-2 bg-white border-b border-neutral-100 rounded-t-lg">
+					<div className="px-4 pt-3 pb-2 bg-white border-b border-neutral-100">
 						{/* Firechat small brand header (minimal) */}
 						<FireHeader showSubtitle={false} size="sm" variant="minimal" className="mb-1" />
 

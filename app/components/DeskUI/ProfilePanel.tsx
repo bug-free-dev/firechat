@@ -354,7 +354,7 @@ export default function ProfilePanel({ profile, onUpdate }: ProfilePanelProps) {
 							{(profile.tags ?? []).slice(0, 10).map((t, i) => (
 								<span
 									key={i}
-									className="bg-neutral-100 text-neutral-800 px-3 py-1 rounded-full text-xs"
+									className="bg-neutral-700 text-neutral-100 px-3 py-1 rounded-full text-xs"
 								>
 									#{t}
 								</span>
@@ -377,7 +377,7 @@ export default function ProfilePanel({ profile, onUpdate }: ProfilePanelProps) {
 									onChange={(e) => setEditData({ ...editData, about: e.target.value })}
 									placeholder="Tell people about you..."
 									rows={6}
-									className="w-full px-6 py-4 bg-neutral-50 border border-neutral-200 rounded-md resize-none focus:ring-2 focus:ring-lime-200 outline-none text-sm"
+									className="w-full px-6 py-4 bg-neutral-50 border border-neutral-200 rounded-md resize-none focus:ring-2 focus:ring-neutral-200 outline-none text-sm"
 								/>
 							) : (
 								<div className="text-neutral-700 text-sm bg-neutral-50 px-6 py-4 rounded-lg border border-neutral-100">
@@ -413,8 +413,9 @@ export default function ProfilePanel({ profile, onUpdate }: ProfilePanelProps) {
 								{isEditing ? (
 									<FireInput
 										value={String(editData.status ?? '')}
-										onChange={(v) => setEditData({ ...editData, status: v })}
+										onChange={() => setEditData({ ...editData })}
 										placeholder="Short status"
+										className="flex-1 rounded-t-lg  ml-2"
 									/>
 								) : (
 									<div className="text-neutral-700 text-sm bg-neutral-50 px-4 py-3 rounded-lg border border-neutral-100">
@@ -436,7 +437,7 @@ export default function ProfilePanel({ profile, onUpdate }: ProfilePanelProps) {
 								onChange={(next) => setEditData({ ...editData, tags: next })}
 								placeholder="Add tags (press Enter)"
 								max={12}
-								prefix="#"
+								prefix=""
 								editable={isEditing}
 							/>
 						</div>
