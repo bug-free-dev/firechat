@@ -2,9 +2,11 @@
 
 import React, { useRef, useState } from 'react';
 import toast from 'react-hot-toast';
-import { FaFire, FaGithub, FaGoogle, FaRocket } from 'react-icons/fa';
+import { FaGithub, FaGoogle } from 'react-icons/fa';
+import { PiFireLight } from 'react-icons/pi';
+import { LuRocket } from 'react-icons/lu';
 
-import TabSwitcher from '@/app/components/FireupUI/TabSwitcher';
+import FireTabSwitcher from '@/app/components/UI/FireTabSwitcher';
 import FireButton from '@/app/components/UI/FireButton';
 import FireInput from '@/app/components/UI/FireInput';
 import OAuthButton from '@/app/components/UI/OAuthButton';
@@ -190,7 +192,7 @@ export default function AuthForm({ activeTab, onTabChange }: Props) {
 
 	return (
 		<div onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd} className="w-full">
-			<TabSwitcher
+			<FireTabSwitcher
 				activeTab={activeTab}
 				onTabChange={(t) => onTabChange(t as 'login' | 'signup')}
 				tabs={[
@@ -200,19 +202,19 @@ export default function AuthForm({ activeTab, onTabChange }: Props) {
 				className="w-full"
 			/>
 
-			<h2 className="mt-6 font-bold text-2xl text-neutral-900 dark:text-neutral-100 text-center lg:text-left">
+			<h2 className="mt-6 font-bold text-2xl text-neutral-900 dark:text-neutral-100 text-center mb-1">
 				{activeTab === 'login' ? (
-					<span className="inline-flex items-center gap-2">
-						<FaFire className="text-orange-500" /> Welcome Back
+					<span className="inline-flex items-center gap-2 ">
+						<PiFireLight className="text-orange-500 h-8 w-8" /> Welcome Back
 					</span>
 				) : (
 					<span className="inline-flex items-center gap-2">
-						<FaRocket className="text-blue-500" /> Create Your Desk
+						<LuRocket className="text-blue-500" /> Create Your Desk
 					</span>
 				)}
 			</h2>
 
-			<p className="text-sm text-neutral-600 dark:text-neutral-300 mt-2 leading-relaxed">
+			<p className="text-sm text-neutral-600 dark:text-neutral-300 mt-2 leading-relaxed text-center">
 				{activeTab === 'login'
 					? 'Sign in to continue chatting with your classmates.'
 					: "Sign up to get started — we'll send a verification link to confirm your email."}
@@ -250,9 +252,10 @@ export default function AuthForm({ activeTab, onTabChange }: Props) {
 						<FireInput
 							label="Full name"
 							value={signup.displayName}
-							onChange={(v) => setSignup((s) => ({ ...s, displayName: v }))}
+							onChange={(e) => setSignup((s) => ({ ...s, displayName: e.target.value }))}
 							placeholder="Your 100% real name."
 							required
+							variant="default"
 							disabled={isLoading}
 						/>
 					)}
@@ -260,10 +263,10 @@ export default function AuthForm({ activeTab, onTabChange }: Props) {
 					<FireInput
 						label="Email"
 						value={activeTab === 'login' ? signin.email : signup.email}
-						onChange={(v) =>
+						onChange={(e) =>
 							activeTab === 'login'
-								? setSignin((s) => ({ ...s, email: v }))
-								: setSignup((s) => ({ ...s, email: v }))
+								? setSignin((s) => ({ ...s, email: e.target.value }))
+								: setSignup((s) => ({ ...s, email: e.target.value }))
 						}
 						type="email"
 						placeholder="you@class9a.school"
@@ -274,10 +277,10 @@ export default function AuthForm({ activeTab, onTabChange }: Props) {
 					<FireInput
 						label="Password"
 						value={activeTab === 'login' ? signin.password : signup.password}
-						onChange={(v) =>
+						onChange={(e) =>
 							activeTab === 'login'
-								? setSignin((s) => ({ ...s, password: v }))
-								: setSignup((s) => ({ ...s, password: v }))
+								? setSignin((s) => ({ ...s, password: e.target.value }))
+								: setSignup((s) => ({ ...s, password: e.target.value }))
 						}
 						type="password"
 						placeholder="your secret key"

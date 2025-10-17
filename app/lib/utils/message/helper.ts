@@ -147,7 +147,3 @@ export function parseTypingUserFromSnapshot(snap: DataSnapshot): FireCachedUser 
 export function compareMsgsAsc(a: ChatMessage, b: ChatMessage): number {
 	return compare.asc(a.createdAt, b.createdAt);
 }
-
-export function makeTempId(): string {
-	return `temp-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
-}

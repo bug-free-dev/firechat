@@ -3,6 +3,15 @@
 import { useEffect, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 
+interface TagInputProps {
+	value: string[];
+	onChange: (next: string[]) => void;
+	placeholder?: string;
+	max?: number;
+	prefix?: string;
+	editable?: boolean;
+}
+
 export default function TagInput({
 	value,
 	onChange,
@@ -10,14 +19,7 @@ export default function TagInput({
 	max = 12,
 	prefix = '',
 	editable = false,
-}: {
-	value: string[];
-	onChange: (next: string[]) => void;
-	placeholder?: string;
-	max?: number;
-	prefix?: string;
-	editable?: boolean;
-}) {
+}: TagInputProps) {
 	const [input, setInput] = useState('');
 	const inputRef = useRef<HTMLInputElement | null>(null);
 
@@ -50,8 +52,10 @@ export default function TagInput({
 	const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
 		if (e.key === 'Enter') {
 			e.preventDefault();
+			e.stopPropagation();
 			addTag(input);
 		} else if (e.key === 'Backspace' && input === '') {
+			e.preventDefault();
 			if (value.length > 0) onChange(value.slice(0, -1));
 		}
 	};
@@ -101,6 +105,8 @@ export default function TagInput({
 				{editable && value.length < max && (
 					<input
 						ref={inputRef}
+						type="text"
+						inputMode="text"
 						value={input}
 						onChange={(e) => setInput(e.target.value)}
 						onKeyDown={handleKeyDown}

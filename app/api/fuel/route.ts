@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { adminDb } from '@/app/lib/firebase/FireAdmin';
 import { FieldValue } from 'firebase-admin/firestore';
+import {DEFAULT_KUDOS} from"@/app/lib/types"
 
 const CRON_SECRET = process.env.CRON_SECRET;
 const BATCH_SIZE = 500;
-const RESET_AMOUNT = 500;
+const RESET_AMOUNT = DEFAULT_KUDOS;
 
 export async function GET(req: NextRequest): Promise<NextResponse> {
 	const authHeader = req.headers.get('authorization') || '';

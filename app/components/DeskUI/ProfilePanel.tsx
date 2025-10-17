@@ -4,19 +4,19 @@ import React, { useEffect, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 import { BiImageAdd } from 'react-icons/bi';
 import {
-	FaEdit,
-	FaEllipsisV,
-	FaHashtag,
-	FaInfoCircle,
-	FaSave,
-	FaSignOutAlt,
-	FaSmile,
-	FaStar,
-	FaTags,
-	FaTimes,
-	FaTrashAlt,
-	FaUser,
-} from 'react-icons/fa';
+	FiEdit,
+	FiInfo,
+	FiSave,
+	FiLogOut,
+	FiSmile,
+	FiStar,
+	FiTag,
+	FiX,
+	FiTrash2,
+	FiUser,
+	FiMoreVertical,
+	FiHash,
+} from 'react-icons/fi';
 
 import FireAvatar from '@/app/components/UI/FireAvatar';
 import FireButton from '@/app/components/UI/FireButton';
@@ -40,6 +40,7 @@ export default function ProfilePanel({ profile, onUpdate }: ProfilePanelProps) {
 	const [isEditing, setIsEditing] = useState(false);
 	const [saving, setSaving] = useState(false);
 	const [editData, setEditData] = useState<Partial<FireProfile>>({
+		displayName: profile.displayName ?? '',
 		status: profile.status ?? '',
 		about: profile.about ?? '',
 		mood: profile.mood ?? '',
@@ -53,9 +54,9 @@ export default function ProfilePanel({ profile, onUpdate }: ProfilePanelProps) {
 	const menuRef = useRef<HTMLDivElement | null>(null);
 
 	useEffect(() => {
-		// whenever profile changes (server), reset edit data unless user is actively editing
 		if (!isEditing) {
 			setEditData({
+				displayName: profile.displayName ?? '',
 				status: profile.status ?? '',
 				about: profile.about ?? '',
 				mood: profile.mood ?? '',
@@ -67,7 +68,7 @@ export default function ProfilePanel({ profile, onUpdate }: ProfilePanelProps) {
 	}, [profile, isEditing]);
 
 	useEffect(() => {
-		function handleClickOutside(e: MouseEvent) {
+		const handleClickOutside = (e: MouseEvent) => {
 			const target = e.target as Node;
 			if (menuOpen) {
 				if (
@@ -79,14 +80,14 @@ export default function ProfilePanel({ profile, onUpdate }: ProfilePanelProps) {
 					setMenuOpen(false);
 				}
 			}
-		}
+		};
 		document.addEventListener('click', handleClickOutside);
 		return () => document.removeEventListener('click', handleClickOutside);
 	}, [menuOpen]);
 
-	// Cancel edits and revert to server values
-	function handleCancelEdit() {
+	const handleCancelEdit = () => {
 		setEditData({
+			displayName: profile.displayName ?? '',
 			status: profile.status ?? '',
 			about: profile.about ?? '',
 			mood: profile.mood ?? '',
@@ -96,13 +97,14 @@ export default function ProfilePanel({ profile, onUpdate }: ProfilePanelProps) {
 		});
 		setIsEditing(false);
 		toast('Edits discarded');
-	}
+	};
 
 	const handleSave = async () => {
 		if (!profile?.uid) return;
 		setSaving(true);
 		try {
 			const success = await updateUserProfile(profile.uid, {
+				displayName: String(editData.displayName ?? ''),
 				status: String(editData.status ?? ''),
 				about: String(editData.about ?? ''),
 				mood: String(editData.mood ?? ''),
@@ -115,7 +117,7 @@ export default function ProfilePanel({ profile, onUpdate }: ProfilePanelProps) {
 				setIsEditing(false);
 			}
 		} catch {
-			setSaving(false);
+			/** Parent handles it */
 		} finally {
 			setSaving(false);
 		}
@@ -132,7 +134,7 @@ export default function ProfilePanel({ profile, onUpdate }: ProfilePanelProps) {
 		}
 	};
 
-	async function handleLogout() {
+	const handleLogout = () => {
 		FireToast({
 			title: 'Sign Out',
 			message: 'Are you sure you want to sign out?',
@@ -158,9 +160,9 @@ export default function ProfilePanel({ profile, onUpdate }: ProfilePanelProps) {
 				},
 			],
 		});
-	}
+	};
 
-	async function handleDeleteAccount() {
+	const handleDeleteAccount = () => {
 		FireToast({
 			title: 'Delete Account',
 			message: 'Deleting your account is permanent. Continue?',
@@ -186,12 +188,11 @@ export default function ProfilePanel({ profile, onUpdate }: ProfilePanelProps) {
 				},
 			],
 		});
-	}
+	};
+
 	return (
 		<div className="relative w-full min-h-[680px] bg-white overflow-hidden">
-			{/* Header */}
 			<div className="relative w-full px-8 py-6 border-b border-neutral-100">
-				{/* Menu button floats top-right */}
 				<button
 					ref={menuBtnRef}
 					onClick={() => setMenuOpen((s) => !s)}
@@ -200,22 +201,20 @@ export default function ProfilePanel({ profile, onUpdate }: ProfilePanelProps) {
 					aria-expanded={menuOpen}
 					aria-label="Open profile actions"
 				>
-					<FaEllipsisV />
+					<FiMoreVertical />
 				</button>
 
-				{/* Centered profile heading */}
 				<div className="flex flex-col items-center text-center">
 					<h2 className="text-3xl font-dyna font-semibold text-neutral-800 flex items-center gap-3 justify-center">
-						<FaUser className="text-[#ff3e00]" />
+						<FiUser className="text-[#ff3e00]" />
 						Profile
 					</h2>
 					<p className="text-sm text-neutral-500 mt-1 flex items-center justify-center">
-						<FaSmile className="inline-block mr-2 text-yellow-500" />
+						<FiSmile className="inline-block mr-2 text-yellow-500" />
 						Show your vibe — be kind.
 					</p>
 				</div>
 
-				{/* Menu dropdown */}
 				{menuOpen && (
 					<div
 						ref={menuRef}
@@ -226,24 +225,22 @@ export default function ProfilePanel({ profile, onUpdate }: ProfilePanelProps) {
 							onClick={handleLogout}
 							className="w-full flex items-center gap-2 px-4 py-2 text-left hover:bg-neutral-50"
 						>
-							<FaSignOutAlt className="w-4 h-4" />
+							<FiLogOut className="w-4 h-4" />
 							Logout
 						</button>
 						<button
 							onClick={handleDeleteAccount}
 							className="w-full flex items-center gap-2 px-4 py-2 text-left hover:bg-neutral-50 text-rose-600"
 						>
-							<FaTrashAlt className="w-4 h-4" />
+							<FiTrash2 className="w-4 h-4" />
 							Delete account
 						</button>
 					</div>
 				)}
 			</div>
 
-			{/* Main content */}
 			<div className="w-full px-8 py-8">
 				<div className="flex flex-col lg:flex-row gap-8">
-					{/* LEFT: avatar and quick info */}
 					<div className="w-full lg:w-1/3 flex flex-col items-center lg:items-start gap-6 relative">
 						<div className="relative">
 							<div className="rounded-full overflow-hidden p-1 bg-gradient-to-tr from-neutral-100 to-neutral-50">
@@ -256,8 +253,6 @@ export default function ProfilePanel({ profile, onUpdate }: ProfilePanelProps) {
 								/>
 							</div>
 
-							{/* avatar badge — edit / save / cancel */}
-
 							<div className="absolute left-2 bottom-2">
 								{isEditing ? (
 									<div
@@ -265,7 +260,6 @@ export default function ProfilePanel({ profile, onUpdate }: ProfilePanelProps) {
 										role="group"
 										aria-label="Profile edit actions"
 									>
-										{/* cancel (muted outline) */}
 										<button
 											type="button"
 											onClick={handleCancelEdit}
@@ -274,10 +268,9 @@ export default function ProfilePanel({ profile, onUpdate }: ProfilePanelProps) {
 											aria-label="Cancel edits"
 											data-i={0}
 										>
-											<FaTimes />
+											<FiX />
 										</button>
 
-										{/* save (accent) */}
 										<button
 											type="button"
 											onClick={handleSave}
@@ -287,10 +280,9 @@ export default function ProfilePanel({ profile, onUpdate }: ProfilePanelProps) {
 											aria-label="Save profile"
 											data-i={1}
 										>
-											<FaSave />
+											<FiSave />
 										</button>
 
-										{/* upload (ghost) */}
 										<label title="Upload avatar" className="m-0">
 											<input
 												ref={fileInputRef}
@@ -323,29 +315,41 @@ export default function ProfilePanel({ profile, onUpdate }: ProfilePanelProps) {
 											aria-label="Edit profile"
 											data-i={0}
 										>
-											<FaEdit />
+											<FiEdit />
 										</button>
 									</div>
 								)}
 							</div>
 						</div>
 
-						<div className="text-center lg:text-left">
-							<h3 className="text-2xl font-semibold text-neutral-800">
-								{profile.displayName}
-							</h3>
+						<div className="text-center lg:text-left w-full">
+							{isEditing ? (
+								<input
+									value={String(editData.displayName ?? '')}
+									onChange={(e) =>
+										setEditData({ ...editData, displayName: e.target.value })
+									}
+									placeholder="Display name"
+									className="flex-1 text-sm  bg-neutral-100/50 focus:bg-white focus:ring-neutral-300 ring-2 ring-neutral-100 px-2 py-2 
+                           rounded-sm focus:outline-none  border-none transition-all max-w-[150px]"
+								/>
+							) : (
+								<h3 className="text-2xl font-semibold text-neutral-800">
+									{profile.displayName}
+								</h3>
+							)}
 							<p className="text-sm text-neutral-500">@{profile.usernamey}</p>
 						</div>
 
 						<div className="flex items-center gap-6 mt-3 text-sm text-neutral-700">
 							<div className="flex items-center gap-1">
-								<FaStar className="text-yellow-500 w-4 h-4" />
+								<FiStar className="text-yellow-500 w-4 h-4" />
 								<span className="font-medium">{profile.kudos ?? 0}</span>
 								<span className="text-xs text-neutral-400 ml-1">kudos</span>
 							</div>
 
 							<div className="flex items-center gap-1 text-neutral-600">
-								<FaHashtag className="w-4 h-4 text-blue-500" />
+								<FiHash className="w-4 h-4 text-blue-500" />
 								<span className="text-xs">{profile.status || 'No status'}</span>
 							</div>
 						</div>
@@ -362,12 +366,10 @@ export default function ProfilePanel({ profile, onUpdate }: ProfilePanelProps) {
 						</div>
 					</div>
 
-					{/* RIGHT: editable fields */}
 					<div className="w-full lg:w-2/3">
-						{/* About */}
 						<div className="mb-6">
 							<label className="flex items-center gap-2 text-sm font-medium text-neutral-700 mb-2">
-								<FaInfoCircle className="text-lime-500" />
+								<FiInfo className="text-lime-500" />
 								About
 							</label>
 
@@ -386,11 +388,10 @@ export default function ProfilePanel({ profile, onUpdate }: ProfilePanelProps) {
 							)}
 						</div>
 
-						{/* Mood & Status */}
 						<div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
 							<div>
 								<label className="flex items-center gap-2 text-sm font-medium text-neutral-700 mb-2">
-									<FaSmile className="text-yellow-500" />
+									<FiSmile className="text-yellow-500" />
 									Mood
 								</label>
 								{isEditing ? (
@@ -407,15 +408,15 @@ export default function ProfilePanel({ profile, onUpdate }: ProfilePanelProps) {
 
 							<div>
 								<label className="flex items-center gap-2 text-sm font-medium text-neutral-700 mb-2">
-									<FaHashtag className="text-blue-500" />
+									<FiHash className="text-blue-500" />
 									Status
 								</label>
 								{isEditing ? (
 									<FireInput
 										value={String(editData.status ?? '')}
-										onChange={() => setEditData({ ...editData })}
+										onChange={(e) => setEditData({ ...editData, status: e.target.value })}
 										placeholder="Short status"
-										className="flex-1 rounded-t-lg  ml-2"
+										className="w-full"
 									/>
 								) : (
 									<div className="text-neutral-700 text-sm bg-neutral-50 px-4 py-3 rounded-lg border border-neutral-100">
@@ -425,10 +426,9 @@ export default function ProfilePanel({ profile, onUpdate }: ProfilePanelProps) {
 							</div>
 						</div>
 
-						{/* Tags (interactive) */}
 						<div className="mb-6">
 							<label className="flex items-center gap-2 text-sm font-medium text-neutral-700 mb-2">
-								<FaTags className="text-pink-500" />
+								<FiTag className="text-pink-500" />
 								Tags ({(editData.tags ?? []).length}/12)
 							</label>
 
@@ -442,10 +442,9 @@ export default function ProfilePanel({ profile, onUpdate }: ProfilePanelProps) {
 							/>
 						</div>
 
-						{/* Quirks (interactive) */}
 						<div className="mb-6">
 							<label className="flex items-center gap-2 text-sm font-medium text-neutral-700 mb-2">
-								<FaStar className="text-yellow-400" />
+								<FiStar className="text-yellow-400" />
 								Quirks ({(editData.quirks ?? []).length}/6)
 							</label>
 
@@ -459,14 +458,20 @@ export default function ProfilePanel({ profile, onUpdate }: ProfilePanelProps) {
 							/>
 						</div>
 
-						{/* Actions — kept minimal because primary actions live on avatar badge */}
-						<div className="mt-6">
-							{!isEditing && (
-								<div className="flex gap-3">
-									<FireButton onClick={() => setIsEditing(true)} variant="default">
-										Edit profile
+						<div className="mt-6 flex gap-3">
+							{isEditing ? (
+								<>
+									<FireButton onClick={handleSave} variant="default" disabled={saving}>
+										{saving ? 'Saving...' : 'Save Changes'}
 									</FireButton>
-								</div>
+									<FireButton onClick={handleCancelEdit} variant="secondary">
+										Cancel
+									</FireButton>
+								</>
+							) : (
+								<FireButton onClick={() => setIsEditing(true)} variant="default">
+									Edit profile
+								</FireButton>
 							)}
 						</div>
 					</div>

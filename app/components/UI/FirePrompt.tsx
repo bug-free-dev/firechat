@@ -67,6 +67,7 @@ export default function FirePrompt({
 						onClick={handleSubmit}
 						disabled={!value.trim() || loading}
 						variant="default"
+						loading={loading}
 					>
 						{loading ? loadingText : 'Verify'}
 					</FireButton>
@@ -95,7 +96,7 @@ export default function FirePrompt({
 					<FireInput
 						label="Identifier"
 						value={value}
-						onChange={onChange}
+						onChange={(e) => onChange(e.target.value)}
 						placeholder={placeholder}
 						className="text-md sm:text-xl py-4 text-center font-medium"
 						onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}

@@ -3,17 +3,8 @@
 import { useRouter } from 'next/navigation';
 import React, { useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
-import {
-	FaCoins,
-	FaCrown,
-	FaGift,
-	FaHistory,
-	FaPaperPlane,
-	FaRegPaperPlane,
-	FaRocket,
-	FaSearch,
-	FaUserPlus,
-} from 'react-icons/fa';
+import { FiGift, FiClock, FiSend, FiSearch, FiUserPlus } from 'react-icons/fi';
+import { BiCrown, BiRocket } from 'react-icons/bi';
 
 import FireArea from '@/app/components/UI/FireArea';
 import FireAvatar from '@/app/components/UI/FireAvatar';
@@ -24,8 +15,8 @@ import type { FireCachedUser, FireProfile, KudosTxn } from '@/app/lib/types';
 
 export interface KudosPanelProps {
 	currentUser: FireProfile;
-	transactions: KudosTxn[]; // newest first
-	allUsers: FireCachedUser[]; // normalized list to pick from
+	transactions: KudosTxn[];
+	allUsers: FireCachedUser[];
 	onSendKudos: (
 		fromUid: string,
 		toUid: string,
@@ -72,16 +63,17 @@ export default function KudosPanel({
 			)
 			.slice(0, 40);
 	}, [allUsers, search, currentUser.uid]);
+
 	const txnIcon = (type: KudosTxn['type']) => {
 		switch (type) {
 			case 'gift':
-				return <FaGift className="w-4 h-4 text-pink-500" />;
+				return <FiGift className="w-4 h-4 text-pink-500" />;
 			case 'reward':
-				return <FaCrown className="w-4 h-4" style={{ color: 'var(--monokai-yellow)' }} />;
+				return <BiCrown className="w-4 h-4" style={{ color: 'var(--monokai-yellow)' }} />;
 			case 'system':
-				return <FaRocket className="w-4 h-4 text-sky-500" />;
+				return <BiRocket className="w-4 h-4 text-sky-500" />;
 			default:
-				return <FaCoins className="w-4 h-4" style={{ color: 'var(--monokai-yellow)' }} />;
+				return <FiGift className="w-4 h-4" style={{ color: 'var(--monokai-yellow)' }} />;
 		}
 	};
 
@@ -144,11 +136,8 @@ export default function KudosPanel({
 				<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 w-full px-2 sm:px-0">
 					{/* Heading */}
 					<div className="flex flex-col items-center gap-2 mb-6">
-						<h2
-							className="font-dyna text-3xl text-center"
-							style={{ color: 'var(--monokai-yellow)', lineHeight: 1 }}
-						>
-							<FaCoins className="inline-block mr-2" /> Kudos
+						<h2 className="font-dyna text-[var(--monokai-yellow)] text-3xl text-center font-semibold">
+							<FiGift className="inline-block mr-2 text-[var(--monokai-yellow)]" /> Kudos
 						</h2>
 						<p className="text-sm text-neutral-600">Quick appreciation</p>
 					</div>
@@ -156,13 +145,15 @@ export default function KudosPanel({
 					{/* Search + Send */}
 					<div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3 mt-3 sm:mt-0 w-full sm:w-auto">
 						{/* Search input */}
-						<div className="flex items-center gap-2 bg-neutral-100 rounded-lg px-2 py-1 w-full sm:w-auto">
-							<FaSearch className="text-neutral-500" />
+						<div className="flex items-center gap-2 rounded-lg px-2 py-1 w-full sm:w-auto">
+							<FiSearch className="text-neutral-500" />
 							<FireInput
 								value={search}
-								onChange={setSearch}
-								placeholder="Find username"
-								className="bg-transparent w-full sm:w-48"
+								onChange={(e) =>
+									setSearch((e as React.ChangeEvent<HTMLInputElement>).target.value)
+								}
+								placeholder="Find your 'Fire friend'..."
+								className="pl-5"
 							/>
 						</div>
 
@@ -172,7 +163,7 @@ export default function KudosPanel({
 							className="flex items-center justify-center gap-2 px-3 py-2 rounded-md bg-neutral-50 hover:bg-neutral-100 text-neutral-700 w-full sm:w-auto"
 							aria-label="Detailed send"
 						>
-							<FaPaperPlane className="text-neutral-700" />
+							<FiSend className="text-neutral-700" />
 							<span className="text-sm">Send</span>
 						</button>
 					</div>
@@ -190,10 +181,10 @@ export default function KudosPanel({
 								boxShadow: '0 6px 18px rgba(0,0,0,0.04)',
 							}}
 						>
-							<FaCrown className="w-10 h-10" style={{ color: 'var(--monokai-yellow)' }} />
+							<BiCrown className="w-10 h-10" style={{ color: 'var(--monokai-yellow)' }} />
 						</div>
 						<div>
-							<div className="text-3xl font-dyna" style={{ color: 'var(--monokai-yellow)' }}>
+							<div className="text-3xl" style={{ color: 'var(--monokai-yellow)' }}>
 								{currentUser.kudos}
 							</div>
 							<div className="text-sm text-neutral-600">Your balance</div>
@@ -220,7 +211,6 @@ export default function KudosPanel({
 				<div className="mb-6">
 					{/* FireHeader */}
 					<div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-3 gap-2 sm:gap-0">
-						<h3 className="text-lg font-semibold text-neutral-800">People</h3>
 						<div className="text-sm text-neutral-500 hidden sm:block">Quick-send badges</div>
 					</div>
 
@@ -233,22 +223,21 @@ export default function KudosPanel({
 							</div>
 						</div>
 
-						{/* People Grid - Optimized for large screens */}
-						<div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4">
+						<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4">
 							{filtered.map((u) => (
 								<div
 									key={u.uid}
-									className="bg-white rounded-xl border border-neutral-200 p-4 hover:shadow-sm transition-all duration-200"
+									className="bg-white rounded-xl border border-neutral-200 p-3 md:p-4 hover:shadow-sm transition-all duration-200"
 								>
 									{/* User Info */}
 									<div className="flex items-center gap-3 mb-4">
-										<FireAvatar src={u.avatarUrl} seed={u.uid} size={48} />
+										<FireAvatar src={u.avatarUrl} seed={u.uid} size={44} />
 										<div className="flex-1 min-w-0">
 											<div className="font-semibold text-neutral-900 truncate">
 												@{u.usernamey}
 											</div>
 											<div className="text-sm text-neutral-500 flex items-center gap-2">
-												<FaCoins className="w-3 h-3 text-yellow-500" />
+												<FiGift className="w-3 h-3 text-yellow-500" />
 												<span>{u.kudos ?? 0}</span>
 												<span>·</span>
 												<span>{String(u.meta?.mood ?? '—')}</span>
@@ -256,14 +245,14 @@ export default function KudosPanel({
 										</div>
 									</div>
 
-									{/* Action Buttons */}
+									{/* Action Buttons (compact on smaller screens) */}
 									<div className="flex items-center gap-2">
 										{quickAmounts.map((a) => (
 											<button
 												key={a}
 												onClick={() => quickSend(u, a)}
 												disabled={loading || a > currentUser.kudos}
-												className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors ${
+												className={`flex-1 py-1.5 md:py-2 rounded-lg text-sm font-medium transition-colors ${
 													a > currentUser.kudos
 														? 'bg-neutral-100 text-neutral-400 cursor-not-allowed'
 														: 'bg-neutral-900 text-white hover:bg-neutral-800'
@@ -274,10 +263,10 @@ export default function KudosPanel({
 										))}
 										<button
 											onClick={() => openDetailed(u)}
-											className="px-3 py-2 bg-yellow-100 hover:bg-yellow-200 text-yellow-700 rounded-lg transition-colors"
+											className="px-2 py-1.5 md:px-3 md:py-2 bg-yellow-50 hover:bg-yellow-100 text-yellow-700 rounded-lg transition-colors"
 											aria-label={`Send custom amount to ${u.usernamey}`}
 										>
-											<FaRegPaperPlane className="w-4 h-4" />
+											<FiSend className="w-4 h-4" />
 										</button>
 									</div>
 								</div>
@@ -285,7 +274,7 @@ export default function KudosPanel({
 						</div>
 						{filtered.length === 0 && (
 							<div className="text-center py-12 text-neutral-400">
-								<FaSearch className="w-12 h-12 mx-auto mb-3 opacity-50" />
+								<FiSearch className="w-12 h-12 mx-auto mb-3 opacity-50" />
 								<div>No users found</div>
 							</div>
 						)}
@@ -296,7 +285,7 @@ export default function KudosPanel({
 						<div className="flex items-center justify-between mb-3">
 							<h3 className="text-lg font-semibold text-neutral-800">Recent activity</h3>
 							<div className="flex items-center gap-2 text-sm text-neutral-500">
-								<FaHistory />
+								<FiClock />
 								<span>Latest {recentLimit}</span>
 							</div>
 						</div>
@@ -345,7 +334,7 @@ export default function KudosPanel({
 
 							{transactions.length === 0 && (
 								<div className="text-center py-8 text-neutral-400">
-									<FaCoins
+									<FiGift
 										className="w-10 h-10 mx-auto mb-2"
 										style={{ color: 'var(--monokai-yellow)' }}
 									/>
@@ -362,7 +351,7 @@ export default function KudosPanel({
 					onClose={() => setSlideOpen(false)}
 					header={
 						<div className="flex items-center gap-3">
-							<FaPaperPlane className="w-5 h-5" style={{ color: 'var(--monokai-yellow)' }} />
+							<FiSend className="w-5 h-5" style={{ color: 'var(--monokai-yellow)' }} />
 							<div>
 								<div className="text-sm font-semibold text-neutral-800">Send Kudos</div>
 								<div className="text-xs text-neutral-500">
@@ -394,7 +383,7 @@ export default function KudosPanel({
 									<FireAvatar src={selected.avatarUrl} seed={selected.uid} size={56} />
 								) : (
 									<div className="w-14 h-14 rounded-md bg-neutral-100 flex items-center justify-center">
-										<FaUserPlus className="w-6 h-6 text-neutral-400" />
+										<FiUserPlus className="w-6 h-6 text-neutral-400" />
 									</div>
 								)}
 							</div>
@@ -410,10 +399,7 @@ export default function KudosPanel({
 
 							<div>
 								<div className="text-sm text-neutral-600">Balance</div>
-								<div
-									className="text-lg font-dyna"
-									style={{ color: 'var(--monokai-yellow)' }}
-								>
+								<div className="text-lg" style={{ color: 'var(--monokai-yellow)' }}>
 									{currentUser.kudos}
 								</div>
 							</div>
@@ -423,7 +409,9 @@ export default function KudosPanel({
 							<label className="text-sm text-neutral-600 block mb-1">Amount</label>
 							<FireInput
 								value={amountStr}
-								onChange={setAmountStr}
+								onChange={(e) =>
+									setAmountStr((e as React.ChangeEvent<HTMLInputElement>).target.value)
+								}
 								placeholder="Enter amount"
 								type="number"
 								className="text-lg font-medium"

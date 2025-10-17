@@ -2,39 +2,10 @@
 
 import type { FireCachedUser, FireProfile } from '@/app/lib/types';
 import { adminDb } from '@/app/lib/firebase/FireAdmin';
-import { create, type FireTime, toISO } from './time';
+import { create } from '../time';
+import { CONFIG, FrequentUserCache, UserCache, ValidationResult } from './config';
+import { createCachedUser, cloneSerializableUser, isValidUser } from './helper';
 
-/* ==================== Configuration ==================== */
-
-const CONFIG = {
-	CACHE_TTL: 5 * 60 * 1000, // 5 minutes
-	FREQ_CACHE_TTL: 2 * 60 * 1000, // 2 minutes
-	MAX_USERS_QUERY: 2000,
-	KUDOS_QUERY_LIMIT: 200,
-	KUDOS_FALLBACK_LIMIT: 500,
-	MIN_USERS_THRESHOLD: 10,
-} as const;
-
-/* ==================== Types ==================== */
-
-interface UserCache {
-	readonly users: Map<string, FireCachedUser>;
-	readonly byUid: Map<string, FireCachedUser>;
-	readonly identifiers: Set<string>;
-	readonly timestamp: number;
-}
-
-interface FrequentUserCache {
-	readonly ts: number;
-	readonly users: readonly FireCachedUser[];
-}
-
-interface ValidationResult {
-	readonly available: boolean;
-	readonly reason?: string;
-}
-
-/* ==================== In-Memory State (Singleton) ==================== */
 
 let cache: UserCache = {
 	users: new Map(),
@@ -47,63 +18,6 @@ let loadAllUsersInFlight: Promise<void> | null = null;
 
 const perUserFreqCache = new Map<string, FrequentUserCache>();
 const perUserFreqInFlight = new Map<string, Promise<FireCachedUser[]>>();
-
-/* ==================== Fast Helper Functions ==================== */
-
-const toISOString = (value: FireTime): string | undefined => toISO(value) || undefined;
-
-function extractUserMeta(data: Partial<FireProfile>): Record<string, unknown> | undefined {
-	const meta: Record<string, unknown> = {};
-
-	if (data.mood) meta.mood = data.mood;
-	if (data.status) meta.status = data.status;
-	if (data.about) meta.about = data.about;
-	if (data.tags?.length) meta.tags = data.tags;
-	if (data.quirks?.length) meta.quirks = data.quirks;
-	if (data.identifierKey) meta.identifierKey = data.identifierKey;
-
-	if (data.meta && typeof data.meta === 'object' && !Array.isArray(data.meta)) {
-		Object.assign(meta, data.meta);
-	}
-
-	return Object.keys(meta).length > 0 ? meta : undefined;
-}
-
-function createCachedUser(data: Partial<FireProfile>, docId: string): FireCachedUser | null {
-	const uid = String(data.uid ?? docId);
-	const usernamey =
-		typeof data.usernamey === 'string'
-			? data.usernamey
-			: typeof data.displayName === 'string'
-				? data.displayName.toLowerCase()
-				: undefined;
-
-	if (!uid || !usernamey) return null;
-
-	return {
-		uid,
-		usernamey: String(usernamey),
-		displayName: String(data.displayName ?? usernamey),
-		avatarUrl: data.avatarUrl ?? null,
-		kudos: Number.isFinite(Number(data.kudos ?? 0)) ? Number(data.kudos ?? 0) : 0,
-		isBanned: Boolean(data.isBanned),
-		createdAt: toISOString(data.createdAt as FireTime) ?? '',
-		lastSeen: toISOString(data.lastSeen as FireTime) ?? '',
-		meta: extractUserMeta(data),
-	};
-}
-
-const cloneSerializableUser = (user: FireCachedUser): FireCachedUser => ({
-	uid: user.uid,
-	usernamey: user.usernamey,
-	displayName: user.displayName,
-	avatarUrl: user.avatarUrl ?? null,
-	kudos: Number(user.kudos ?? 0),
-	isBanned: Boolean(user.isBanned),
-	createdAt: user.createdAt,
-	lastSeen: user.lastSeen,
-	meta: user.meta ? { ...user.meta } : undefined,
-});
 
 /* ==================== Core Loader ==================== */
 
@@ -159,50 +73,7 @@ async function ensureFresh(): Promise<void> {
 	if (isStale) await loadAllUsers();
 }
 
-const isValidUser = (user: FireCachedUser | undefined): user is FireCachedUser =>
-	!!user && !user.isBanned;
-
 /* ==================== Granular Cache Invalidation ==================== */
-
-/**
- * Invalidate a single user - O(1) operation
- */
-export async function invalidateUser(uid: string): Promise<void> {
-	if (!uid) return;
-
-	try {
-		const doc = await adminDb.collection('users').doc(uid).get();
-
-		if (!doc.exists) {
-			removeUserFromCache(uid);
-			return;
-		}
-
-		const data = doc.data() as Partial<FireProfile>;
-
-		if (data.isBanned) {
-			removeUserFromCache(uid);
-			return;
-		}
-
-		const updated = createCachedUser(data, doc.id);
-		if (!updated) return;
-
-		updateUserInCache(updated);
-
-		perUserFreqCache.clear();
-	} catch {
-		// Silent fail - cache will self-heal on next ensureFresh()
-	}
-}
-
-/**
- * Bulk invalidate multiple users
- */
-export async function invalidateUsers(uids: string[]): Promise<void> {
-	if (!uids.length) return;
-	await Promise.allSettled(uids.map((uid) => invalidateUser(uid)));
-}
 
 /**
  * Remove user from cache
@@ -266,6 +137,46 @@ function updateUserInCache(updated: FireCachedUser): void {
 		identifiers: newIdentifiers,
 		timestamp: create.nowMs(),
 	});
+}
+
+/**
+ * Invalidate a single user - O(1) operation
+ */
+export async function invalidateUser(uid: string): Promise<void> {
+	if (!uid) return;
+
+	try {
+		const doc = await adminDb.collection('users').doc(uid).get();
+
+		if (!doc.exists) {
+			removeUserFromCache(uid);
+			return;
+		}
+
+		const data = doc.data() as Partial<FireProfile>;
+
+		if (data.isBanned) {
+			removeUserFromCache(uid);
+			return;
+		}
+
+		const updated = createCachedUser(data, doc.id);
+		if (!updated) return;
+
+		updateUserInCache(updated);
+
+		perUserFreqCache.clear();
+	} catch {
+		// Silent fail - cache will self-heal on next ensureFresh()
+	}
+}
+
+/**
+ * Bulk invalidate multiple users
+ */
+export async function invalidateUsers(uids: string[]): Promise<void> {
+	if (!uids.length) return;
+	await Promise.allSettled(uids.map((uid) => invalidateUser(uid)));
 }
 
 /**

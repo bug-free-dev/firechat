@@ -60,12 +60,11 @@ export default function Sneaky({ value, onChange, step = 2, total = 7 }: Props) 
 
 				<div className="mb-8">
 					<FireInput
+						variant="custom"
 						label=""
 						value={value}
-						onChange={onChange}
+						onChange={(e) => onChange(e.target.value)}
 						placeholder="Enter your secret code word"
-						className="text-xl py-5 text-center font-medium"
-						type="password"
 						showPasswordToggle
 					/>
 				</div>

@@ -1,77 +1,130 @@
 'use client';
 
-import React, { useState } from 'react';
-import { FaEye, FaEyeSlash } from 'react-icons/fa';
+import React, { forwardRef, useId, useMemo, useState } from 'react';
+import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
 
-interface FireInputProps {
+type FireInputSize = 'sm' | 'md' | 'lg';
+type FireInputVariant = 'default' | 'outline' | 'filled' | 'custom';
+
+interface FireInputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'size'> {
 	label?: string;
-	value: string;
-	onChange: (value: string) => void;
-	type?: string;
-	placeholder?: string;
-	required?: boolean;
-	disabled?: boolean;
 	showPasswordToggle?: boolean;
-	className?: string;
-	onKeyDown?: React.KeyboardEventHandler<HTMLInputElement>;
+	inputSize?: FireInputSize;
+	variant?: FireInputVariant;
+	inputClassName?: string;
+	containerClassName?: string;
 }
 
-export default function FireInput({
-	label,
-	value,
-	onChange,
-	type = 'text',
-	placeholder,
-	required = false,
-	disabled = false,
-	showPasswordToggle = false,
-	className = '',
-	onKeyDown,
-	id,
-}: FireInputProps & { id?: string }) {
-	const [showPassword, setShowPassword] = useState(false);
+const sizeMap: Record<FireInputSize, string> = {
+	sm: 'py-1.5 text-sm px-2',
+	md: 'py-2.5 text-[15px] px-3',
+	lg: 'py-3.5 text-lg px-4',
+};
 
-	const inputType = showPasswordToggle ? (showPassword ? 'text' : 'password') : type;
-	const inputId = id || label?.toLowerCase().replace(/\s+/g, '_') || 'input-field';
+/**
+ * Variants:
+ * - default: rounded box
+ * - outline: transparent with border
+ * - filled: subtle filled background
+ * - custom: Vercel-like login style (rounded-top, thick bottom border, neutral idle bg -> transparent/white on focus)
+ */
+const variantClasses: Record<FireInputVariant, string> = {
+	default:
+		'bg-white border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-neutral-400/20 focus:border-neutral-300 hover:border-neutral-300',
+	outline:
+		'bg-transparent border border-neutral-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-100 focus:border-indigo-300',
+	filled:
+		'bg-neutral-50 border border-neutral-50 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-50',
+	custom:
+		'rounded-t-lg border-b-3 border-neutral-200 dark:border-neutral-700 bg-neutral-100/30 dark:bg-neutral-800/70 focus:bg-white dark:focus:bg-transparent focus:border-orange-400 transition-colors duration-200',
+};
 
-	return (
-		<div className={`space-y-2 ${className}`}>
-			{label && (
-				<label htmlFor={inputId} className="block text-sm font-medium text-neutral-700">
-					{label}
-					{required && <span className="text-red-500 ml-1">*</span>}
-				</label>
-			)}
+const labelBase = 'text-sm font-medium text-neutral-700 dark:text-neutral-200';
 
-			<div className="relative">
-				<input
-					id={inputId}
-					type={inputType}
-					value={value}
-					onChange={(e) => onChange(e.target.value)}
-					placeholder={placeholder}
-					required={required}
-					disabled={disabled}
-					onKeyDown={onKeyDown}
-					className="w-full px-4 py-3 bg-white border-0 border-b-3 border-neutral-200 
-                     focus:outline-none focus:border-yellow-400 focus:bg-neutral-50/50
-                     disabled:bg-neutral-50 disabled:text-neutral-500 disabled:cursor-not-allowed
-                     transition-all duration-300 hover:border-neutral-300
-                     text-base placeholder-neutral-400 rounded-t-lg"
-					aria-label={label}
-				/>
+const FireInput = forwardRef<HTMLInputElement, FireInputProps>(
+	(
+		{
+			label,
+			showPasswordToggle,
+			inputSize = 'md',
+			variant = 'default',
+			className = '',
+			inputClassName = '',
+			containerClassName = '',
+			type = 'text',
+			...props
+		},
+		ref
+	) => {
+		const id = useId();
+		const [showPassword, setShowPassword] = useState(false);
 
-				{showPasswordToggle && type === 'password' && (
-					<button
-						type="button"
-						onClick={() => setShowPassword(!showPassword)}
-						className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600 transition-colors"
-						tabIndex={-1}
-					>
-						{showPassword ? <FaEyeSlash size={16} /> : <FaEye size={16} />}
-					</button>
+		const isPassword = type === 'password';
+		const shouldShowToggle = isPassword && (showPasswordToggle ?? true);
+		const inputType = isPassword ? (showPassword ? 'text' : 'password') : type;
+
+		const sizeClasses = sizeMap[inputSize];
+		const variantClass = variantClasses[variant];
+
+		const baseInput = useMemo(
+			() =>
+				[
+					'w-full',
+					'outline-none',
+					'appearance-none',
+					'placeholder-neutral-400',
+					'text-neutral-900 dark:text-neutral-100',
+					'transition-colors duration-180',
+					sizeClasses,
+					variantClass,
+					inputClassName,
+					className,
+					'pr-10',
+				]
+					.filter(Boolean)
+					.join(' '),
+			[sizeClasses, variantClass, inputClassName, className]
+		);
+
+		return (
+			<div className={`w-full flex flex-col gap-1 select-none ${containerClassName}`}>
+				{label && (
+					<label htmlFor={id} className={labelBase}>
+						{label}
+						{props.required && <span className="ml-1 text-red-500">*</span>}
+					</label>
 				)}
+
+				<div className="relative">
+					<input
+						{...props}
+						ref={ref}
+						id={id}
+						type={inputType}
+						className={baseInput}
+						style={{ WebkitTapHighlightColor: 'transparent' }}
+					/>
+
+					{shouldShowToggle && (
+						<button
+							type="button"
+							onClick={() => setShowPassword((s) => !s)}
+							tabIndex={0}
+							aria-label={showPassword ? 'Hide password' : 'Show password'}
+							className="absolute right-2 top-1/2 -translate-y-1/2 z-10 flex items-center justify-center p-1 text-neutral-500 hover:text-neutral-700 transition-colors duration-150"
+						>
+							{showPassword ? (
+								<AiOutlineEyeInvisible size={18} />
+							) : (
+								<AiOutlineEye size={18} />
+							)}
+						</button>
+					)}
+				</div>
 			</div>
-		</div>
-	);
-}
+		);
+	}
+);
+
+FireInput.displayName = 'FireInput';
+export default FireInput;

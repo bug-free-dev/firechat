@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useMemo } from 'react';
-import { FaComments, FaPlus, FaFire } from 'react-icons/fa';
+import { IoChatbubblesOutline, IoAddOutline } from 'react-icons/io5';
+import { MdOutlineWhatshot } from 'react-icons/md';
 
 import FireButton from '@/app/components/UI/FireButton';
 import { FireCachedUser, FireProfile, SessionDoc } from '@/app/lib/types';
@@ -9,6 +10,7 @@ import { FireCachedUser, FireProfile, SessionDoc } from '@/app/lib/types';
 import { FrequentUsers } from './FrequentUsers';
 import { SessionCard } from './SessionCard';
 import { compare } from '@/app/lib/utils/time';
+import WaveLoader from '../../UI/WaveLoader';
 
 interface ChatsTabProps {
 	sessions: SessionDoc[];
@@ -68,8 +70,8 @@ export function ChatsTab({
 		return (
 			<div className="flex items-center justify-center py-20">
 				<div className="text-center">
-					<FaComments className="w-15 h-15 mx-auto mb-4 text-orange-500/40" />
-					<p className="text-neutral-500">Loading sessions...</p>
+					<IoChatbubblesOutline className="w-12 h-12 mx-auto mb-4 text-orange-500/40" />
+					<WaveLoader/>
 				</div>
 			</div>
 		);
@@ -77,28 +79,26 @@ export function ChatsTab({
 
 	return (
 		<>
-			{/* Frequent Users Section */}
 			{frequentUsers.length > 0 && (
 				<FrequentUsers users={frequentUsers} currentUser={currentUser} />
 			)}
 
-			{/* Single sessions grid (invites are rendered inline and flagged) */}
 			{mergedSessions.length === 0 ? (
 				<div className="flex flex-col items-center justify-center py-20 text-center">
-					<FaFire className="w-20 h-20 mb-6 text-orange-300 opacity-50" />
+					<MdOutlineWhatshot className="w-20 h-20 mb-6 text-orange-300 opacity-50" />
 					<h3 className="text-2xl font-dyna text-neutral-700 mb-2">No sparks yet</h3>
 					<p className="text-neutral-500 mb-6 max-w-sm">
 						Fire up your first session and start chatting with your classmates!
 					</p>
 					{onCreateSession && (
 						<FireButton onClick={onCreateSession} className="flex items-center gap-2">
-							<FaPlus className="w-4 h-4" />
+							<IoAddOutline className="w-5 h-5" />
 							Fire Up a Session
 						</FireButton>
 					)}
 				</div>
 			) : (
-				<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
 					{mergedSessions.map((session) => (
 						<SessionCard
 							key={session.id}

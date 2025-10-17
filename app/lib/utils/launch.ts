@@ -5,6 +5,7 @@ import { FieldValue } from 'firebase-admin/firestore';
 import { adminDb } from '../firebase/FireAdmin';
 import { DEFAULT_KUDOS } from '../types';
 import { hashIdentifierKeyAsync } from './hashy';
+import { invalidateUser } from './memory';
 
 type LaunchResult = { success: true; userRefPath: string } | { success: false; reason: string };
 
@@ -37,7 +38,6 @@ export async function launchUserProfile(
 			const snap = await tx.get(userRef);
 			const isNew = !snap.exists;
 
-			// Build profile object (exclude createdAt / lastSeen)
 			const profileData: Record<string, unknown> = {
 				uid,
 				displayName: payload.displayName,
@@ -57,14 +57,11 @@ export async function launchUserProfile(
 				meta: {},
 			};
 
-			// Merge the main profile
 			tx.set(userRef, profileData, { merge: true });
 
-			// Set createdAt if new user
 			if (isNew) {
 				tx.update(userRef, { createdAt: FieldValue.serverTimestamp() });
 
-				// Initial kudos transaction
 				tx.set(kudosRef, {
 					from: 'SYSTEM',
 					to: uid,
@@ -76,6 +73,10 @@ export async function launchUserProfile(
 			}
 
 			tx.update(userRef, { lastSeen: FieldValue.serverTimestamp() });
+		});
+
+		await invalidateUser(uid).catch(() => {
+			// Silent fail - cache will self-heal on next read
 		});
 
 		return { success: true, userRefPath: `users/${uid}` };

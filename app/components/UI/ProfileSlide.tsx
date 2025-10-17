@@ -2,22 +2,20 @@
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
-	FaCoins,
-	FaFire,
-	FaGem,
-	FaGhost,
-	FaInfoCircle,
-	FaMagic,
-	FaStar,
-	FaTags,
-} from 'react-icons/fa';
+	IoTrophyOutline,
+	IoFlameOutline,
+	IoDiamondOutline,
+	IoHappyOutline,
+	IoInformationCircleOutline,
+	IoSparklesOutline,
+	IoPricetagsOutline,
+	IoStarOutline,
+} from 'react-icons/io5';
 
 import FireAvatar from '@/app/components/UI/FireAvatar';
 import FireSlide from '@/app/components/UI/FireSlide';
 import type { FireCachedUser } from '@/app/lib/types';
 import { FireTime, formatTime, toMillis, validate } from '@/app/lib/utils/time';
-
-/* ==================== Types & Helpers ==================== */
 
 interface UserMetadata {
 	mood?: string;
@@ -59,11 +57,9 @@ function relativeTimeFromMs(ms: number): string {
 	return `${d}d ago`;
 }
 
-/* ==================== Tag Colors ==================== */
-
 const TAG_COLORS = [
 	'bg-blue-50 text-blue-700 border-blue-200',
-	'bg-violet-50 text-violet-700 border-violet-200',
+	'bg-indigo-50 text-indigo-700 border-indigo-200',
 	'bg-pink-50 text-pink-700 border-pink-200',
 	'bg-neutral-50 text-neutral-700 border-neutral-200',
 	'bg-lime-50 text-lime-700 border-lime-200',
@@ -73,7 +69,6 @@ const TAG_COLORS = [
 ];
 
 const getTagColor = (index: number): string => TAG_COLORS[index % TAG_COLORS.length];
-
 
 interface UserProfileSlideProps {
 	user: FireCachedUser | null;
@@ -86,7 +81,6 @@ export default function ProfileSlide({ user, isOpen, onClose }: UserProfileSlide
 	const [kudosPulse, setKudosPulse] = useState(false);
 	const prevKudosRef = useRef<number | null>(null);
 
-	// animate kudos when it changes
 	useEffect(() => {
 		if (!user) return;
 		const prev = prevKudosRef.current;
@@ -106,10 +100,7 @@ export default function ProfileSlide({ user, isOpen, onClose }: UserProfileSlide
 
 	return (
 		<FireSlide open={isOpen} onClose={onClose} size="md" header="" backdropStatic={false}>
-			
-
 			<div className="flex flex-col gap-6 p-6">
-				{/* Header: avatar + name + kudos */}
 				<div className="animate-slide-in flex items-start gap-4">
 					<div className="relative flex-shrink-0">
 						<FireAvatar
@@ -118,7 +109,6 @@ export default function ProfileSlide({ user, isOpen, onClose }: UserProfileSlide
 							size={72}
 							className="ring-2 ring-neutral-200 shadow-lg"
 						/>
-						{/* Online indicator */}
 						<span
 							aria-hidden
 							className={`absolute -bottom-2 -right-2 w-5 h-5 rounded-full border-3 border-white flex items-center justify-center transition-all duration-300 ${
@@ -128,7 +118,7 @@ export default function ProfileSlide({ user, isOpen, onClose }: UserProfileSlide
 							}`}
 							title={online ? 'Online' : `Last seen ${lastSeenLabel}`}
 						>
-							{online && <FaFire className="w-2 h-2 text-white animate-float" />}
+							{online && <IoFlameOutline className="w-2 h-2 text-white animate-float" />}
 						</span>
 					</div>
 
@@ -137,7 +127,7 @@ export default function ProfileSlide({ user, isOpen, onClose }: UserProfileSlide
 							<h2 className="text-xl font-bold text-neutral-900 truncate">
 								{user.displayName}
 							</h2>
-							<FaStar className="w-3.5 h-3.5 text-amber-400" />
+							<IoStarOutline className="w-3.5 h-3.5 text-amber-400" />
 						</div>
 						<div className="flex items-center gap-2 text-xs text-neutral-500 mb-3">
 							<span className="truncate font-medium">@{user.usernamey}</span>
@@ -147,58 +137,51 @@ export default function ProfileSlide({ user, isOpen, onClose }: UserProfileSlide
 							</span>
 						</div>
 
-						{/* Kudos card - inline, elegant */}
 						<div
 							className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-amber-200 bg-gradient-to-r from-amber-50 to-yellow-50 transition-all duration-300 ${
 								kudosPulse ? 'scale-110 shadow-lg shadow-amber-200/50' : 'shadow-sm'
 							}`}
 							aria-live="polite"
 						>
-							<FaCoins className="w-3.5 h-3.5 text-yellow-500" />
+							<IoTrophyOutline className="w-3.5 h-3.5 text-yellow-500" />
 							<span className="text-sm font-bold text-amber-900">{user.kudos}</span>
 							<span className="text-xs font-medium text-amber-700">kudos</span>
 						</div>
 					</div>
 				</div>
 
-				{/* mood + status: subtle cards with better spacing */}
 				{(metadata.mood || metadata.status) && (
 					<div className="grid grid-cols-1 md:grid-cols-2 gap-3">
 						{metadata.mood && (
-							<div className="animate-slide-in stagger-delay-1 group p-3 rounded-xl border border-violet-100 bg-gradient-to-br from-violet-50 to-violet-50/50 hover:border-violet-200 transition-all duration-300 cursor-default">
-								<div className="flex items-center gap-2 text-violet-600 mb-2">
-									<FaGhost className="w-4 h-4" />
+							<div className="animate-slide-in stagger-delay-1 group p-3 rounded-xl border border-indigo-100 bg-gradient-to-br from-indigo-50 to-indigo-50/50 hover:border-indigo-200 transition-all duration-300 cursor-default">
+								<div className="flex items-center gap-2 text-indigo-600 mb-2">
+									<IoHappyOutline className="w-4 h-4" />
 									<span className="text-xs font-semibold uppercase tracking-wide">
 										Mood
 									</span>
 								</div>
-								<p className="text-sm text-violet-900 font-medium">
-									{metadata.mood}
-								</p>
+								<p className="text-sm text-indigo-900 font-medium">{metadata.mood}</p>
 							</div>
 						)}
 
 						{metadata.status && (
 							<div className="animate-slide-in stagger-delay-2 group p-3 rounded-xl border border-blue-100 bg-gradient-to-br from-blue-50 to-blue-50/50 hover:border-blue-200 transition-all duration-300 cursor-default">
 								<div className="flex items-center gap-2 text-blue-600 mb-2">
-									<FaMagic className="w-4 h-4" />
+									<IoSparklesOutline className="w-4 h-4" />
 									<span className="text-xs font-semibold uppercase tracking-wide">
 										Status
 									</span>
 								</div>
-								<p className="text-sm text-blue-900 font-medium">
-									{metadata.status}
-								</p>
+								<p className="text-sm text-blue-900 font-medium">{metadata.status}</p>
 							</div>
 						)}
 					</div>
 				)}
 
-				{/* About */}
 				{metadata.about && (
 					<div className="animate-slide-in stagger-delay-3">
 						<div className="flex items-center gap-2 mb-2">
-							<FaInfoCircle className="w-3.5 h-3.5 text-neutral-400" />
+							<IoInformationCircleOutline className="w-3.5 h-3.5 text-neutral-400" />
 							<h3 className="text-xs font-bold text-neutral-600 uppercase tracking-wider">
 								About
 							</h3>
@@ -209,11 +192,10 @@ export default function ProfileSlide({ user, isOpen, onClose }: UserProfileSlide
 					</div>
 				)}
 
-				{/* Tags with better styling */}
 				{metadata.tags && metadata.tags.length > 0 && (
 					<div className="animate-slide-in stagger-delay-4">
 						<div className="flex items-center gap-2 mb-2.5">
-							<FaTags className="w-3.5 h-3.5 text-neutral-400" />
+							<IoPricetagsOutline className="w-3.5 h-3.5 text-neutral-400" />
 							<h3 className="text-xs font-bold text-neutral-600 uppercase tracking-wider">
 								Tags
 							</h3>
@@ -234,11 +216,10 @@ export default function ProfileSlide({ user, isOpen, onClose }: UserProfileSlide
 					</div>
 				)}
 
-				{/* Quirks */}
 				{metadata.quirks && metadata.quirks.length > 0 && (
 					<div>
 						<div className="flex items-center gap-2 mb-2.5">
-							<FaGem className="w-3.5 h-3.5 text-neutral-400" />
+							<IoDiamondOutline className="w-3.5 h-3.5 text-neutral-400" />
 							<h3 className="text-xs font-bold text-neutral-600 uppercase tracking-wider">
 								Quirks
 							</h3>
@@ -247,11 +228,11 @@ export default function ProfileSlide({ user, isOpen, onClose }: UserProfileSlide
 							{metadata.quirks.map((quirk, idx) => (
 								<div
 									key={idx}
-									className="animate-slide-in flex items-start gap-3 p-3 bg-gradient-to-r from-violet-50 to-purple-50 rounded-lg border border-violet-100 hover:border-violet-200 transition-all duration-300 cursor-default"
+									className="animate-slide-in flex items-start gap-3 p-3 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg border border-indigo-100 hover:border-indigo-200 transition-all duration-300 cursor-default"
 									style={{ animationDelay: `${idx * 60}ms` }}
 								>
-									<span className="text-violet-400 text-sm flex-shrink-0 mt-0.5">✦</span>
-									<span className="text-xs text-violet-800 flex-1 leading-relaxed">
+									<span className="text-indigo-400 text-sm flex-shrink-0 mt-0.5">✦</span>
+									<span className="text-xs text-indigo-800 flex-1 leading-relaxed">
 										{quirk}
 									</span>
 								</div>
@@ -260,11 +241,11 @@ export default function ProfileSlide({ user, isOpen, onClose }: UserProfileSlide
 					</div>
 				)}
 
-				{/* Joined date - minimal inline */}
 				{user.createdAt && (
 					<div className="pt-2 border-t border-neutral-100">
 						<p className="text-xs text-neutral-500">
-							<span className="font-semibold text-neutral-600">Joined</span> {formatTime(user.createdAt)}
+							<span className="font-semibold text-neutral-600">Joined</span>{' '}
+							{formatTime(user.createdAt)}
 						</p>
 					</div>
 				)}

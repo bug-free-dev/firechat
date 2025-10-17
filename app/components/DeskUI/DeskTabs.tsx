@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import { FaCoins, FaComments, FaUser } from 'react-icons/fa';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { FiUser, FiGift } from 'react-icons/fi';
+import { IoChatbubblesOutline } from 'react-icons/io5';
 
 export type Tabs = 'profile' | 'kudos' | 'sessions';
 
@@ -19,65 +20,80 @@ interface TabConfig {
 
 export default function DeskTabs({ activeTab, onTabChange }: DeskTabsProps) {
 	const tabs: TabConfig[] = [
-		{ id: 'profile', label: 'Profile', icon: FaUser, color: 'orange' },
-		{ id: 'kudos', label: 'Kudos', icon: FaCoins, color: 'yellow' },
-		{ id: 'sessions', label: 'Sessions', icon: FaComments, color: 'lime' },
+		{ id: 'profile', label: 'Profile', icon: FiUser, color: 'orange' },
+		{ id: 'kudos', label: 'Kudos', icon: FiGift, color: 'yellow' },
+		{ id: 'sessions', label: 'Sessions', icon: IoChatbubblesOutline, color: 'lime' },
 	];
 
 	const [visible, setVisible] = useState(true);
-	const hideTimeout = React.useRef<NodeJS.Timeout | null>(null);
+	const hideTimeout = useRef<NodeJS.Timeout | null>(null);
 
 	useEffect(() => {
 		const handleMouseMove = () => {
-			if (hideTimeout.current) {
-				clearTimeout(hideTimeout.current);
-			}
+			if (hideTimeout.current) clearTimeout(hideTimeout.current);
 			setVisible(true);
 			hideTimeout.current = setTimeout(() => setVisible(false), 2500);
 		};
-
 		window.addEventListener('mousemove', handleMouseMove);
 		return () => {
 			window.removeEventListener('mousemove', handleMouseMove);
-			if (hideTimeout.current) {
-				clearTimeout(hideTimeout.current);
-			}
+			if (hideTimeout.current) clearTimeout(hideTimeout.current);
 		};
 	}, []);
 
-	const getTabClasses = (tab: TabConfig, isActive: boolean) => {
-		const base =
-			'flex items-center gap-2 px-4 py-2 transition-all duration-200 text-sm font-medium rounded-2xl';
+	const activeIndex = tabs.findIndex((tab) => tab.id === activeTab);
 
-		if (isActive) {
-			const activeStyles: Record<TabConfig['color'], string> = {
-				orange: 'bg-orange-50 text-orange-600 border-orange-500',
-				yellow: 'bg-yellow-50 text-yellow-600 border-yellow-500',
-				lime: 'bg-lime-50 text-lime-600 border-lime-500',
-			};
-			return `${base} ${activeStyles[tab.color]}`;
-		}
+	const highlightColor =
+		activeTab === 'profile'
+			? 'bg-orange-100'
+			: activeTab === 'kudos'
+				? 'bg-yellow-100'
+				: 'bg-lime-100';
 
-		return `${base} text-neutral-600 border-transparent hover:bg-neutral-100`;
+	const indicatorStyle = useMemo(() => {
+		if (activeIndex === -1) return { opacity: 0 };
+		const width = `calc(${100 / tabs.length}% - 0.3rem)`;
+		const translateX = `calc(${activeIndex * 100}% + 0.3rem)`;
+		return {
+			width,
+			transform: `translateX(${translateX})`,
+		};
+	}, [activeIndex, tabs.length]);
+
+	const colorMap: Record<TabConfig['color'], string> = {
+		orange: 'text-orange-600',
+		yellow: 'text-yellow-500',
+		lime: 'text-lime-600',
 	};
+
+	// Base classes
+	const containerBase =
+		'relative bg-white border border-neutral-200 rounded-full px-2.5 py-0.5 flex gap-1 overflow-hidden';
+	const buttonBase =
+		'relative z-10 flex-1 flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-semibold rounded-full transition-colors duration-300';
 
 	return (
 		<div
-			className={`fixed bottom-3 left-1/2 -translate-x-1/2 z-50 transition-all duration-500 ${
-				visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'
+			className={`fixed bottom-3 left-1/2 -translate-x-1/2 z-50 transition-all duration-700 ease-[cubic-bezier(0.25,0.1,0.25,1)] ${
+				visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12 pointer-events-none'
 			}`}
 			onMouseEnter={() => setVisible(true)}
 			onMouseLeave={() => setVisible(false)}
 		>
-			<div className="bg-white/90 backdrop-blur-md rounded-full border border-neutral-200 px-3 py-2 flex gap-2 shadow-lg hover:shadow-xl transition-all">
+			<div className={containerBase}>
+				{/* Sliding background highlight */}
+				<div
+					className={`absolute inset-y-1 left-0 ${highlightColor} rounded-2xl transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)]`}
+					style={indicatorStyle}
+				/>
+
 				{tabs.map((tab) => {
 					const Icon = tab.icon;
-					const isActive = activeTab === tab.id;
 					return (
 						<button
 							key={tab.id}
 							onClick={() => onTabChange(tab.id)}
-							className={getTabClasses(tab, isActive)}
+							className={`${buttonBase} ${colorMap[tab.color]}`}
 						>
 							<Icon className="w-4 h-4" />
 							<span className="hidden sm:inline">{tab.label}</span>

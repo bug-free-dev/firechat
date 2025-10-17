@@ -3,7 +3,7 @@
 import { ChatMessage, RTDBMessage, ServerResult } from '@/app/lib/types';
 
 import { adminRTDB } from '../firebase/FireAdmin';
-import { parseRTDBMessage, sanitizeMessageForRTDB } from '../utils/message/utils';
+import { parseRTDBMessage, sanitizeMessageForRTDB } from '../utils/message/helper';
 import { compare, create } from '../utils/time';
 
 /* ==================== SEND MESSAGE ==================== */

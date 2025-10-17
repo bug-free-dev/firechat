@@ -10,7 +10,13 @@ type Stored<T> = {
 };
 
 // Check if we're in browser environment
-const isBrowser = typeof window !== 'undefined' && typeof window.localStorage !== 'undefined';
+let isBrowser = false;
+try {
+	isBrowser = typeof window !== 'undefined' && !!window.localStorage;
+} catch {
+	isBrowser = false;
+}
+
 
 // Safe JSON utilities
 const safeJSON = {

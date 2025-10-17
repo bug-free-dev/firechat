@@ -81,7 +81,7 @@ export default function FireHeader({
             `}
 						>
 							<FaShieldAlt className="text-[#ff3e00] flex-shrink-0" />
-							<span className="truncate">9A exclusive.</span>
+							<span className="truncate">Exclusive.</span>
 						</div>
 					)}
 				</div>

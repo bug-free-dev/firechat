@@ -5,6 +5,7 @@ import { FieldValue } from 'firebase-admin/firestore';
 import { adminAuth, adminDb } from '@/app/lib/firebase/FireAdmin';
 import type { FireProfile } from '@/app/lib/types';
 import { toISO } from '@/app/lib/utils/time';
+import { invalidateUser } from '@/app/lib/utils/memory';
 
 /**
  * Fetch all user profiles
@@ -28,7 +29,6 @@ export async function getUserProfileFromUid(uid: string): Promise<FireProfile | 
 		const snap = await adminDb.collection('users').doc(uid).get();
 		if (!snap.exists) return null;
 
-		// Cast safely into FireProfile
 		return snap.data() as FireProfile;
 	} catch {
 		return null;
@@ -55,6 +55,11 @@ export async function updateUserProfile(
 			...updates,
 			lastSeen: FieldValue.serverTimestamp(),
 		});
+
+		await invalidateUser(uid).catch(() => {
+			// Silent fail - cache will self-heal
+		});
+
 		return true;
 	} catch {
 		return false;
@@ -72,6 +77,10 @@ export async function touchUserLastSeen(uid: string): Promise<void> {
 	} catch {
 		await userRef.set({ lastSeen: FieldValue.serverTimestamp() }, { merge: true });
 	}
+
+	await invalidateUser(uid).catch(() => {
+		// Silent fail
+	});
 }
 
 /**
@@ -86,6 +95,11 @@ export async function setUserBan(uid: string, isBanned: boolean): Promise<boolea
 			isBanned,
 			lastSeen: FieldValue.serverTimestamp(),
 		});
+
+		await invalidateUser(uid).catch(() => {
+			// Silent fail
+		});
+
 		return true;
 	} catch {
 		return false;
@@ -105,7 +119,6 @@ export async function getMinimalProfileFromIdToken(
 	}
 
 	try {
-		// Verify token and extract uid
 		const decoded = await adminAuth.verifyIdToken(idToken);
 		const { uid } = decoded;
 
@@ -113,7 +126,6 @@ export async function getMinimalProfileFromIdToken(
 			return null;
 		}
 
-		// Fetch user document
 		const snap = await adminDb.collection('users').doc(uid).get();
 
 		if (!snap.exists) {
@@ -126,12 +138,10 @@ export async function getMinimalProfileFromIdToken(
 			return null;
 		}
 
-		// Build partial profile with safe defaults
 		const profile: Partial<FireProfile> = {
 			uid: data.uid ?? uid,
 		};
 
-		// Required string fields with defaults
 		if (data.displayName && typeof data.displayName === 'string') {
 			profile.displayName = data.displayName.trim();
 		}
@@ -144,7 +154,6 @@ export async function getMinimalProfileFromIdToken(
 			profile.identifierKey = data.identifierKey;
 		}
 
-		// Optional string fields
 		if ('mood' in data) {
 			profile.mood = data.mood === null ? null : String(data.mood || '').trim() || null;
 		}
@@ -157,13 +166,11 @@ export async function getMinimalProfileFromIdToken(
 			profile.about = String(data.about).trim();
 		}
 
-		// FireAvatar URL
 		if ('avatarUrl' in data) {
 			profile.avatarUrl =
 				data.avatarUrl === null ? null : String(data.avatarUrl || '').trim() || null;
 		}
 
-		// Array fields
 		if (Array.isArray(data.quirks) && data.quirks.length > 0) {
 			profile.quirks = data.quirks
 				.filter((q) => typeof q === 'string')
@@ -178,7 +185,6 @@ export async function getMinimalProfileFromIdToken(
 				.filter(Boolean);
 		}
 
-		// Boolean fields
 		if ('onboarded' in data) {
 			profile.onboarded = Boolean(data.onboarded);
 		}
@@ -187,7 +193,6 @@ export async function getMinimalProfileFromIdToken(
 			profile.isBanned = Boolean(data.isBanned);
 		}
 
-		// Number fields
 		if ('kudos' in data) {
 			const kudos = Number(data.kudos);
 			profile.kudos = Number.isFinite(kudos) ? kudos : 0;
@@ -211,7 +216,6 @@ export async function getMinimalProfileFromIdToken(
 			profile.lastSeen = toISO(data.lastSeen);
 		}
 
-		// Meta object (shallow copy if exists)
 		if (data.meta && typeof data.meta === 'object' && !Array.isArray(data.meta)) {
 			profile.meta = { ...data.meta };
 		}
@@ -221,6 +225,7 @@ export async function getMinimalProfileFromIdToken(
 		return null;
 	}
 }
+
 /**
  * Check if user exists and is not banned
  * @param uid - Firebase UID
@@ -249,12 +254,15 @@ export async function deleteAccount(uid: string): Promise<boolean> {
 	if (uid.length === 0) return false;
 
 	try {
-		// Delete user document from Firestore
 		const userRef = adminDb.collection('users').doc(uid);
 		await userRef.delete();
 
-		// Delete user from Firebase Authentication
 		await adminAuth.deleteUser(uid);
+
+		await invalidateUser(uid).catch(() => {
+			// Silent fail
+		});
+
 		return true;
 	} catch {
 		return false;

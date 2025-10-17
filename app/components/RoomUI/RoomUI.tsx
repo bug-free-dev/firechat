@@ -14,7 +14,7 @@ import { FireToast } from '../UI/FireToast';
 import MessageComposer from './MessageComposer';
 import MessageList from './MessageList';
 import ParticipantsPanel from './ParticipantsPanel';
-import ParticipantPicker from './ParticipantsPicker';
+import ParticipantPicker from '../UI/FirePicker';
 import SessionHeader from './SessionHeader';
 import TypingIndicator from './TypingIndicator';
 

@@ -12,6 +12,7 @@ import {
 } from 'react-icons/fa';
 
 import FireInput from '@/app/components/UI/FireInput';
+import FireArea from '../UI/FireArea';
 
 export interface Profile {
 	status?: string;
@@ -57,8 +58,9 @@ export default function Picky({ value, onChange, step = 1, total = 1 }: Props) {
 						Current Status
 					</label>
 					<FireInput
+						variant="custom"
 						value={status}
-						onChange={(val) => onChange({ ...value, status: val })}
+						onChange={(e) => onChange({ ...value, status: e.target.value })}
 						placeholder="What are you currently up to? (e.g., Studying, Gaming, Chilling...)"
 						required
 					/>
@@ -71,17 +73,15 @@ export default function Picky({ value, onChange, step = 1, total = 1 }: Props) {
 						About You
 					</label>
 					<div className="relative">
-						<textarea
+						<FireArea
 							value={about}
 							onChange={(e) => onChange({ ...value, about: e.target.value })}
 							placeholder="A short tagline or fun bio..."
 							rows={4}
-							className="w-full px-4 py-3 bg-white border-neutral-200 focus:bg-neutral-50/50
-                         focus:outline-none focus:border-b-yellow-400 border-b-3
-                         disabled:bg-neutral-50 disabled:text-neutral-500 disabled:cursor-not-allowed
-                         transition-all duration-300 text-base placeholder-neutral-400 
-                         rounded-t-lg resize-none pr-10"
+							variant="custom"
+							className="text-base"
 						/>
+
 						<FaPen className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none" />
 					</div>
 				</div>

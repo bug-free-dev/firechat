@@ -103,11 +103,12 @@ export default function Taggy({ value, onChange, step = 5, total = 7 }: Props) {
 
 					{/* Input Field using custom component */}
 					<FireInput
+						variant="custom"
 						placeholder="Type a tag and hit enter"
 						value={inputValue}
-						onChange={setInputValue}
+						onChange={(e) => setInputValue(e.target.value)}
 						onKeyDown={handleKeyPress as React.KeyboardEventHandler<HTMLInputElement>}
-						className="w-full max-w-md mx-auto mb-4"
+						className="max-w-md mx-auto mb-4"
 					/>
 
 					{/* Display selected tags */}

@@ -7,7 +7,7 @@ import toast from 'react-hot-toast';
 import DeskTabs from '@/app/components/DeskUI/DeskTabs';
 import KudosPanel from '@/app/components/DeskUI/KudosPanel';
 import ProfilePanel from '@/app/components/DeskUI/ProfilePanel';
-import InvitePicker from '@/app/components/DeskUI/SessionsPanelUI/InvitePicker';
+import InvitePicker from '@/app/components/UI/FirePicker';
 import SessionsPanel from '@/app/components/DeskUI/SessionsPanel';
 import FireButton from '@/app/components/UI/FireButton';
 import FireHeader from '@/app/components/UI/FireHeader';
@@ -32,7 +32,7 @@ export default function Desk() {
 	const { profile, updateProfile, verifyIdentifier } = useAuthState();
 
 	// Active tab state
-	const [activeTab, setActiveTab] = useState<TabType>('sessions');
+	const [activeTab, setActiveTab] = useState<TabType>('profile');
 
 	// Swipe tracking
 	const touchStartX = useRef<number | null>(null);
@@ -168,7 +168,7 @@ export default function Desk() {
 				invited: invitedUids,
 				identifierRequired,
 				meta: {},
-				cost: 5,
+				cost: 10,
 			});
 			if (!res.ok) {
 				toast.error("Oops! Couldn't create the session. Please try again.");
@@ -447,7 +447,7 @@ export default function Desk() {
 						<label className="text-sm text-neutral-600 block mb-1">Title</label>
 						<FireInput
 							value={title}
-							onChange={setTitle}
+							onChange={(e) => setTitle(e.target.value)}
 							placeholder="Session name (optional)"
 						/>
 					</div>

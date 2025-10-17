@@ -1,9 +1,9 @@
 import type { ProfileDraft, ValidationResult } from '@/app/components/SlidesUI/utils/constant';
 import { MESSAGES, VALIDATION_RULES } from '@/app/components/SlidesUI/utils/constant';
-import { checkIdentifierKeyUnique, checkUsernameUnique } from '@/app/lib/utils/checky';
+import { isUsernameAvailable, isIdentifierAvailable } from '@/app/lib/utils/memory';
 
 /**
- * Validates username format and availability
+ * Validates username format and availability using in-memory cache
  */
 export async function validateUsername(
 	nickname: string,
@@ -21,9 +21,9 @@ export async function validateUsername(
 
 	setChecking(true);
 	try {
-		const isUnique = await checkUsernameUnique(trimmed);
-		if (!isUnique) {
-			return { ok: false, message: MESSAGES.ERROR.USERNAME_TAKEN };
+		const result = await isUsernameAvailable(trimmed);
+		if (!result.available) {
+			return { ok: false, message: result.reason ?? MESSAGES.ERROR.USERNAME_TAKEN };
 		}
 		return { ok: true, message: MESSAGES.SUCCESS.USERNAME };
 	} catch {
@@ -34,7 +34,7 @@ export async function validateUsername(
 }
 
 /**
- * Validates secret identifier format and availability
+ * Validates secret identifier format and availability using in-memory cache
  */
 export async function validateSecret(
 	secret: string,
@@ -52,9 +52,9 @@ export async function validateSecret(
 
 	setChecking(true);
 	try {
-		const isUnique = await checkIdentifierKeyUnique(trimmed);
-		if (!isUnique) {
-			return { ok: false, message: MESSAGES.ERROR.SECRET_TAKEN };
+		const result = await isIdentifierAvailable(trimmed);
+		if (!result.available) {
+			return { ok: false, message: result.reason ?? MESSAGES.ERROR.SECRET_TAKEN };
 		}
 		return { ok: true, message: MESSAGES.SUCCESS.SECRET };
 	} catch {

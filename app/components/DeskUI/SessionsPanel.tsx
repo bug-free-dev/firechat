@@ -2,7 +2,8 @@
 
 import React, { useMemo, useState } from 'react';
 import { toast } from 'react-hot-toast';
-import { FaSearch, FaComments } from 'react-icons/fa';
+import { FaInbox } from 'react-icons/fa';
+import { FiSearch } from 'react-icons/fi';
 
 import FireInput from '@/app/components/UI/FireInput';
 import FirePrompt from '@/app/components/UI/FirePrompt';
@@ -10,12 +11,13 @@ import { FireCachedUser, FireProfile, InboxThread, SessionDoc } from '@/app/lib/
 import { compare } from '@/app/lib/utils/time';
 
 import { FloatingActionButton } from './SessionsPanelUI/ActionButton';
-import { ChatsTab } from './SessionsPanelUI/ChatTab';
+import { ChatsTab } from './SessionsPanelUI/ChatsTab';
 import { DecorativeIcons } from './SessionsPanelUI/DecorativeIcons';
 import { InboxTab } from './SessionsPanelUI/InboxTab';
-import InvitePicker from './SessionsPanelUI/InvitePicker';
-import { TabNavigation } from './SessionsPanelUI/TabNavigation';
+import Picker from '../UI/FirePicker';
 import KudosBalance from './KudosBalance';
+import FireTabSwitcher from '@/app/components/UI/FireTabSwitcher';
+import { IoChatbubblesOutline } from 'react-icons/io5';
 
 export interface SessionsPanelProps {
 	currentUser: FireProfile;
@@ -109,7 +111,7 @@ export default function SessionsPanel({
 			}
 
 			await navigator.clipboard.writeText(link);
-			toast.success('🔗 Room link copied to clipboard!');
+			toast.success('Room link copied!');
 		} catch {
 			/** Parent handles the error */
 		} finally {
@@ -171,7 +173,7 @@ export default function SessionsPanel({
 
 			if (next >= 3) {
 				toast.error('3 failed attempts — contact the creator for help');
-				toast('Are you really who you say you are? 🤨');
+				toast('Are you really who you say you are?');
 				setPromptForSession(null);
 				setPromptValue('');
 				return;
@@ -192,12 +194,12 @@ export default function SessionsPanel({
 				{/* Header with Kudos Balance */}
 				<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
 					<div>
-						<h1 className="font-dyna text-4xl font-bold text-neutral-800 flex items-center gap-3 justify-center text-center">
-							<FaComments className="text-lime-500" />
+						<h1 className="font-dyna text-3xl font-semibold text-neutral-800 flex items-center gap-3 justify-center text-center">
+							<IoChatbubblesOutline className="text-lime-500" />
 							Sessions
 						</h1>
-						<p className="font-righteous text-sm text-neutral-500 mt-1 text-center">
-							Where sparks turn into bonfires
+						<p className="text-sm text-neutral-500 mt-1 text-center">
+							Start your conversation now!
 						</p>
 					</div>
 
@@ -206,27 +208,40 @@ export default function SessionsPanel({
 				</div>
 
 				{/* Tab Navigation */}
-				<TabNavigation
+				<FireTabSwitcher
 					activeTab={activeTab}
 					onTabChange={setActiveTab}
-					activeSessions={filteredSessions.filter((s) => s.isActive).length}
-					unreadInbox={inboxThreads.filter((t) => (t.unreadCount || 0) > 0).length}
+					tabs={[
+						{
+							id: 'chats',
+							label: 'Chats',
+							icon: <IoChatbubblesOutline className="w-4.5 h-4.5" />,
+							count: filteredSessions.filter((s) => s.isActive).length,
+							tooltip: 'Where sparks turn into bonfires',
+						},
+						{
+							id: 'inbox',
+							label: 'Inbox',
+							icon: <FaInbox className="w-4 h-4" />,
+							count: inboxThreads.filter((t) => (t.unreadCount || 0) > 0).length,
+							tooltip: 'Private whispers, just for you',
+						},
+					]}
+					className="mb-6"
 				/>
 
 				{/* Search Bar */}
-				<div className="mb-6">
-					<div className="relative">
-						<FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400 w-4 h-4" />
-						<FireInput
-							value={searchQuery}
-							onChange={setSearchQuery}
-							placeholder={
-								activeTab === 'chats' ? 'Search sessions...' : 'Search conversations...'
-							}
-							className="pl-10"
-						/>
-					</div>
-				</div>
+				<div className="flex items-center gap-2 mb-4">
+  <FiSearch className="text-neutral-500 w-4 h-4 m-1" />
+  <FireInput
+    value={searchQuery}
+    onChange={(e) => setSearchQuery(e.target.value)}
+    placeholder={activeTab === 'chats' ? 'Search sessions...' : 'Search conversations...'}
+    className="pl-5"
+  />
+</div>
+
+
 
 				{/* Tab Content */}
 				<div className="min-h-[400px]">
@@ -264,7 +279,7 @@ export default function SessionsPanel({
 
 			{/* InvitePicker */}
 			{inviteForSession && (
-				<InvitePicker
+				<Picker
 					open={!!inviteForSession}
 					onClose={() => setInviteForSession(null)}
 					frequentUsers={frequentUsers || []}

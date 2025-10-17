@@ -13,7 +13,7 @@ import Sneaky from '@/app/components/SlidesUI/Sneaky';
 import Taggy from '@/app/components/SlidesUI/Taggy';
 import FireHeader from '@/app/components/UI/FireHeader';
 import { useAuthState } from '@/app/lib/routing/context/AuthStateContext';
-import { Memory } from '@/app/lib/utils/cachy';
+import { Memory } from '@/app/lib/utils/storage';
 import { launchUserProfile } from '@/app/lib/utils/launch';
 import {
 	ProfileDraft,

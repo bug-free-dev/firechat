@@ -5,6 +5,7 @@ import { FaInbox } from 'react-icons/fa';
 
 import { FireProfile } from '@/app/lib/types';
 import { InboxThread } from '@/app/lib/types';
+import WaveLoader from '../../UI/WaveLoader';
 
 import { InboxThreadCard } from './ThreadCard';
 
@@ -20,8 +21,8 @@ export function InboxTab({ threads, currentUser, onOpenInbox, loading }: InboxTa
 		return (
 			<div className="flex items-center justify-center py-20">
 				<div className="text-center">
-					<FaInbox className="w-12 h-12 mx-auto mb-4 text-orange-500 animate-pulse" />
-					<p className="text-neutral-500">Loading inbox...</p>
+					<FaInbox className="w-12 h-12 mx-auto mb-4 text-orange-500/30 " />
+					<WaveLoader/>
 				</div>
 			</div>
 		);

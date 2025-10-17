@@ -15,6 +15,7 @@ import {
 import { SessionDoc } from '@/app/lib/types';
 
 import FireButton from '../UI/FireButton';
+import FireInput from '../UI/FireInput';
 
 interface SessionHeaderProps {
 	session: SessionDoc;
@@ -82,14 +83,14 @@ const SessionHeader: React.FC<SessionHeaderProps> = ({
 					<div className="min-w-0 flex-1">
 						{isEditing ? (
 							<div className="flex items-center gap-1.5">
-								<input
+								<FireInput
 									value={editedTitle}
 									onChange={(e) => setEditedTitle(e.target.value)}
 									onKeyDown={handleKeyDown}
 									autoFocus
 									placeholder="Session title"
 									disabled={saving}
-									className="flex-1 text-sm  bg-neutral-100/50 focus:bg-white focus:ring-neutral-300 ring-2 ring-neutral-100 px-2 py-1 rounded-t-sm focus:outline-none  border-none transition-all w-full"
+									inputSize="sm"
 								/>
 								<FireButton
 									onClick={handleSaveEdit}

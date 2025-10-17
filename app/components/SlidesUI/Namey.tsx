@@ -104,11 +104,10 @@ export default function Namey({ value, onChange, step = 1, total = 7 }: Props) {
 				{/* Input Field */}
 				<div className="mb-8">
 					<FireInput
-						label=""
+						variant="custom"
 						value={value}
-						onChange={onChange}
+						onChange={(e) => onChange(e.target.value)}
 						placeholder="Please choose a goofy username"
-						className="text-xl py-5 text-center font-medium"
 					/>
 				</div>
 

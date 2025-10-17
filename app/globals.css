@@ -5,6 +5,8 @@
 @import 'https://fonts.googleapis.com/css2?family=Righteous&display=swap';
 @import 'https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap';
 
+@import 'https://fonts.googleapis.com/css2?family=Jolly+Lodger&display=swap';
+
 @import 'tailwindcss';
 
 :root {
@@ -13,12 +15,13 @@
 	--font-rubik: 'Rubik', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
 	--font-moonrocks: 'Rubik Moonrocks', cursive;
 	--font-dynapuff: 'DynaPuff', cursive;
+	--font-jolly: 'Jolly Lodger', cursive;
 	--font-righteous: 'Righteous', cursive;
 	--font-quicksand: 'Quicksand', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
 	--font-main: var(--font-quicksand);
 
 	/* Brand colors & UI */
-	--monokai-yellow: #ffe816;
+	--monokai-yellow: #f7df07;
 
 	--fc-bg: #ffffff;
 	--fc-muted: #f3f4f6;
@@ -46,10 +49,12 @@
 	font-family: var(--font-dynapuff);
 }
 
+.font-jolly {
+	font-family: var(--font-jolly);
+}
 .font-righteous {
 	font-family: var(--font-righteous);
 }
-
 .font-quicksand {
 	font-family: var(--font-quicksand);
 }
@@ -112,6 +117,23 @@ li {
 			-apple-system,
 			sans-serif;
 	}
+}
+/* Remove Chrome autofill yellow + keep background consistent */
+input:-webkit-autofill,
+textarea:-webkit-autofill,
+select:-webkit-autofill {
+	-webkit-text-fill-color: #111827 !important;
+	-webkit-box-shadow: 0 0 0 1000px #ffffff inset !important;
+	box-shadow: 0 0 0 1000px #ffffff inset !important;
+	transition: background-color 5000s ease-in-out 0s !important;
+}
+
+/* Small accessibility polish — remove tap highlight on mobile */
+button,
+input,
+select,
+textarea {
+	-webkit-tap-highlight-color: transparent;
 }
 
 /* =========================
@@ -263,61 +285,76 @@ li {
 }
 
 @keyframes slideInContent {
-   from {
-      opacity: 0;
-      transform: translateY(12px);
-   }
+	from {
+		opacity: 0;
+		transform: translateY(12px);
+	}
 
-   to {
-      opacity: 1;
-      transform: translateY(0);
-   }
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
 }
 
 @keyframes scaleIn {
-   from {
-      opacity: 0;
-      transform: scale(0.95);
-   }
+	from {
+		opacity: 0;
+		transform: scale(0.95);
+	}
 
-   to {
-      opacity: 1;
-      transform: scale(1);
-   }
+	to {
+		opacity: 1;
+		transform: scale(1);
+	}
 }
 
 @keyframes shimmer {
-   0% {
-      background-position: -1000px 0;
+	0% {
+		background-position: -1000px 0;
+	}
+
+	100% {
+		background-position: 1000px 0;
+	}
+}
+@keyframes wave {
+
+   0%,
+   100% {
+      transform: translateY(0);
    }
 
-   100% {
-      background-position: 1000px 0;
+   50% {
+      transform: translateY(-12px);
    }
+}
+
+.animate-wave {
+   animation: wave 0.6s ease-in-out infinite;
 }
 
 .animate-slide-in {
-   animation: slideInContent 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+	animation: slideInContent 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
 
 .animate-scale-in {
-   animation: scaleIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+	animation: scaleIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
 
 .stagger-delay-1 {
-   animation-delay: 0.05s;
+	animation-delay: 0.05s;
 }
 
 .stagger-delay-2 {
-   animation-delay: 0.1s;
+	animation-delay: 0.1s;
 }
 
 .stagger-delay-3 {
-   animation-delay: 0.15s;
+	animation-delay: 0.15s;
 }
 
 .stagger-delay-4 {
-   animation-delay: 0.2s;
+	animation-delay: 0.2s;
 }
 
 :root {
@@ -373,7 +410,7 @@ li {
 	border: 1px solid var(--fc-border);
 	background: var(--fc-bg);
 	color: var(--fc-text);
-	font-size: 15px;
+	font-size: 18px;
 	line-height: 1;
 	cursor: pointer;
 	transition:

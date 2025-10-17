@@ -27,7 +27,7 @@ import {
 	compareMsgsAsc,
 	parseMessageFromSnapshot,
 	parseTypingUserFromSnapshot,
-} from '@/app/lib/utils/message/utils';
+} from '@/app/lib/utils/message/helper';
 
 export * from '@/app/lib/utils/message/types';
 

@@ -11,7 +11,7 @@ export default function Page() {
 	const [activeTab, setActiveTab] = useState<'login' | 'signup'>('login');
 
 	return (
-		<main className="min-h-screen bg-gradient-to-br from-neutral-50 via-white to-orange-50/30 dark:from-neutral-900 dark:via-neutral-900 dark:to-orange-900 text-neutral-900 dark:text-neutral-100 relative overflow-hidden">
+		<main className="min-h-screen relative overflow-hidden">
 			<FireHeader variant="default" />
 
 			<div className="max-w-7xl mx-auto px-6 py-12 relative z-10">
@@ -33,7 +33,7 @@ export default function Page() {
 			</div>
 
 			<footer className="bottom-0 absolute flex-row flex items-center justify-center w-full p-4 bg-gradient-to-t from-white to-transparent dark:from-transparent">
-				<span className="text-neutral-400 text-xs font-righteous">
+				<span className="text-neutral-500 text-lg font-jolly">
 					Made with ❤️ Thanks for being here.
 				</span>
 			</footer>
