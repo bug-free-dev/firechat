@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useEffect, useMemo, useState, useCallback, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { toast } from 'react-hot-toast';
-import { IoSearchOutline, IoCloseCircleOutline } from 'react-icons/io5';
+import { FiSearch } from 'react-icons/fi';
+import { IoCloseCircleOutline } from 'react-icons/io5';
 import { MdOutlinePersonAdd } from 'react-icons/md';
 
 import FireAvatar from '@/app/components/UI/FireAvatar';
@@ -72,12 +73,11 @@ export default function FirePicker({
 		let canceled = false;
 		setLoading(true);
 
-		const timeout = setTimeout(async () => {
+		const performSearch = async () => {
 			try {
 				const fn = searchUsersRef.current || searchUsersByUsername;
 				const out = await fn(query.trim());
 				if (!canceled) {
-					// Use ref to get latest participants
 					const participantSet = new Set(currentParticipantsRef.current);
 					setResults(out.filter((u) => !participantSet.has(u.uid)).slice(0, 50));
 				}
@@ -86,6 +86,10 @@ export default function FirePicker({
 			} finally {
 				if (!canceled) setLoading(false);
 			}
+		};
+
+		const timeout = setTimeout(() => {
+			void performSearch();
 		}, 200);
 
 		return () => {
@@ -188,13 +192,13 @@ export default function FirePicker({
 						</div>
 						<div className="h-px flex-1 bg-neutral-200" />
 					</div>
-					<div className="relative">
-						<IoSearchOutline className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
+					<div className="flex items-center gap-2 rounded-lg px-2 py-1 w-full sm:w-auto">
+						<FiSearch className="w-4 h-4 text-neutral-400 mr-2" />
 						<FireInput
 							value={query}
 							onChange={(e) => setQuery(e.target.value)}
 							placeholder="Search by username or display name"
-							className="pl-10"
+							className="pl-5"
 						/>
 					</div>
 
@@ -207,14 +211,14 @@ export default function FirePicker({
 
 					{/* Search results */}
 					{!loading && results.length > 0 && (
-						<div className="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-[280px] overflow-y-auto">
+						<div className="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-[280px] overflow-y-auto scroll">
 							{results.map((u) => {
 								const active = selected.has(u.uid);
 								return (
 									<button
 										key={u.uid}
 										onClick={() => toggle(u)}
-										className={`w-full p-2 flex items-center gap-2 text-left rounded-lg ring-1 transition-all duration-200 ${
+										className={`truncate w-85 p-2 flex items-center gap-2 text-left rounded-lg ring-1 mt-1 ml-2 transition-all duration-200 ${
 											active
 												? 'ring-yellow-500 bg-yellow-50'
 												: 'ring-neutral-200 hover:ring-neutral-300'
@@ -252,18 +256,25 @@ export default function FirePicker({
 							<div className="text-xs font-semibold text-neutral-500 uppercase tracking-wide">
 								Selected ({selected.size})
 							</div>
-							<div className="h-px flex-1 bg-neutral-100/50" />
+							<div className="h-px flex-1 bg-neutral-300/20" />
 						</div>
-						<div className="flex items-center gap-1 flex-wrap bg-neutral-50/20 rounded-lg p-2 ring-1 ring-neutral-200">
+
+						<div className="flex items-center gap-1 flex-wrap bg-neutral-100/50 rounded-xl p-2 backdrop-blur-sm">
 							{selectedArray.map((u) => (
 								<div
 									key={u.uid}
-									className="flex items-center gap-1 px-2 py-1 rounded-full bg-white ring-1 ring-neutral-300"
+									className="flex items-center gap-1 px-2 py-1 rounded-full ring-neutral-400/30 ring-2 hover:bg-white/20 transition-colors duration-200 m-[2px]"
 								>
 									<FireAvatar seed={u.uid} src={u.avatarUrl ?? null} size={20} />
-									<div className="text-xs font-medium truncate">@{u.usernamey}</div>
-									<button onClick={() => toggle(u)} aria-label="Remove">
-										<IoCloseCircleOutline className="w-4 h-4 text-neutral-400 hover:text-neutral-600" />
+									<div className="text-xs font-medium text-neutral-800 truncate">
+										@{u.usernamey}
+									</div>
+									<button
+										onClick={() => toggle(u)}
+										aria-label="Remove"
+										className="transition-transform hover:scale-110"
+									>
+										<IoCloseCircleOutline className="w-4 h-4 text-neutral-400 hover:text-red-400 transition-colors duration-200" />
 									</button>
 								</div>
 							))}

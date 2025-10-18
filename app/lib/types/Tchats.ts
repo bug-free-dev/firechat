@@ -1,5 +1,6 @@
-import type { UID, ID } from './Tuser';
 import type { FireTime } from '@/app/lib/utils/time';
+
+import type { ID, UID } from './Tuser';
 
 /* ==================== CHAT MESSAGES ==================== */
 

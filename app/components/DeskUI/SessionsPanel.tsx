@@ -4,27 +4,24 @@ import React, { useMemo, useState } from 'react';
 import { toast } from 'react-hot-toast';
 import { FaInbox } from 'react-icons/fa';
 import { FiSearch } from 'react-icons/fi';
+import { IoChatbubblesOutline } from 'react-icons/io5';
 
 import FireInput from '@/app/components/UI/FireInput';
 import FirePrompt from '@/app/components/UI/FirePrompt';
+import FireTabSwitcher from '@/app/components/UI/FireTabSwitcher';
 import { FireCachedUser, FireProfile, InboxThread, SessionDoc } from '@/app/lib/types';
 import { compare } from '@/app/lib/utils/time';
 
+import Picker from '../UI/FirePicker';
 import { FloatingActionButton } from './SessionsPanelUI/ActionButton';
 import { ChatsTab } from './SessionsPanelUI/ChatsTab';
-import { DecorativeIcons } from './SessionsPanelUI/DecorativeIcons';
 import { InboxTab } from './SessionsPanelUI/InboxTab';
-import Picker from '../UI/FirePicker';
-import KudosBalance from './KudosBalance';
-import FireTabSwitcher from '@/app/components/UI/FireTabSwitcher';
-import { IoChatbubblesOutline } from 'react-icons/io5';
 
 export interface SessionsPanelProps {
 	currentUser: FireProfile;
 	sessions: SessionDoc[];
 	invitedSessions?: SessionDoc[];
 	inboxThreads: InboxThread[];
-	kudosBalance: number;
 	frequentUsers?: FireCachedUser[];
 	onCreateSession?: () => void;
 	onJoinSession?: (sessionId: string, identifierInput?: string) => void;
@@ -43,7 +40,6 @@ export default function SessionsPanel({
 	currentUser,
 	sessions = [],
 	inboxThreads = [],
-	kudosBalance,
 	frequentUsers = [],
 	onCreateSession,
 	onJoinSession,
@@ -118,23 +114,27 @@ export default function SessionsPanel({
 			setInviteForSession(null);
 		}
 	};
-
+	// In SessionsPanel.tsx - handleJoinAttempt
 	const handleJoinAttempt = (sessionId: string) => {
-		const session = [...sessions, ...invitedSessions].find((s) => s.id === sessionId);
+		// Check if this session requires identifier
+		const invitedSession = invitedSessions.find((s) => s.id === sessionId);
+		const participantSession = sessions.find((s) => s.id === sessionId);
 
+		const session = invitedSession || participantSession;
+
+		// The server will handle the identifier check
 		if (!session) {
 			onJoinSession?.(sessionId);
 			return;
 		}
 
-		// Check if identifier is required
+		// If identifier required, show prompt
 		if (session.identifierRequired) {
 			setPromptForSession(session);
 			setPromptValue('');
 			return;
 		}
 
-		// No identifier required, join directly
 		onJoinSession?.(sessionId);
 	};
 
@@ -187,14 +187,12 @@ export default function SessionsPanel({
 	};
 
 	return (
-		<div className="relative w-full min-h-screen bg-gradient-to-br from-white via-orange-50/10 to-white px-4 sm:px-6 py-8 overflow-hidden">
-			<DecorativeIcons />
-
+		<div className="relative w-full min-h-screen bg-white px-4 sm:px-6 py-8 overflow-hidden">
 			<div className="max-w-5xl mx-auto relative z-10">
 				{/* Header with Kudos Balance */}
-				<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+				<div className="flex flex-col items-center justify-between gap-4 mb-6 text-center">
 					<div>
-						<h1 className="font-dyna text-3xl font-semibold text-neutral-800 flex items-center gap-3 justify-center text-center">
+						<h1 className="font-dyna text-3xl font-semibold text-neutral-800 flex items-center gap-3 justify-center ">
 							<IoChatbubblesOutline className="text-lime-500" />
 							Sessions
 						</h1>
@@ -204,7 +202,6 @@ export default function SessionsPanel({
 					</div>
 
 					{/* Kudos Badge */}
-					<KudosBalance kudosBalance={kudosBalance} />
 				</div>
 
 				{/* Tab Navigation */}
@@ -232,16 +229,16 @@ export default function SessionsPanel({
 
 				{/* Search Bar */}
 				<div className="flex items-center gap-2 mb-4">
-  <FiSearch className="text-neutral-500 w-4 h-4 m-1" />
-  <FireInput
-    value={searchQuery}
-    onChange={(e) => setSearchQuery(e.target.value)}
-    placeholder={activeTab === 'chats' ? 'Search sessions...' : 'Search conversations...'}
-    className="pl-5"
-  />
-</div>
-
-
+					<FiSearch className="text-neutral-500 w-4 h-4 m-1" />
+					<FireInput
+						value={searchQuery}
+						onChange={(e) => setSearchQuery(e.target.value)}
+						placeholder={
+							activeTab === 'chats' ? 'Search sessions...' : 'Search conversations...'
+						}
+						className="pl-5"
+					/>
+				</div>
 
 				{/* Tab Content */}
 				<div className="min-h-[400px]">

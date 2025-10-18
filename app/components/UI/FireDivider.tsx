@@ -11,7 +11,7 @@ interface FireDividerProps {
 }
 
 const FireDivider = ({
-	height = 'min-h-[400px] sm:min-h-[600px]',
+	height = 'min-h-[400px] sm:min-h-[700px]',
 	showLogo = true,
 	animated = true,
 	variant = 'default',

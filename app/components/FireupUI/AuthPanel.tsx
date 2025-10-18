@@ -3,16 +3,16 @@
 import React, { useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 import { FaGithub, FaGoogle } from 'react-icons/fa';
-import { PiFireLight } from 'react-icons/pi';
 import { LuRocket } from 'react-icons/lu';
+import { PiFireLight } from 'react-icons/pi';
 
-import FireTabSwitcher from '@/app/components/UI/FireTabSwitcher';
 import FireButton from '@/app/components/UI/FireButton';
 import FireInput from '@/app/components/UI/FireInput';
+import FireTabSwitcher from '@/app/components/UI/FireTabSwitcher';
 import OAuthButton from '@/app/components/UI/OAuthButton';
+import { useAuthState } from '@/app/lib/routing/context/AuthStateContext';
 import { sendResetPasswordEmail } from '@/app/lib/utils/auth';
 import { sleep } from '@/app/lib/utils/time';
-import { useAuthState } from '@/app/lib/routing/context/AuthStateContext';
 
 interface Props {
 	activeTab: 'login' | 'signup';
@@ -111,8 +111,6 @@ export default function AuthForm({ activeTab, onTabChange }: Props) {
 
 				toastSuccess('Welcome back! Signed in successfully.');
 				setSignin({ email: '', password: '' });
-
-				window.location.reload();
 			}
 		} catch {
 			toastError('Authentication failed. Please try again.');
@@ -160,7 +158,7 @@ export default function AuthForm({ activeTab, onTabChange }: Props) {
 				return;
 			}
 			toastSuccess('Signed in with Google — welcome!');
-			window.location.reload();
+
 			await sleep(500);
 		} catch {
 			toastError('Google sign-in failed');
@@ -178,7 +176,7 @@ export default function AuthForm({ activeTab, onTabChange }: Props) {
 				return;
 			}
 			toastSuccess('Signed in with GitHub — nice!');
-			window.location.reload();
+
 			await sleep(500);
 		} catch {
 			toastError('GitHub sign-in failed');
@@ -194,7 +192,7 @@ export default function AuthForm({ activeTab, onTabChange }: Props) {
 		<div onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd} className="w-full">
 			<FireTabSwitcher
 				activeTab={activeTab}
-				onTabChange={(t) => onTabChange(t as 'login' | 'signup')}
+				onTabChange={(t) => onTabChange(t)}
 				tabs={[
 					{ id: 'login', label: 'Sign In' },
 					{ id: 'signup', label: 'Sign Up' },

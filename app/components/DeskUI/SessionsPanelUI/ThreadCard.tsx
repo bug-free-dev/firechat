@@ -6,8 +6,8 @@ import { FaBell, FaCircle, FaClock } from 'react-icons/fa';
 import FireAvatar from '@/app/components/UI/FireAvatar';
 import { FireProfile } from '@/app/lib/types';
 import { InboxThread } from '@/app/lib/types';
-import { formatTime } from '@/app/lib/utils/time';
 import { getUserByUid } from '@/app/lib/utils/memory';
+import { formatTime } from '@/app/lib/utils/time';
 
 interface InboxThreadCardProps {
 	thread: InboxThread;

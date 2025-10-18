@@ -1,0 +1,50 @@
+:root {
+	/* Fonts */
+	--font-geist: 'Geist', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+	--font-rubik: 'Rubik', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+	--font-moonrocks: 'Rubik Moonrocks', cursive;
+	--font-dynapuff: 'DynaPuff', cursive;
+	--font-jolly: 'Jolly Lodger', cursive;
+	--font-righteous: 'Righteous', cursive;
+	--font-quicksand: 'Quicksand', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+	--font-main: var(--font-quicksand);
+
+	/* Brand / UI */
+	--monokai-yellow: #f7df07;
+	--fc-bg: #ffffff;
+	--fc-muted: #f3f4f6;
+	--fc-border: #e6e7ea;
+	--fc-text: #111827;
+	--fc-accent: #ff3e00;
+	--fc-accent-press: #ff5e29;
+
+	/* animation tokens */
+	--transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+	--transition-fast: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+
+	/* scroll */
+	--scroll-bg: rgba(0, 0, 0, 0.05);
+	--scroll-thumb: rgba(0, 0, 0, 0.096);
+	--scroll-thumb-hover: rgba(0, 0, 0, 0.25);
+}
+
+/* font helpers (small, explicit helpers kept) */
+.font-moonrocks {
+	font-family: var(--font-moonrocks);
+}
+
+.font-dyna {
+	font-family: var(--font-dynapuff);
+}
+
+.font-jolly {
+	font-family: var(--font-jolly);
+}
+
+.font-righteous {
+	font-family: var(--font-righteous);
+}
+
+.font-quicksand {
+	font-family: var(--font-quicksand);
+}

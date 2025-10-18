@@ -1,7 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { adminDb } from '@/app/lib/firebase/FireAdmin';
 import { FieldValue } from 'firebase-admin/firestore';
-import {DEFAULT_KUDOS} from"@/app/lib/types"
+import { NextRequest, NextResponse } from 'next/server';
+
+import { adminDb } from '@/app/lib/firebase/FireAdmin';
+import { DEFAULT_KUDOS } from '@/app/lib/types';
 
 const CRON_SECRET = process.env.CRON_SECRET;
 const BATCH_SIZE = 500;

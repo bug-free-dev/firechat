@@ -82,7 +82,7 @@ export default function FireSlide({
 	return (
 		<div
 			aria-hidden={!open}
-			className={`fixed inset-0 z-50 pointer-events-none`}
+			className={`fixed inset-0 z-50 pointer-events-none scroll`}
 			aria-modal={open}
 			role="dialog"
 			id={id}
@@ -126,7 +126,7 @@ export default function FireSlide({
 								<button
 									aria-label="Close"
 									onClick={onClose}
-									className="p-[5px] rounded-md hover:bg-neutral-100 border-neutral-200 border-2"
+									className="p-[4px] rounded-md text-sm hover:bg-neutral-100 border-neutral-200 border-2 mb-2"
 								>
 									esc
 								</button>

@@ -8,14 +8,14 @@ import { verifyIdentifierKeyAsync } from '@/app/lib/utils/hashy';
 
 import { adminDb, adminRTDB } from '../firebase/FireAdmin';
 import type {
-	ServerResult,
-	SessionDoc,
-	RTDBSessionMetadata,
+	InboxInviteItem,
 	RTDBInvitedUser,
 	RTDBParticipant,
-	InboxInviteItem,
+	RTDBSessionMetadata,
+	ServerResult,
+	SessionDoc,
 } from '../types';
-import { getUserByUid } from '../utils/memory';
+import { getUserByUid } from '../utils/memory/memory';
 import { compare, create } from '../utils/time';
 
 const nowISO = create.nowISO;
@@ -764,10 +764,15 @@ export async function inviteUsersToSession(params: {
 		}
 
 		if (validUsers.length === 0) {
+			const message =
+				skipped.length === 1
+					? `User is already invited or a participant.`
+					: `All ${skipped.length} users are already invited or are participants.`;
+
 			return {
 				ok: false,
 				error: 'NO_VALID_USERS',
-				reason: `All ${skipped.length} users already invited or are participants`,
+				reason: message,
 			};
 		}
 
@@ -939,7 +944,7 @@ export async function getUserSessionsAndInvites(
 
 			if (isParticipant || isCreator) {
 				sessions.push(sessionDoc);
-			} else if (isInvited) {
+			} else if (isInvited && !isParticipant) {
 				invitedSessions.push(sessionDoc);
 			}
 		}

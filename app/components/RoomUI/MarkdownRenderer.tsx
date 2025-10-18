@@ -3,7 +3,7 @@
 import 'katex/dist/katex.min.css';
 
 import React, { useMemo, useState } from 'react';
-import { AnchorHTMLAttributes, ImgHTMLAttributes, HTMLAttributes } from 'react';
+import { AnchorHTMLAttributes, HTMLAttributes, ImgHTMLAttributes } from 'react';
 import ReactMarkdown, { Components } from 'react-markdown';
 import rehypeHighlight from 'rehype-highlight';
 import rehypeKatex from 'rehype-katex';

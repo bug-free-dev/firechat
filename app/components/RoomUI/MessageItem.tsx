@@ -1,16 +1,18 @@
 'use client';
 
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
+import { toast } from 'react-hot-toast';
+import { FiClipboard, FiCornerUpLeft, FiSmile, FiTrash2 } from 'react-icons/fi';
+
 import { ChatMessage, FireCachedUser } from '@/app/lib/types';
 import { formatTime } from '@/app/lib/utils/time';
+
 import FireAvatar from '../UI/FireAvatar';
-import { FiCornerUpLeft, FiSmile, FiClipboard, FiTrash2 } from 'react-icons/fi';
 import MarkdownRenderer from './MarkdownRenderer';
 import ReactionPicker from './ReactionPicker';
 import ReactionsDisplay from './ReactionsDisplay';
 import ReplyPreview from './ReplyPreview';
 import StatusIndicator from './StatusIndicator';
-import { toast } from 'react-hot-toast';
 
 interface MessageItemProps {
 	message: ChatMessage;

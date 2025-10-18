@@ -4,8 +4,8 @@ import { FieldValue } from 'firebase-admin/firestore';
 
 import { adminAuth, adminDb } from '@/app/lib/firebase/FireAdmin';
 import type { FireProfile } from '@/app/lib/types';
+import { invalidateUser } from '@/app/lib/utils/memory/memory';
 import { toISO } from '@/app/lib/utils/time';
-import { invalidateUser } from '@/app/lib/utils/memory';
 
 /**
  * Fetch all user profiles

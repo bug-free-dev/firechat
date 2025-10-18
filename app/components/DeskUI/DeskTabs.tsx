@@ -1,8 +1,9 @@
 'use client';
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { FiUser, FiGift } from 'react-icons/fi';
+import { FiGift } from 'react-icons/fi';
 import { IoChatbubblesOutline } from 'react-icons/io5';
+import { RiUserLine } from 'react-icons/ri';
 
 export type Tabs = 'profile' | 'kudos' | 'sessions';
 
@@ -20,7 +21,7 @@ interface TabConfig {
 
 export default function DeskTabs({ activeTab, onTabChange }: DeskTabsProps) {
 	const tabs: TabConfig[] = [
-		{ id: 'profile', label: 'Profile', icon: FiUser, color: 'orange' },
+		{ id: 'profile', label: 'Profile', icon: RiUserLine, color: 'orange' },
 		{ id: 'kudos', label: 'Kudos', icon: FiGift, color: 'yellow' },
 		{ id: 'sessions', label: 'Sessions', icon: IoChatbubblesOutline, color: 'lime' },
 	];
@@ -68,7 +69,7 @@ export default function DeskTabs({ activeTab, onTabChange }: DeskTabsProps) {
 
 	// Base classes
 	const containerBase =
-		'relative bg-white border border-neutral-200 rounded-full px-2.5 py-0.5 flex gap-1 overflow-hidden';
+		'relative bg-white border border-neutral-200 rounded-full px-2.5 py-1 flex gap-1 overflow-hidden';
 	const buttonBase =
 		'relative z-10 flex-1 flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-semibold rounded-full transition-colors duration-300';
 

@@ -4,28 +4,29 @@ import React, { useCallback, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 
-import Launchy from '@/app/components/SlidesUI/Launchy';
-import Moody from '@/app/components/SlidesUI/Moody';
-import Namey from '@/app/components/SlidesUI/Namey';
-import Picky from '@/app/components/SlidesUI/Picky';
-import Quirky from '@/app/components/SlidesUI/Quirky';
-import Sneaky from '@/app/components/SlidesUI/Sneaky';
-import Taggy from '@/app/components/SlidesUI/Taggy';
+import { Launchy } from '@/app/components/SlidesUI/Launchy';
+import { Moody } from '@/app/components/SlidesUI/Moody';
+import { Namey } from '@/app/components/SlidesUI/Namey';
+import { Picky } from '@/app/components/SlidesUI/Picky';
+import { Quirky } from '@/app/components/SlidesUI/Quirky';
+import { Sneaky } from '@/app/components/SlidesUI/Sneaky';
+import { Taggy } from '@/app/components/SlidesUI/Taggy';
 import FireHeader from '@/app/components/UI/FireHeader';
 import { useAuthState } from '@/app/lib/routing/context/AuthStateContext';
-import { Memory } from '@/app/lib/utils/storage';
 import { launchUserProfile } from '@/app/lib/utils/launch';
+import { Memory } from '@/app/lib/utils/storage';
+
 import {
+	MESSAGES,
 	ProfileDraft,
 	Step,
-	validateUsername,
-	validateSecret,
-	validateMood,
-	validateQuirks,
-	validateTags,
-	validateProfile,
 	STEPS,
-	MESSAGES,
+	validateMood,
+	validateProfile,
+	validateQuirks,
+	validateSecret,
+	validateTags,
+	validateUsername,
 	ValidationResult,
 } from './utils';
 
@@ -219,6 +220,7 @@ export default function Slidy() {
 							tags,
 							status: profile.status,
 							about: profile.about,
+							identifierKey: secret,
 							avatarUrl: profile.avatarUrl ?? undefined,
 						}}
 					/>

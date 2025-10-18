@@ -1,16 +1,16 @@
 'use client';
 
 import React, { useMemo } from 'react';
-import { IoChatbubblesOutline, IoAddOutline } from 'react-icons/io5';
+import { IoAddOutline, IoChatbubblesOutline } from 'react-icons/io5';
 import { MdOutlineWhatshot } from 'react-icons/md';
 
 import FireButton from '@/app/components/UI/FireButton';
+import WaveLoader from '@/app/components/UI/WaveLoader';
 import { FireCachedUser, FireProfile, SessionDoc } from '@/app/lib/types';
+import { compare } from '@/app/lib/utils/time';
 
 import { FrequentUsers } from './FrequentUsers';
 import { SessionCard } from './SessionCard';
-import { compare } from '@/app/lib/utils/time';
-import WaveLoader from '../../UI/WaveLoader';
 
 interface ChatsTabProps {
 	sessions: SessionDoc[];
@@ -71,7 +71,7 @@ export function ChatsTab({
 			<div className="flex items-center justify-center py-20">
 				<div className="text-center">
 					<IoChatbubblesOutline className="w-12 h-12 mx-auto mb-4 text-orange-500/40" />
-					<WaveLoader/>
+					<WaveLoader />
 				</div>
 			</div>
 		);

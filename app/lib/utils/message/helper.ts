@@ -62,10 +62,10 @@ export function parseRTDBMessage(messageId: string, data: RTDBMessage): ChatMess
 
 // small helpers
 function getStr(obj: Record<string, unknown>, key: string): string | undefined {
-	return typeof obj[key] === 'string' ? (obj[key] as string) : undefined;
+	return typeof obj[key] === 'string' ? obj[key] : undefined;
 }
 function getNum(obj: Record<string, unknown>, key: string): number | undefined {
-	return typeof obj[key] === 'number' ? (obj[key] as number) : undefined;
+	return typeof obj[key] === 'number' ? obj[key] : undefined;
 }
 
 export function parseMessageFromSnapshot(
@@ -75,7 +75,7 @@ export function parseMessageFromSnapshot(
 	const val = snap.val();
 	if (!isRecord(val)) return null;
 
-	const rec = val as Record<string, unknown>;
+	const rec = val;
 	const id = snap.key;
 	if (!id) return null;
 
@@ -103,7 +103,7 @@ export function parseMessageFromSnapshot(
 		text: textField ?? '',
 		replyTo: replyToField ?? undefined,
 		reactions: parseReactions(rec.reactions),
-		extras: isRecord(rec.extras) ? (rec.extras as Record<string, unknown>) : undefined,
+		extras: isRecord(rec.extras) ? rec.extras : undefined,
 		status: (getStr(rec, 'status') as ChatMessage['status']) ?? undefined,
 		createdAt: createdAtField ?? new Date().toISOString(),
 	};
@@ -116,7 +116,7 @@ export function parseTypingUserFromSnapshot(snap: DataSnapshot): FireCachedUser 
 	const val = snap.val();
 	if (!isRecord(val)) return null;
 
-	const rec = val as Record<string, unknown>;
+	const rec = val;
 
 	const usernamey = getStr(rec, 'usernamey');
 	const displayNameField = getStr(rec, 'displayName');
@@ -138,7 +138,7 @@ export function parseTypingUserFromSnapshot(snap: DataSnapshot): FireCachedUser 
 		kudos: kudosField,
 		createdAt: createdAtField ?? new Date().toISOString(),
 		lastSeen: startedAtField ?? new Date().toISOString(),
-		meta: isRecord(rec.meta) ? (rec.meta as Record<string, unknown>) : undefined,
+		meta: isRecord(rec.meta) ? rec.meta : undefined,
 	};
 }
 

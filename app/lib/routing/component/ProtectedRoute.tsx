@@ -2,6 +2,7 @@
 
 import { FireLoader } from '@/app/components/UI/FireLoader';
 import { useAuthState } from '@/app/lib/routing/context/AuthStateContext';
+
 import { AuthState } from '../util/helper';
 
 interface ProtectedRouteProps {

@@ -7,11 +7,11 @@ import toast from 'react-hot-toast';
 import DeskTabs from '@/app/components/DeskUI/DeskTabs';
 import KudosPanel from '@/app/components/DeskUI/KudosPanel';
 import ProfilePanel from '@/app/components/DeskUI/ProfilePanel';
-import InvitePicker from '@/app/components/UI/FirePicker';
 import SessionsPanel from '@/app/components/DeskUI/SessionsPanel';
 import FireButton from '@/app/components/UI/FireButton';
 import FireHeader from '@/app/components/UI/FireHeader';
 import FireInput from '@/app/components/UI/FireInput';
+import InvitePicker from '@/app/components/UI/FirePicker';
 import FireSlide from '@/app/components/UI/FireSlide';
 import { FireToast } from '@/app/components/UI/FireToast';
 import * as sessionAPI from '@/app/lib/api/sessionAPI';
@@ -323,7 +323,7 @@ export default function Desk() {
 			}
 
 			// Type-safe success response
-			const { invitedCount, skippedCount } = res.data!;
+			const { invitedCount, skippedCount } = res.data;
 			const message =
 				skippedCount > 0
 					? `Invited ${invitedCount} user${invitedCount !== 1 ? 's' : ''} (${skippedCount} already invited or participant${skippedCount !== 1 ? 's' : ''})`
@@ -377,11 +377,11 @@ export default function Desk() {
 
 		switch (activeTab) {
 			case 'profile':
-				return <ProfilePanel profile={profile as FireProfile} onUpdate={handleProfileUpdate} />;
+				return <ProfilePanel profile={profile} onUpdate={handleProfileUpdate} />;
 			case 'kudos':
 				return (
 					<KudosPanel
-						currentUser={profile as FireProfile}
+						currentUser={profile}
 						transactions={kudosHook.transactions}
 						allUsers={allUsers}
 						onSendKudos={handleSendKudos}
@@ -391,11 +391,10 @@ export default function Desk() {
 			case 'sessions':
 				return (
 					<SessionsPanel
-						currentUser={profile as FireProfile}
+						currentUser={profile}
 						sessions={sessionManager.sessions}
 						inboxThreads={inbox.threads}
 						invitedSessions={sessionManager.invitedSessions}
-						kudosBalance={kudosHook.balance}
 						frequentUsers={frequentUsers}
 						onCreateSession={handleCreateClick}
 						onJoinSession={(sid: string, identifier?: string) =>
@@ -436,7 +435,12 @@ export default function Desk() {
 						<FireButton variant="secondary" onClick={() => setCreateOpen(false)}>
 							Cancel
 						</FireButton>
-						<FireButton onClick={handleCreateSubmit} disabled={creating} variant="default">
+						<FireButton
+							onClick={handleCreateSubmit}
+							disabled={creating}
+							variant="default"
+							loading={creating}
+						>
 							{creating ? 'Creating...' : 'Create'}
 						</FireButton>
 					</div>

@@ -36,7 +36,7 @@ const variantClasses: Record<FireInputVariant, string> = {
 	filled:
 		'bg-neutral-50 border border-neutral-50 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-50',
 	custom:
-		'rounded-t-lg border-b-3 border-neutral-200 dark:border-neutral-700 bg-neutral-100/30 dark:bg-neutral-800/70 focus:bg-white dark:focus:bg-transparent focus:border-orange-400 transition-colors duration-200',
+		'rounded-t-lg border-b-3 border-neutral-200/50 dark:border-neutral-700 bg-neutral-100/30 dark:bg-neutral-800/70 focus:bg-white dark:focus:bg-transparent focus:border-indigo-400/60 transition-colors duration-200',
 };
 
 const labelBase = 'text-sm font-medium text-neutral-700 dark:text-neutral-200';
@@ -126,5 +126,4 @@ const FireInput = forwardRef<HTMLInputElement, FireInputProps>(
 	}
 );
 
-FireInput.displayName = 'FireInput';
 export default FireInput;

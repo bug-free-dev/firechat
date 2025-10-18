@@ -1,8 +1,8 @@
 import './globals.css';
 
+import { Analytics } from '@vercel/analytics/next';
 import type { Metadata } from 'next';
 import { Toaster, type ToastOptions } from 'react-hot-toast';
-import { Analytics } from '@vercel/analytics/next';
 
 import { AuthProvider } from './lib/routing/context/AuthStateContext';
 

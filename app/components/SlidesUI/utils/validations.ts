@@ -1,6 +1,6 @@
 import type { ProfileDraft, ValidationResult } from '@/app/components/SlidesUI/utils/constant';
 import { MESSAGES, VALIDATION_RULES } from '@/app/components/SlidesUI/utils/constant';
-import { isUsernameAvailable, isIdentifierAvailable } from '@/app/lib/utils/memory';
+import { isIdentifierAvailable, isUsernameAvailable } from '@/app/lib/utils/memory/memory';
 
 /**
  * Validates username format and availability using in-memory cache

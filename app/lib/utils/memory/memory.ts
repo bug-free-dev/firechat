@@ -1,11 +1,11 @@
 'use server';
 
-import type { FireCachedUser, FireProfile } from '@/app/lib/types';
 import { adminDb } from '@/app/lib/firebase/FireAdmin';
+import type { FireCachedUser, FireProfile } from '@/app/lib/types';
+
 import { create } from '../time';
 import { CONFIG, FrequentUserCache, UserCache, ValidationResult } from './config';
-import { createCachedUser, cloneSerializableUser, isValidUser } from './helper';
-
+import { cloneSerializableUser, createCachedUser, isValidUser } from './helpers';
 
 let cache: UserCache = {
 	users: new Map(),

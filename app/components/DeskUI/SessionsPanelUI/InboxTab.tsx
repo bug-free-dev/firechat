@@ -5,8 +5,8 @@ import { FaInbox } from 'react-icons/fa';
 
 import { FireProfile } from '@/app/lib/types';
 import { InboxThread } from '@/app/lib/types';
-import WaveLoader from '../../UI/WaveLoader';
 
+import WaveLoader from '../../UI/WaveLoader';
 import { InboxThreadCard } from './ThreadCard';
 
 interface InboxTabProps {
@@ -22,7 +22,7 @@ export function InboxTab({ threads, currentUser, onOpenInbox, loading }: InboxTa
 			<div className="flex items-center justify-center py-20">
 				<div className="text-center">
 					<FaInbox className="w-12 h-12 mx-auto mb-4 text-orange-500/30 " />
-					<WaveLoader/>
+					<WaveLoader />
 				</div>
 			</div>
 		);

@@ -1,18 +1,25 @@
 'use client';
 
 import React from 'react';
-import { FaBolt, FaHashtag, FaMagic, FaStar, FaTag, FaThumbsUp } from 'react-icons/fa';
+import {
+	RiFlashlightLine,
+	RiHashtag,
+	RiPriceTag3Line,
+	RiSparklingLine,
+	RiStarLine,
+	RiThumbUpLine,
+} from 'react-icons/ri';
 
 import FireInput from '@/app/components/UI/FireInput';
 
-type Props = {
+type TaggyProps = {
 	value: string[];
 	onChange: (v: string[]) => void;
 	step?: number;
 	total?: number;
 };
 
-export default function Taggy({ value, onChange, step = 5, total = 7 }: Props) {
+export function Taggy({ value, onChange, step = 5, total = 7 }: TaggyProps) {
 	const [inputValue, setInputValue] = React.useState('');
 
 	const addTag = (tag: string) => {
@@ -46,95 +53,94 @@ export default function Taggy({ value, onChange, step = 5, total = 7 }: Props) {
 	];
 
 	return (
-		<div className="relative w-full h-full min-h-[600px] flex items-center justify-center overflow-hidden">
-			{/* Floating icons */}
-			<div className="absolute inset-0 pointer-events-none">
-				{/* Top-left */}
-				<div className="absolute -top-1 left-4 md:left-8 text-lime-400 opacity-70">
-					<FaHashtag className="w-10 h-10 md:w-12 md:h-12 animate-pulse" />
+		<div className="relative w-full h-full min-h-[700px] flex items-center justify-center overflow-hidden bg-gradient-to-br from-slate-50 via-lime-50/20 to-cyan-50/20">
+			{/* Floating Icons */}
+			<div className="absolute inset-0 pointer-events-none overflow-hidden">
+				<div className="absolute top-[5%] left-[5%] text-lime-400/40">
+					<RiHashtag className="w-12 h-12 animate-shimmer" />
 				</div>
-
-				{/* Top-right */}
-				<div className="absolute top-5 right-4 md:right-12 text-[#f59e0b] opacity-60">
-					<FaStar className="w-8 h-8 md:w-10 md:h-10 animate-float" />
+				<div className="absolute top-[8%] right-[10%] text-amber-400/35">
+					<RiStarLine className="w-10 h-10 animate-float-elegant" />
 				</div>
-
-				{/* Center-top-right */}
-				<div className="absolute top-1/6 right-1/4 md:right-1/4 text-[#3b82f6] opacity-50">
-					<FaThumbsUp className="w-6 h-6 md:w-8 md:h-8 animate-pulse" />
+				<div className="absolute top-[16%] right-[22%] text-blue-400/30">
+					<RiThumbUpLine className="w-8 h-8 animate-pulse-soft" />
 				</div>
-
-				{/* Middle-right */}
-				<div className="absolute top-1/2 right-4 md:right-8 transform -translate-y-1/2 text-[#8b5cf6] opacity-50">
-					<FaBolt
-						className="w-7 h-7 md:w-9 md:h-9 animate-pulse"
+				<div className="absolute top-[50%] right-[5%] -translate-y-1/2 text-violet-400/35">
+					<RiFlashlightLine
+						className="w-9 h-9 animate-pulse-soft"
 						style={{ animationDelay: '1s' }}
 					/>
 				</div>
-
-				{/* Bottom-left */}
-				<div className="absolute bottom-0 left-4 md:left-50 text-[#ec4899] opacity-60">
-					<FaMagic
-						className="w-8 h-8 md:w-10 md:h-10 animate-float"
+				<div className="absolute bottom-[5%] right-[8%] text-pink-400/40">
+					<RiSparklingLine
+						className="w-10 h-10 animate-drift"
 						style={{ animationDelay: '1.5s' }}
 					/>
 				</div>
 			</div>
 
-			{/* Main content */}
-			<div className="relative z-10 max-w-3xl w-full mx-auto px-6 text-center">
-				<div className="mb-12">
-					<h1 className="font-dyna text-5xl lg:text-6xl text-neutral-900 inline-flex items-center justify-center gap-3 mb-3">
-						<FaTag className="text-lime-400 w-12 h-12 animate-pulse" />
+			{/* Main Content */}
+			<div className="mt-3 relative z-10 max-w-3xl w-full mx-auto px-6 text-center animate-fade-in-up">
+				<div className="mb-14">
+					<h1 className="font-dyna text-5xl lg:text-6xl text-slate-900 inline-flex items-center justify-center gap-3 mb-4">
+						<RiPriceTag3Line className="text-lime-500 w-12 h-12 animate-pulse-soft" />
 						Taggy
 					</h1>
-					<p className="font-righteous text-base text-neutral-500">
+					<p className="font-righteous text-base text-slate-500">
 						Add some tags to represent your personality
 					</p>
 				</div>
 
-				<div className="mb-10">
-					<h2 className="text-3xl lg:text-4xl font-bold text-neutral-900 mb-4">
+				<div className="mb-12">
+					<h2 className="text-3xl lg:text-4xl font-bold text-slate-900 mb-5">
 						Pick your tags (max 5)
 					</h2>
-					<p className="text-lg text-neutral-600 mb-4">
+					<p className="text-base text-slate-600 mb-6">
 						Tags help others understand your style, vibe, or interests.
 					</p>
 
-					{/* Input Field using custom component */}
-					<FireInput
-						variant="custom"
-						placeholder="Type a tag and hit enter"
-						value={inputValue}
-						onChange={(e) => setInputValue(e.target.value)}
-						onKeyDown={handleKeyPress as React.KeyboardEventHandler<HTMLInputElement>}
-						className="max-w-md mx-auto mb-4"
-					/>
+					{/* Input Field */}
+					<div className="animate-slide-up" style={{ animationDelay: '0.1s' }}>
+						<FireInput
+							variant="custom"
+							placeholder="Type a tag and hit enter"
+							value={inputValue}
+							onChange={(e) => setInputValue(e.target.value)}
+							onKeyDown={handleKeyPress as React.KeyboardEventHandler<HTMLInputElement>}
+							className="max-w-md mx-auto mb-6"
+						/>
+					</div>
 
-					{/* Display selected tags */}
-					<div className="flex flex-wrap justify-center gap-3 mb-4">
+					{/* Display Selected Tags */}
+					<div
+						className="flex flex-wrap justify-center gap-3 mb-6 animate-fade-in"
+						style={{ animationDelay: '0.2s' }}
+					>
 						{value.map((tag) => (
 							<div
 								key={tag}
-								className="flex items-center gap-2 bg-lime-400 text-white px-3 py-1 rounded-full text-sm font-medium cursor-pointer hover:opacity-80 transition"
+								className="flex items-center gap-2 bg-lime-500 text-white px-4 py-2 rounded-full text-sm font-medium cursor-pointer hover:opacity-90 transition-all duration-200"
 								onClick={() => removeTag(tag)}
 							>
-								{tag} &times;
+								{tag} <span className="text-lg leading-none">&times;</span>
 							</div>
 						))}
 					</div>
 
-					{/* Suggested tags */}
-					<div className="flex flex-wrap justify-center gap-3">
+					{/* Suggested Tags */}
+					<div
+						className="flex flex-wrap justify-center gap-3 animate-fade-in"
+						style={{ animationDelay: '0.3s' }}
+					>
 						{suggestedTags.map((tag) => (
 							<button
 								key={tag}
 								onClick={() => addTag(tag)}
 								disabled={value.includes(tag) || value.length >= 5}
-								className={`px-3 py-1 rounded-full border border-neutral-300 text-sm font-medium transition hover:scale-105 ${
+								className={`px-4 py-2 rounded-full border-2 text-sm font-medium transition-all duration-200 hover:-translate-y-0.5 ${
 									value.includes(tag)
-										? 'bg-neutral-300 text-neutral-600 cursor-not-allowed'
-										: 'bg-white text-neutral-800'
+										? 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed'
+										: 'bg-white text-slate-700 border-slate-200 hover:border-lime-300 hover:shadow-sm'
 								}`}
 							>
 								{tag}
@@ -144,14 +150,20 @@ export default function Taggy({ value, onChange, step = 5, total = 7 }: Props) {
 				</div>
 
 				{/* Footer */}
-				<div className="flex items-center justify-center gap-3 text-base text-neutral-500 mb-8">
-					<FaTag className="text-green-500 w-5 h-5 animate-pulse" />
+				<div
+					className="flex items-center justify-center gap-3 text-base text-slate-500 mb-10 animate-fade-in"
+					style={{ animationDelay: '0.4s' }}
+				>
+					<RiPriceTag3Line className="text-lime-500 w-5 h-5 animate-pulse-soft" />
 					<span>Pro tip: pick tags that show off your personality!</span>
 				</div>
 
-				<div className="flex items-center justify-center gap-3">
-					<div className="w-3 h-3 rounded-full bg-lime-400 animate-pulse" />
-					<span className="text-sm text-neutral-500 font-medium">
+				<div
+					className="flex items-center justify-center gap-3 animate-fade-in"
+					style={{ animationDelay: '0.5s' }}
+				>
+					<div className="w-2.5 h-2.5 rounded-full bg-lime-500 animate-pulse-soft" />
+					<span className="text-sm text-slate-500 font-medium">
 						Step {step} of {total}
 					</span>
 				</div>

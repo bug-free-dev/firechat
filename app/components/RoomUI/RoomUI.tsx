@@ -9,12 +9,11 @@ import { MessagesServices, useFireMessages } from '@/app/lib/hooks/useFireMessag
 import { ChatMessage, FireCachedUser, SessionDoc } from '@/app/lib/types';
 import { toMillis } from '@/app/lib/utils/time';
 
-import FireHeader from '../UI/FireHeader';
+import ParticipantPicker from '../UI/FirePicker';
 import { FireToast } from '../UI/FireToast';
 import MessageComposer from './MessageComposer';
 import MessageList from './MessageList';
 import ParticipantsPanel from './ParticipantsPanel';
-import ParticipantPicker from '../UI/FirePicker';
 import SessionHeader from './SessionHeader';
 import TypingIndicator from './TypingIndicator';
 
@@ -290,13 +289,6 @@ const RoomUI: React.FC<RoomUIProps> = ({
 
 	return (
 		<div className="flex flex-col h-screen bg-neutral-50">
-			{/* Top header */}
-			<div className="border-b border-neutral-200 bg-white">
-				<div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-12 py-1 sm:py-2">
-					<FireHeader showSubtitle={false} size="sm" variant="minimal" />
-				</div>
-			</div>
-
 			{/* Session header */}
 			<SessionHeader
 				session={session}

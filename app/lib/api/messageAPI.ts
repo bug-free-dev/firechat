@@ -115,7 +115,7 @@ export async function getMessages(params: {
 		const messages: ChatMessage[] = [];
 		snap.forEach((childSnap) => {
 			const data = childSnap.val() as RTDBMessage;
-			messages.push(parseRTDBMessage(childSnap.key!, data));
+			messages.push(parseRTDBMessage(childSnap.key, data));
 		});
 
 		// Sort by createdAt ascending (oldest first)

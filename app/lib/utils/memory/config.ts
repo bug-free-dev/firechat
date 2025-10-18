@@ -1,22 +1,21 @@
-import { FireCachedUser } from "../../types";
+import { FireCachedUser } from '../../types';
 
 export interface UserCache {
-   readonly users: Map<string, FireCachedUser>;
-   readonly byUid: Map<string, FireCachedUser>;
-   readonly identifiers: Set<string>;
-   readonly timestamp: number;
+	readonly users: Map<string, FireCachedUser>;
+	readonly byUid: Map<string, FireCachedUser>;
+	readonly identifiers: Set<string>;
+	readonly timestamp: number;
 }
 
 export interface FrequentUserCache {
-   readonly ts: number;
-   readonly users: readonly FireCachedUser[];
+	readonly ts: number;
+	readonly users: readonly FireCachedUser[];
 }
 
 export interface ValidationResult {
-   readonly available: boolean;
-   readonly reason?: string;
+	readonly available: boolean;
+	readonly reason?: string;
 }
-
 
 export const CONFIG = {
 	CACHE_TTL: 5 * 60 * 1000, // 5 minutes

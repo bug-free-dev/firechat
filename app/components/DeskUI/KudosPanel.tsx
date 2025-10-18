@@ -3,8 +3,9 @@
 import { useRouter } from 'next/navigation';
 import React, { useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
-import { FiGift, FiClock, FiSend, FiSearch, FiUserPlus } from 'react-icons/fi';
 import { BiCrown, BiRocket } from 'react-icons/bi';
+import { FiClock, FiGift, FiSearch, FiSend, FiUserPlus } from 'react-icons/fi';
+import { RiCoinsLine } from 'react-icons/ri';
 
 import FireArea from '@/app/components/UI/FireArea';
 import FireAvatar from '@/app/components/UI/FireAvatar';
@@ -45,7 +46,6 @@ export default function KudosPanel({
 
 	const quickAmounts = [5, 10, 25];
 
-	// filtered users (compact display) — exclude current user
 	function getUsername(uid: string) {
 		const user = allUsers.find((u) => u.uid === uid);
 		return user?.usernamey ?? uid; // fallback to UID if not found
@@ -61,7 +61,7 @@ export default function KudosPanel({
 					(u.usernamey ?? '').toLowerCase().includes(q) ||
 					(u.displayName ?? '').toLowerCase().includes(q)
 			)
-			.slice(0, 40);
+			.slice(0, 15);
 	}, [allUsers, search, currentUser.uid]);
 
 	const txnIcon = (type: KudosTxn['type']) => {
@@ -149,9 +149,7 @@ export default function KudosPanel({
 							<FiSearch className="text-neutral-500" />
 							<FireInput
 								value={search}
-								onChange={(e) =>
-									setSearch((e as React.ChangeEvent<HTMLInputElement>).target.value)
-								}
+								onChange={(e) => setSearch(e.target.value)}
 								placeholder="Find your 'Fire friend'..."
 								className="pl-5"
 							/>
@@ -173,7 +171,7 @@ export default function KudosPanel({
 				<div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
 					<div className="flex items-center gap-4">
 						<div
-							className="rounded-lg flex items-center justify-center"
+							className="rounded-lg flex items-center justify-center border border-neutral-200/40"
 							style={{
 								width: 88,
 								height: 88,
@@ -181,7 +179,10 @@ export default function KudosPanel({
 								boxShadow: '0 6px 18px rgba(0,0,0,0.04)',
 							}}
 						>
-							<BiCrown className="w-10 h-10" style={{ color: 'var(--monokai-yellow)' }} />
+							<RiCoinsLine
+								className="w-10 h-10"
+								style={{ color: 'var(--monokai-yellow)' }}
+							/>
 						</div>
 						<div>
 							<div className="text-3xl" style={{ color: 'var(--monokai-yellow)' }}>
@@ -255,7 +256,7 @@ export default function KudosPanel({
 												className={`flex-1 py-1.5 md:py-2 rounded-lg text-sm font-medium transition-colors ${
 													a > currentUser.kudos
 														? 'bg-neutral-100 text-neutral-400 cursor-not-allowed'
-														: 'bg-neutral-900 text-white hover:bg-neutral-800'
+														: 'bg-neutral-800 text-white hover:bg-neutral-700'
 												}`}
 											>
 												+{a}
@@ -409,9 +410,7 @@ export default function KudosPanel({
 							<label className="text-sm text-neutral-600 block mb-1">Amount</label>
 							<FireInput
 								value={amountStr}
-								onChange={(e) =>
-									setAmountStr((e as React.ChangeEvent<HTMLInputElement>).target.value)
-								}
+								onChange={(e) => setAmountStr(e.target.value)}
 								placeholder="Enter amount"
 								type="number"
 								className="text-lg font-medium"

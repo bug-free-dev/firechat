@@ -200,7 +200,7 @@ export async function updateCurrentUserPassword(newPassword: string): Promise<Re
 		return { ok: false, error: { code: 'no-user', message: 'No authenticated user found.' } };
 	}
 	try {
-		await updatePassword(user as User, newPassword);
+		await updatePassword(user, newPassword);
 		return { ok: true, data: undefined };
 	} catch (err) {
 		return { ok: false, error: wrapError(err) };

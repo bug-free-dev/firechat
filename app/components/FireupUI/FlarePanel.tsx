@@ -1,8 +1,8 @@
 'use client';
 
 import React from 'react';
-import { FiLock, FiStar, FiUsers, FiGift } from 'react-icons/fi';
 import { BiRocket } from 'react-icons/bi';
+import { FiGift, FiLock, FiStar, FiUsers } from 'react-icons/fi';
 
 export default function FlarePanel() {
 	const features = [

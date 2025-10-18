@@ -5,28 +5,28 @@ import toast from 'react-hot-toast';
 import { BiImageAdd } from 'react-icons/bi';
 import {
 	FiEdit,
+	FiHash,
 	FiInfo,
-	FiSave,
 	FiLogOut,
+	FiMoreVertical,
+	FiSave,
 	FiSmile,
 	FiStar,
 	FiTag,
-	FiX,
 	FiTrash2,
-	FiUser,
-	FiMoreVertical,
-	FiHash,
+	FiX,
 } from 'react-icons/fi';
+import { RiUserLine } from 'react-icons/ri';
 
 import FireAvatar from '@/app/components/UI/FireAvatar';
 import FireButton from '@/app/components/UI/FireButton';
 import FireInput from '@/app/components/UI/FireInput';
 import FireOption from '@/app/components/UI/FireOption';
 import { FireToast } from '@/app/components/UI/FireToast';
+import TagInput from '@/app/components/UI/TagInput';
 import { updateUserProfile } from '@/app/lib/api/userAPI';
-import { FireProfile } from '@/app/lib/types';
-import TagInput from '../UI/TagInput';
 import { useAuthState } from '@/app/lib/routing/context/AuthStateContext';
+import { FireProfile } from '@/app/lib/types';
 
 interface ProfilePanelProps {
 	profile: FireProfile;
@@ -108,8 +108,8 @@ export default function ProfilePanel({ profile, onUpdate }: ProfilePanelProps) {
 				status: String(editData.status ?? ''),
 				about: String(editData.about ?? ''),
 				mood: String(editData.mood ?? ''),
-				tags: (editData.tags ?? []) as string[],
-				quirks: (editData.quirks ?? []) as string[],
+				tags: editData.tags ?? [],
+				quirks: editData.quirks ?? [],
 				avatarUrl: String(editData.avatarUrl ?? ''),
 			});
 			if (success) {
@@ -206,7 +206,7 @@ export default function ProfilePanel({ profile, onUpdate }: ProfilePanelProps) {
 
 				<div className="flex flex-col items-center text-center">
 					<h2 className="text-3xl font-dyna font-semibold text-neutral-800 flex items-center gap-3 justify-center">
-						<FiUser className="text-[#ff3e00]" />
+						<RiUserLine className="text-[#ff3e00]" />
 						Profile
 					</h2>
 					<p className="text-sm text-neutral-500 mt-1 flex items-center justify-center">
@@ -355,14 +355,31 @@ export default function ProfilePanel({ profile, onUpdate }: ProfilePanelProps) {
 						</div>
 
 						<div className="flex flex-wrap gap-2 mt-3 justify-center lg:justify-start">
-							{(profile.tags ?? []).slice(0, 10).map((t, i) => (
-								<span
-									key={i}
-									className="bg-neutral-700 text-neutral-100 px-3 py-1 rounded-full text-xs"
-								>
-									#{t}
-								</span>
-							))}
+							{(profile.tags ?? []).slice(0, 10).map((t, i) => {
+								const colors = [
+									'bg-rose-600/20 text-rose-500',
+									'bg-amber-600/20 text-amber-500',
+									'bg-emerald-600/20 text-emerald-500',
+									'bg-sky-600/20 text-sky-500',
+									'bg-violet-600/20 text-violet-500',
+									'bg-pink-600/20 text-pink-500',
+									'bg-indigo-600/20 text-indigo-500',
+									'bg-teal-600/20 text-teal-500',
+									'bg-orange-600/20 text-orange-500',
+									'bg-lime-600/20 text-lime-500',
+								];
+								const colorClass = colors[i % colors.length];
+
+								return (
+									<span
+										key={i}
+										className={`px-3 py-1 rounded-full text-xs font-medium ${colorClass} flex items-center gap-1 transition-all duration-200 hover:scale-105`}
+									>
+										<span className="text-sm">★</span>
+										{t}
+									</span>
+								);
+							})}
 						</div>
 					</div>
 
@@ -379,10 +396,10 @@ export default function ProfilePanel({ profile, onUpdate }: ProfilePanelProps) {
 									onChange={(e) => setEditData({ ...editData, about: e.target.value })}
 									placeholder="Tell people about you..."
 									rows={6}
-									className="w-full px-6 py-4 bg-neutral-50 border border-neutral-200 rounded-md resize-none focus:ring-2 focus:ring-neutral-200 outline-none text-sm"
+									className="w-full px-6 py-3 bg-neutral-50 border border-neutral-200 rounded-md resize-none focus:ring-2 focus:ring-neutral-200 outline-none text-sm"
 								/>
 							) : (
-								<div className="text-neutral-700 text-sm bg-neutral-50 px-6 py-4 rounded-lg border border-neutral-100">
+								<div className="text-neutral-700 text-sm bg-neutral-50 px-6 py-3 rounded-lg border border-neutral-100">
 									{profile.about || 'No bio yet'}
 								</div>
 							)}
@@ -433,7 +450,7 @@ export default function ProfilePanel({ profile, onUpdate }: ProfilePanelProps) {
 							</label>
 
 							<TagInput
-								value={(editData.tags ?? []) as string[]}
+								value={editData.tags ?? []}
 								onChange={(next) => setEditData({ ...editData, tags: next })}
 								placeholder="Add tags (press Enter)"
 								max={12}
@@ -449,7 +466,7 @@ export default function ProfilePanel({ profile, onUpdate }: ProfilePanelProps) {
 							</label>
 
 							<TagInput
-								value={(editData.quirks ?? []) as string[]}
+								value={editData.quirks ?? []}
 								onChange={(next) => setEditData({ ...editData, quirks: next })}
 								placeholder="Add quirks (press Enter)"
 								max={6}

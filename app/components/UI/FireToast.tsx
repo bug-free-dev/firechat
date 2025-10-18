@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { toast } from 'react-hot-toast';
-import { FiX, FiInfo } from 'react-icons/fi';
+import { FiInfo, FiX } from 'react-icons/fi';
 
 type ActionButton = {
 	label: string;

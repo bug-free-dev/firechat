@@ -16,6 +16,11 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { clearUserTyping, setUserTyping } from '@/app/lib/api/typingAPI';
 import { rtdb } from '@/app/lib/firebase/FireClient';
 import type { ChatMessage, FireCachedUser } from '@/app/lib/types';
+import {
+	compareMsgsAsc,
+	parseMessageFromSnapshot,
+	parseTypingUserFromSnapshot,
+} from '@/app/lib/utils/message/helper';
 import type {
 	RTDBListeners,
 	ServerResult,
@@ -23,11 +28,6 @@ import type {
 	UseMessagesOptions,
 	UseMessagesReturn,
 } from '@/app/lib/utils/message/types';
-import {
-	compareMsgsAsc,
-	parseMessageFromSnapshot,
-	parseTypingUserFromSnapshot,
-} from '@/app/lib/utils/message/helper';
 
 export * from '@/app/lib/utils/message/types';
 

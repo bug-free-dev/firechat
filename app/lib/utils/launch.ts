@@ -5,7 +5,7 @@ import { FieldValue } from 'firebase-admin/firestore';
 import { adminDb } from '../firebase/FireAdmin';
 import { DEFAULT_KUDOS } from '../types';
 import { hashIdentifierKeyAsync } from './hashy';
-import { invalidateUser } from './memory';
+import { invalidateUser } from './memory/';
 
 type LaunchResult = { success: true; userRefPath: string } | { success: false; reason: string };
 
@@ -67,7 +67,7 @@ export async function launchUserProfile(
 					to: uid,
 					amount: DEFAULT_KUDOS,
 					type: 'system',
-					note: 'Initial onboarding reward',
+					note: 'Thank you so much for joining!',
 					createdAt: FieldValue.serverTimestamp(),
 				});
 			}

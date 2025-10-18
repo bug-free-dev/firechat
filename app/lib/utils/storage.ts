@@ -17,7 +17,6 @@ try {
 	isBrowser = false;
 }
 
-
 // Safe JSON utilities
 const safeJSON = {
 	parse: <T>(str: string | null): T | null => {

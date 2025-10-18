@@ -67,7 +67,7 @@ export default function FireOption({ value, onChange }: FireOptionProps) {
 			<div className="mt-4 flex flex-col sm:flex-row gap-2">
 				<FireInput
 					value={custom}
-					onChange={(e)=>setCustom(e.target.value)}
+					onChange={(e) => setCustom(e.target.value)}
 					placeholder="Or set your own mood..."
 					className="flex-1 rounded-t-lg  ml-2"
 				/>

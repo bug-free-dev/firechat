@@ -33,17 +33,18 @@ export default function FireArea({
 
 	const variantClasses: Record<FireAreaVariant, string> = {
 		default: `
-      bg-neutral-100/40
-      border border-neutral-200
+      bg-neutral-100/30 
+      border border-neutral-200/40
       rounded-md
-      focus:ring-2 focus:ring-neutral-200
+      focus:ring-2 focus:ring-neutral-200/80
+      focus:border-neutral-300 outline-none
     `,
 		custom: `
       bg-neutral-100/30
       rounded-t-lg
-      border-b-[3px] border-neutral-200
+      border-b-[3px] border-neutral-200/40
       focus:bg-white dark:focus:bg-neutral-900
-      focus:border-orange-400
+      focus:border-indigo-400/50
       transition-colors duration-200
     `,
 	};

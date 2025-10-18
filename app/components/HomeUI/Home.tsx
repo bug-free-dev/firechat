@@ -1,5 +1,7 @@
 'use client';
 
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Confetti from 'react-confetti';
 import toast from 'react-hot-toast';
@@ -15,10 +17,9 @@ import {
 	FaStar,
 	FaUsers,
 } from 'react-icons/fa';
-import Image from 'next/image';
+
 import FireHeader from '@/app/components/UI/FireHeader';
 import { useAuthState } from '@/app/lib/routing/context/AuthStateContext';
-import { useRouter } from 'next/navigation';
 
 export default function Home() {
 	const [showConfetti, setShowConfetti] = useState(false);

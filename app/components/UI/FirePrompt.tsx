@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { toast } from 'react-hot-toast';
-import { FaBrain, FaLightbulb, FaMagic, FaUserSecret } from 'react-icons/fa';
+import { RiKey2Line, RiLockPasswordLine } from 'react-icons/ri';
 
 import FireButton from '@/app/components/UI/FireButton';
 import FireInput from '@/app/components/UI/FireInput';
@@ -24,33 +24,31 @@ export default function FirePrompt({
 	onChange,
 	onSubmit,
 	verify,
-	placeholder = 'Enter your identifier to sneak in...',
+	placeholder = 'Enter your secret identifier...',
 	size = 'md',
 	backdropStatic = false,
 	id,
-	loadingText = 'Verifying...',
+	loadingText = 'Verifying identity...',
 }: FirePromptProps) {
 	const [loading, setLoading] = useState(false);
 
 	const handleSubmit = async () => {
 		if (!value.trim()) return;
-
 		if (verify) {
 			try {
 				setLoading(true);
 				const valid = await verify(value);
 				if (!valid) {
-					toast.error('Invalid input. Please try again.');
+					toast.error('Invalid identifier. Please try again.');
 					return;
 				}
 			} catch {
-				toast.error('Verification failed. Please try again.');
+				toast.error('Verification failed. Try again later.');
 				return;
 			} finally {
 				setLoading(false);
 			}
 		}
-
 		onSubmit?.();
 	};
 
@@ -74,36 +72,31 @@ export default function FirePrompt({
 				</div>
 			}
 		>
-			<div className="relative w-full h-full min-h-[400px] flex flex-col items-center justify-center overflow-hidden">
-				{/* Floating decorative icons */}
-				<div className="absolute inset-0 pointer-events-none">
-					<FaLightbulb className="absolute top-5 left-5 text-yellow-400 w-10 h-10 animate-float opacity-50" />
-					<FaMagic className="absolute top-1/2 right-12 transform -translate-y-1/2 text-indigo-500 w-10 h-10 animate-pulse opacity-60" />
-					<FaBrain className="absolute bottom-16 left-10 text-lime-500 w-10 h-10 animate-float opacity-50" />
-				</div>
-
+			<div className="relative w-full h-full min-h-[400px] flex flex-col items-center justify-center overflow-hidden ">
 				{/* Main content */}
-				<div className="relative z-10 max-w-xl w-full px-6 text-center flex flex-col gap-6">
+				<div className="relative z-10 max-w-md w-full px-6 text-center flex flex-col gap-6">
 					<h1 className="font-dyna text-4xl sm:text-5xl text-neutral-900 inline-flex items-center justify-center gap-3">
-						<FaUserSecret className="text-orange-400 w-12 h-12 animate-pulse" />
+						<RiLockPasswordLine className="text-lime-500 w-10 h-10" />
 						Verify Identifier
 					</h1>
 
 					<p className="text-neutral-500 font-righteous text-base">
-						Enter your secret identifier key below
+						Enter your secure access key to continue
 					</p>
 
 					<FireInput
-						label="Identifier"
+						variant="custom"
 						value={value}
 						onChange={(e) => onChange(e.target.value)}
 						placeholder={placeholder}
-						className="text-md sm:text-xl py-4 text-center font-medium"
+						type="password"
+						showPasswordToggle
 						onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
 					/>
 
 					<p className="text-neutral-500 text-sm flex items-center justify-center gap-2">
-						Tip: Keep it secret! <FaMagic className="w-4 h-4 text-indigo-400" />
+						<RiKey2Line className="w-4 h-4 text-slate-400" />
+						Your key remains private and never leaves this device.
 					</p>
 				</div>
 			</div>

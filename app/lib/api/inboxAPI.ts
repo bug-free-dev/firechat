@@ -2,8 +2,8 @@
 
 import { adminRTDB } from '@/app/lib/firebase/FireAdmin';
 import type { InboxInviteItem, InboxThread, ServerResult } from '@/app/lib/types';
-
 import { compare } from '@/app/lib/utils/time';
+
 /**
  * markInboxRead
  * - Mark a single thread as read

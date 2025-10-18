@@ -2,7 +2,15 @@
 
 import type { User as FirebaseUser } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
-import { createContext, useContext, useEffect, useRef, useState, useCallback, useMemo } from 'react';
+import {
+	createContext,
+	useCallback,
+	useContext,
+	useEffect,
+	useMemo,
+	useRef,
+	useState,
+} from 'react';
 
 import {
 	deleteAccount as deleteAccountAPI,
@@ -12,18 +20,18 @@ import {
 import { auth } from '@/app/lib/firebase/FireClient';
 import type { FireProfile } from '@/app/lib/types';
 import {
-	signOutUser,
 	registerWithEmail,
 	sendVerificationToUser,
 	signInWithEmail,
-	signInWithGoogle,
 	signInWithGithub,
+	signInWithGoogle,
+	signOutUser,
 	updateAuthProfile,
 } from '@/app/lib/utils/auth';
 import { verifyIdentifierKeyAsync } from '@/app/lib/utils/hashy';
-import { invalidateUser } from '@/app/lib/utils/memory';
 import { normalizeProfile } from '@/app/lib/utils/sanitizer';
 import { Memory } from '@/app/lib/utils/storage';
+
 import { AuthState, computeAuthState, isAuthFlowPath, isPublicPath } from '../util/helper';
 
 interface AuthContextValue {
@@ -474,10 +482,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 					profileCache.set(profile.uid, {
 						profile: updated,
 						timestamp: Date.now(),
-					});
-
-					invalidateUser(profile.uid).catch(() => {
-						// Silent fail
 					});
 				}
 

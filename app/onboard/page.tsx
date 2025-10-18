@@ -1,7 +1,7 @@
 'use client';
 
 import Slidy from '@/app/components/SlidesUI/Slidy';
-import { ProtectedRoute } from '../lib/routing/component/ProtectedRoute';
+import { ProtectedRoute } from '@/app/lib/routing/component/ProtectedRoute';
 import { AuthState } from '@/app/lib/routing/util/helper';
 
 export default function Page() {

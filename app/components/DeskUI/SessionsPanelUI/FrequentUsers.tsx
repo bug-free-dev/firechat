@@ -6,7 +6,8 @@ import { FaUsers } from 'react-icons/fa';
 import { FireCachedUser, FireProfile } from '@/app/lib/types';
 
 import FireAvatar from '../../UI/FireAvatar';
-import ProfileSlide, { isRecentlyActive } from '../../UI/ProfileSlide';
+import ProfileSlide from '../ProfileSlide';
+import { isRecentlyActive } from '../util';
 
 interface FrequentUsersProps {
 	users: FireCachedUser[];
@@ -36,7 +37,7 @@ export function FrequentUsers({ users, currentUser }: FrequentUsersProps) {
 
 	return (
 		<>
-			<div className="mb-4 bg-white rounded-xl p-3 ring-neutral-200 ring-2 hover:shadow-sm transition-shadow">
+			<div className="mb-4 bg-white rounded-xl p-3 ring-neutral-200/30 ring-2 hover:shadow-sm transition-shadow">
 				{/* Header */}
 				<div className="flex items-center justify-between mb-3">
 					<div className="flex items-center gap-2">
