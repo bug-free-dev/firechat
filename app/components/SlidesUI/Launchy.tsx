@@ -13,8 +13,7 @@ import {
 	RiStarLine,
 } from 'react-icons/ri';
 
-import FireAvatar from '@/app/components/UI/FireAvatar';
-import FireButton from '@/app/components/UI/FireButton';
+import { FireAvatar, FireButton } from '@/app/components/UI';
 
 type Preview = {
 	displayName?: string;

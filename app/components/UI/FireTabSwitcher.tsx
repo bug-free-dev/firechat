@@ -23,7 +23,7 @@ interface FireTabSwitcherProps<T extends string = string> {
 	animated?: boolean;
 }
 
-export default function FireTabSwitcher<T extends string = string>({
+export const FireTabSwitcher = <T extends string = string>({
 	activeTab,
 	onTabChange,
 	tabs,
@@ -33,7 +33,7 @@ export default function FireTabSwitcher<T extends string = string>({
 	showCounts = true,
 	iconPosition = 'left',
 	animated = true,
-}: FireTabSwitcherProps<T>) {
+}: FireTabSwitcherProps<T>) => {
 	// Memoize active index for performance
 	const activeIndex = useMemo(() => tabs.findIndex((t) => t.id === activeTab), [tabs, activeTab]);
 
@@ -148,4 +148,4 @@ export default function FireTabSwitcher<T extends string = string>({
 			</div>
 		</div>
 	);
-}
+};

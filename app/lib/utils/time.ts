@@ -16,7 +16,7 @@ export type FireTime =
 	| null
 	| undefined;
 
-/* ==================== TYPE GUARDS ==================== */
+/* <------- TYPE GUARDS -------> */
 
 export const is = {
 	/**
@@ -50,7 +50,7 @@ export const is = {
 			('_seconds' in value && '_nanoseconds' in value)),
 } as const;
 
-/* ==================== CORE CONVERSION FUNCTIONS ==================== */
+/* <------- CORE CONVERSION FUNCTIONS -------> */
 
 /**
  * Converts any FireTime to milliseconds since Unix epoch
@@ -124,7 +124,7 @@ export function toSeconds(time: FireTime): number {
 	return Math.floor(toMillis(time) / 1000);
 }
 
-/* ==================== CREATION UTILITIES ==================== */
+/* <------- CREATION UTILITIES -------> */
 
 export const create = {
 	/**
@@ -158,7 +158,7 @@ export const create = {
 	isoFromMillis: (ms: number): string => new Date(ms).toISOString(),
 } as const;
 
-/* ==================== FORMATTING ==================== */
+/* <------- FORMATTING -------> */
 
 /**
  * Format FireTime into human-readable string
@@ -179,7 +179,7 @@ export function formatTime(
 	return date ? date.toLocaleString(locale, options) : fallback;
 }
 
-/* ==================== COMPARISON UTILITIES ==================== */
+/* <------- COMPARISON UTILITIES -------> */
 
 export const compare = {
 	/**
@@ -218,7 +218,7 @@ export const compare = {
 	isAfter: (a: FireTime, b: FireTime): boolean => toMillis(a) > toMillis(b),
 } as const;
 
-/* ==================== VALIDATION ==================== */
+/* <------- VALIDATION -------> */
 
 export const validate = {
 	/**
@@ -240,14 +240,14 @@ export const validate = {
 	},
 } as const;
 
-/* ==================== UTILITY ==================== */
+/* <------- UTILITY -------> */
 
 /**
  * Sleep/delay utility (async)
  */
 export const sleep = (ms = 300): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms));
 
-/* ==================== DEFAULT EXPORT ==================== */
+/* <------- DEFAULT EXPORT -------> */
 
 export default {
 	is,

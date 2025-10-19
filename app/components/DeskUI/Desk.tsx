@@ -4,16 +4,8 @@ import { useRouter } from 'next/navigation';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 
-import DeskTabs from '@/app/components/DeskUI/DeskTabs';
-import KudosPanel from '@/app/components/DeskUI/KudosPanel';
-import ProfilePanel from '@/app/components/DeskUI/ProfilePanel';
-import SessionsPanel from '@/app/components/DeskUI/SessionsPanel';
-import FireButton from '@/app/components/UI/FireButton';
-import FireHeader from '@/app/components/UI/FireHeader';
-import FireInput from '@/app/components/UI/FireInput';
-import InvitePicker from '@/app/components/UI/FirePicker';
-import FireSlide from '@/app/components/UI/FireSlide';
-import { FireToast } from '@/app/components/UI/FireToast';
+import { FireButton, FireHeader, FireInput, FireSlide, FireToast } from '@/app/components/UI';
+import { FirePicker as InvitePicker } from '@/app/components/UI';
 import * as sessionAPI from '@/app/lib/api/sessionAPI';
 import { useFireInbox } from '@/app/lib/hooks/useFireInbox';
 import { useKudos } from '@/app/lib/hooks/useFireKudos';
@@ -21,6 +13,9 @@ import { useFireSession } from '@/app/lib/hooks/useFireSession';
 import { useAuthState } from '@/app/lib/routing/context/AuthStateContext';
 import type { FireCachedUser, FireProfile, SessionDoc } from '@/app/lib/types';
 import { getAllCachedUsers, getFrequentUsers } from '@/app/lib/utils/memory';
+
+import { NavTabs } from './NavTab';
+import { KudosPanel, ProfilePanel, SessionsPanel } from './Panels';
 
 const TAB_ORDER = ['profile', 'kudos', 'sessions'] as const;
 type TabType = (typeof TAB_ORDER)[number];
@@ -177,7 +172,9 @@ export default function Desk() {
 			toast.success('Your session is ready!');
 			setCreateOpen(false);
 		} catch {
-			toast.error("Oops! Couldn't create the session. Please try again.");
+			toast.error(
+				"Oops! Couldn't create the session. Please check your kudos balance and try again."
+			);
 		} finally {
 			setCreating(false);
 		}
@@ -329,7 +326,7 @@ export default function Desk() {
 					? `Invited ${invitedCount} user${invitedCount !== 1 ? 's' : ''} (${skippedCount} already invited or participant${skippedCount !== 1 ? 's' : ''})`
 					: `Invited ${invitedCount} user${invitedCount !== 1 ? 's' : ''}! They'll see it in their sessions.`;
 
-			toast.success(message);
+			toast(message);
 
 			await sessionManager.refresh();
 		} catch (err) {
@@ -422,7 +419,7 @@ export default function Desk() {
 		>
 			<FireHeader />
 			<main className="flex-1 pb-24">{renderActivePanel()}</main>
-			<DeskTabs activeTab={activeTab} onTabChange={setActiveTab} />
+			<NavTabs activeTab={activeTab} onTabChange={setActiveTab} />
 
 			{/* Create Session Slide */}
 			<FireSlide

@@ -11,7 +11,7 @@ import { Picky } from '@/app/components/SlidesUI/Picky';
 import { Quirky } from '@/app/components/SlidesUI/Quirky';
 import { Sneaky } from '@/app/components/SlidesUI/Sneaky';
 import { Taggy } from '@/app/components/SlidesUI/Taggy';
-import FireHeader from '@/app/components/UI/FireHeader';
+import { FireHeader } from '@/app/components/UI/FireHeader';
 import { useAuthState } from '@/app/lib/routing/context/AuthStateContext';
 import { launchUserProfile } from '@/app/lib/utils/launch';
 import { Memory } from '@/app/lib/utils/storage';
@@ -46,7 +46,7 @@ export default function Slidy() {
 	const [checkingIdentifier, setCheckingIdentifier] = useState(false);
 	const [loadingLaunch, setLoadingLaunch] = useState(false);
 
-	/* ==================== INITIALIZATION ==================== */
+	/* <------- INITIALIZATION -------> */
 
 	/**
 	 * Load cached user data from Memory API
@@ -94,7 +94,7 @@ export default function Slidy() {
 		[nickname, secret, mood, quirks, tags, profile]
 	);
 
-	/* ==================== NAVIGATION ==================== */
+	/* <------- NAVIGATION -------> */
 
 	const goNext = useCallback(async () => {
 		const stepId = STEPS[current].id;
@@ -118,7 +118,7 @@ export default function Slidy() {
 		setCurrent((prev) => Math.max(0, prev - 1));
 	}, []);
 
-	/* ==================== LAUNCH HANDLER ==================== */
+	/* <------- LAUNCH HANDLER -------> */
 
 	const handleLaunch = useCallback(async () => {
 		setLoadingLaunch(true);
@@ -172,7 +172,7 @@ export default function Slidy() {
 		}
 	}, [nickname, secret, mood, quirks, tags, profile, displayName, firebaseUser, refreshProfile]);
 
-	/* ==================== RENDER SLIDE ==================== */
+	/* <------- RENDER SLIDE -------> */
 
 	const renderSlide = useCallback(() => {
 		const stepId = STEPS[current].id;
@@ -242,13 +242,13 @@ export default function Slidy() {
 		handleLaunch,
 	]);
 
-	/* ==================== COMPUTED VALUES ==================== */
+	/* <------- COMPUTED VALUES -------> */
 
 	const isNavigationDisabled = checkingUsername || checkingIdentifier || loadingLaunch;
 	const isBackDisabled = current === 0 || isNavigationDisabled;
 	const isNextDisabled = isNavigationDisabled || current === STEPS.length - 1;
 
-	/* ==================== KEYBOARD NAVIGATION ==================== */
+	/* <------- KEYBOARD NAVIGATION -------> */
 	useEffect(() => {
 		const handleKeyDown = async (e: KeyboardEvent) => {
 			if (isNavigationDisabled) return;
@@ -270,7 +270,7 @@ export default function Slidy() {
 		return () => window.removeEventListener('keydown', handleKeyDown);
 	}, [goNext, goBack, isNavigationDisabled]);
 
-	/* ==================== RENDER ==================== */
+	/* <------- RENDER -------> */
 
 	return (
 		<div className="min-h-screen flex flex-col bg-white">

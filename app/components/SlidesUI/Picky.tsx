@@ -12,9 +12,7 @@ import {
 	RiUserLine,
 } from 'react-icons/ri';
 
-import FireInput from '@/app/components/UI/FireInput';
-
-import FireArea from '../UI/FireArea';
+import { FireArea, FireInput } from '@/app/components/UI';
 
 export interface Profile {
 	status?: string;

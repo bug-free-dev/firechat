@@ -13,7 +13,7 @@ interface FireButtonProps {
 	className?: string;
 }
 
-export default function FireButton({
+export const FireButton: React.FC<FireButtonProps> = ({
 	children,
 	onClick,
 	type = 'button',
@@ -22,25 +22,52 @@ export default function FireButton({
 	variant = 'default',
 	size = 'medium',
 	className = '',
-}: FireButtonProps) {
-	const base = `inline-flex items-center justify-center font-medium rounded-md
-		transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 
-		focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50`;
+}) => {
+	const base = `
+		inline-flex items-center justify-center font-medium rounded-md
+		transition-all duration-200
+		focus:outline-none focus:ring-2 focus:ring-offset-2
+		disabled:pointer-events-none disabled:opacity-50 
+	`;
 
-	const sizeMap = {
+	const sizeMap: Record<string, string> = {
 		small: 'h-9 px-3 text-sm',
-		medium: 'h-10 px-4 py-2 text-sm',
+		medium: 'h-10 px-4 text-sm',
 		large: 'h-11 px-8 text-base',
 	};
 
 	const variantMap: Record<string, string> = {
-		default: 'bg-neutral-900 text-neutral-50 hover:bg-neutral-800 focus-visible:ring-neutral-950',
-		secondary:
-			'bg-neutral-100 text-neutral-900 hover:bg-neutral-200 focus-visible:ring-neutral-400',
-		outline:
-			'border border-neutral-300 bg-white hover:bg-neutral-50 hover:text-neutral-900 focus-visible:ring-neutral-400',
-		ghost: 'hover:bg-neutral-100 hover:text-neutral-900',
-		destructive: 'bg-red-600 text-white hover:bg-red-700 focus-visible:ring-red-600 shadow-sm',
+		default: `
+			bg-neutral-900 text-neutral-50
+			hover:bg-neutral-800
+			focus:ring-neutral-900
+			focus:ring-offset-neutral-900/
+		`,
+		secondary: `
+			bg-neutral-100 text-neutral-900
+			hover:bg-neutral-200
+			focus:ring-neutral-900/20
+			focus:ring-offset-neutral-100
+		`,
+		outline: `
+			bg-white text-neutral-900 border border-neutral-300
+			hover:bg-neutral-50/40
+			hover:text-neutral-900
+			focus:ring-neutral-900/10
+			focus:ring-offset-white
+		`,
+		ghost: `
+			bg-transparent text-neutral-900
+			hover:bg-neutral-50/30
+			focus:ring-neutral-900/10
+			focus:ring-offset-white
+		`,
+		destructive: `
+			bg-red-600 text-white
+			hover:bg-red-700
+			focus:ring-red-600/30
+			focus:ring-offset-white
+		`,
 	};
 
 	const isDisabled = disabled || loading;
@@ -81,4 +108,4 @@ export default function FireButton({
 			)}
 		</button>
 	);
-}
+};

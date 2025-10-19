@@ -2,7 +2,7 @@ import type { FireTime } from '@/app/lib/utils/time';
 
 import type { ID, UID } from './Tuser';
 
-/* ==================== SESSIONS ==================== */
+/* <------- SESSIONS -------> */
 
 /**
  * Session document structure.

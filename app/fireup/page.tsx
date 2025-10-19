@@ -4,8 +4,7 @@ import React, { useState } from 'react';
 
 import AuthForm from '@/app/components/FireupUI/AuthPanel';
 import RightPanel from '@/app/components/FireupUI/FlarePanel';
-import FireDivider from '@/app/components/UI/FireDivider';
-import FireHeader from '@/app/components/UI/FireHeader';
+import { FireDivider, FireHeader } from '@/app/components/UI';
 
 export default function Page() {
 	const [activeTab, setActiveTab] = useState<'login' | 'signup'>('login');

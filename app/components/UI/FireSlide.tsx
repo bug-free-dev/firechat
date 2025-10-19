@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef } from 'react';
 
-import FireHeader from '@/app/components/UI/FireHeader';
+import { FireHeader } from '.';
 
 type Size = 'sm' | 'md' | 'lg' | 'full';
 
@@ -24,7 +24,7 @@ const SIZE_MAP: Record<Size, string> = {
 	full: 'h-full',
 };
 
-export default function FireSlide({
+export const FireSlide: React.FC<FireSlideProps> = ({
 	open,
 	onClose,
 	header,
@@ -33,7 +33,7 @@ export default function FireSlide({
 	size = 'md',
 	backdropStatic = false,
 	id,
-}: FireSlideProps) {
+}) => {
 	const sheetRef = useRef<HTMLDivElement | null>(null);
 	const lastActiveRef = useRef<HTMLElement | null>(null);
 
@@ -149,4 +149,4 @@ export default function FireSlide({
 			</div>
 		</div>
 	);
-}
+};

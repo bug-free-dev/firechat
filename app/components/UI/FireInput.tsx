@@ -4,7 +4,7 @@ import React, { forwardRef, useId, useMemo, useState } from 'react';
 import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
 
 type FireInputSize = 'sm' | 'md' | 'lg';
-type FireInputVariant = 'default' | 'outline' | 'filled' | 'custom';
+type FireInputVariant = 'default' | 'custom';
 
 interface FireInputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'size'> {
 	label?: string;
@@ -30,18 +30,14 @@ const sizeMap: Record<FireInputSize, string> = {
  */
 const variantClasses: Record<FireInputVariant, string> = {
 	default:
-		'bg-white border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-neutral-400/20 focus:border-neutral-300 hover:border-neutral-300',
-	outline:
-		'bg-transparent border border-neutral-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-100 focus:border-indigo-300',
-	filled:
-		'bg-neutral-50 border border-neutral-50 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-50',
+		'bg-white border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-neutral-400/20 focus:border-neutral-300/70 hover:border-neutral-300/60',
 	custom:
 		'rounded-t-lg border-b-3 border-neutral-200/50 dark:border-neutral-700 bg-neutral-100/30 dark:bg-neutral-800/70 focus:bg-white dark:focus:bg-transparent focus:border-indigo-400/60 transition-colors duration-200',
 };
 
 const labelBase = 'text-sm font-medium text-neutral-700 dark:text-neutral-200';
 
-const FireInput = forwardRef<HTMLInputElement, FireInputProps>(
+export const FireInput = forwardRef<HTMLInputElement, FireInputProps>(
 	(
 		{
 			label,
@@ -125,5 +121,3 @@ const FireInput = forwardRef<HTMLInputElement, FireInputProps>(
 		);
 	}
 );
-
-export default FireInput;

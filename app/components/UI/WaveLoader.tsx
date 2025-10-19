@@ -11,7 +11,7 @@ interface WaveLoaderProps {
 
 const defaultColors = ['bg-cyan-400/30', 'bg-yellow-400/30', 'bg-lime-400/30'];
 
-const WaveLoader: React.FC<WaveLoaderProps> = ({
+export const WaveLoader: React.FC<WaveLoaderProps> = ({
 	size = 2,
 	gap = 2,
 	colors = defaultColors,
@@ -34,5 +34,3 @@ const WaveLoader: React.FC<WaveLoaderProps> = ({
 		</div>
 	);
 };
-
-export default WaveLoader;

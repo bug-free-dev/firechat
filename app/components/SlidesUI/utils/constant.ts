@@ -21,7 +21,7 @@ export type ValidationResult = {
 	message?: string;
 };
 
-/* ==================== CONSTANTS ==================== */
+/* <------- CONSTANTS -------> */
 
 export const STEPS: ReadonlyArray<{ id: Step; title: string }> = [
 	{ id: `namey`, title: `Namey` },

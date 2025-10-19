@@ -9,12 +9,12 @@ interface FireHeaderProps {
 	className?: string;
 }
 
-export default function FireHeader({
+export const FireHeader: React.FC<FireHeaderProps> = ({
 	showSubtitle = true,
 	size = 'md',
 	variant = 'default',
 	className = '',
-}: FireHeaderProps) {
+}) => {
 	const sizeClasses = {
 		sm: {
 			container: 'mb-6 mt-3',
@@ -88,4 +88,4 @@ export default function FireHeader({
 			</div>
 		</div>
 	);
-}
+};

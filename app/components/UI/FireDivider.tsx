@@ -1,4 +1,3 @@
-// app/components/Divider.tsx
 'use client';
 
 import Image from 'next/image';
@@ -10,12 +9,12 @@ interface FireDividerProps {
 	variant?: 'default' | 'minimal' | 'bold';
 }
 
-const FireDivider = ({
+export const FireDivider: React.FC<FireDividerProps> = ({
 	height = 'min-h-[400px] sm:min-h-[700px]',
 	showLogo = true,
 	animated = true,
 	variant = 'default',
-}: FireDividerProps) => {
+}) => {
 	const variantStyles = {
 		default: {
 			line: 'bg-gradient-to-b from-transparent via-neutral-300 to-transparent',
@@ -90,5 +89,3 @@ const FireDivider = ({
 		</div>
 	);
 };
-
-export default FireDivider;

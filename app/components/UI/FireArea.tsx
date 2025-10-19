@@ -12,14 +12,14 @@ interface FireAreaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
 	className?: string;
 }
 
-export default function FireArea({
+export const FireArea: React.FC<FireAreaProps> = ({
 	label,
 	helperText,
 	icon,
 	variant = 'default',
 	className = '',
 	...props
-}: FireAreaProps) {
+}) => {
 	const baseClasses = `
     w-full
     outline-none
@@ -72,4 +72,4 @@ export default function FireArea({
 			{helperText && <p className="mt-1 text-xs text-neutral-500">{helperText}</p>}
 		</div>
 	);
-}
+};

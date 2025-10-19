@@ -11,7 +11,7 @@ import {
 	RiUserSmileLine,
 } from 'react-icons/ri';
 
-import FireInput from '@/app/components/UI/FireInput';
+import { FireInput } from '@/app/components/UI';
 
 type NameyProps = {
 	value: string;

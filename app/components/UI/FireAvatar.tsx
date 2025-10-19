@@ -11,7 +11,7 @@ interface FireAvatarProps {
 	src?: string | null;
 }
 
-const FireAvatar: React.FC<FireAvatarProps> = ({
+export const FireAvatar: React.FC<FireAvatarProps> = ({
 	seed,
 	src,
 	size = 40,
@@ -35,5 +35,3 @@ const FireAvatar: React.FC<FireAvatarProps> = ({
 		/>
 	);
 };
-
-export default FireAvatar;

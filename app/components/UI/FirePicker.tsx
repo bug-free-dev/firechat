@@ -6,12 +6,10 @@ import { FiSearch } from 'react-icons/fi';
 import { IoCloseCircleOutline } from 'react-icons/io5';
 import { MdOutlinePersonAdd } from 'react-icons/md';
 
-import FireAvatar from '@/app/components/UI/FireAvatar';
-import FireButton from '@/app/components/UI/FireButton';
-import FireInput from '@/app/components/UI/FireInput';
-import FireSlide from '@/app/components/UI/FireSlide';
 import type { FireCachedUser, SessionDoc } from '@/app/lib/types';
 import { searchUsersByUsername } from '@/app/lib/utils/memory';
+
+import { FireAvatar, FireButton, FireInput, FireSlide } from '.';
 
 interface PickerProps {
 	open: boolean;
@@ -26,7 +24,7 @@ interface PickerProps {
 	searchUsers?: (query: string) => Promise<FireCachedUser[]>;
 }
 
-export default function FirePicker({
+export const FirePicker: React.FC<PickerProps> = ({
 	open,
 	onClose,
 	frequentUsers = [],
@@ -37,7 +35,7 @@ export default function FirePicker({
 	description = 'Pick contacts to invite — they will receive a friendly inbox invite.',
 	maxSelection = 50,
 	searchUsers,
-}: PickerProps) {
+}) => {
 	const [selected, setSelected] = useState<Map<string, FireCachedUser>>(new Map());
 	const [query, setQuery] = useState('');
 	const [results, setResults] = useState<FireCachedUser[]>([]);
@@ -294,4 +292,4 @@ export default function FirePicker({
 			</div>
 		</FireSlide>
 	);
-}
+};

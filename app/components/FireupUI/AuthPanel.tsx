@@ -2,14 +2,10 @@
 
 import React, { useRef, useState } from 'react';
 import toast from 'react-hot-toast';
-import { FaGithub, FaGoogle } from 'react-icons/fa';
 import { LuRocket } from 'react-icons/lu';
 import { PiFireLight } from 'react-icons/pi';
 
-import FireButton from '@/app/components/UI/FireButton';
-import FireInput from '@/app/components/UI/FireInput';
-import FireTabSwitcher from '@/app/components/UI/FireTabSwitcher';
-import OAuthButton from '@/app/components/UI/OAuthButton';
+import { FireButton, FireInput, FireTabSwitcher, OAuthButton } from '@/app/components/UI';
 import { useAuthState } from '@/app/lib/routing/context/AuthStateContext';
 import { sendResetPasswordEmail } from '@/app/lib/utils/auth';
 import { sleep } from '@/app/lib/utils/time';
@@ -222,18 +218,18 @@ export default function AuthForm({ activeTab, onTabChange }: Props) {
 				{/* OAuth Row */}
 				<div className="flex gap-3">
 					<OAuthButton
+						provider="google"
 						onClick={handleGoogle}
 						disabled={isLoading}
 						className="flex-1"
 						label="Google"
-						icon={<FaGoogle className="text-rose-500" />}
 					/>
 					<OAuthButton
+						provider="github"
 						onClick={handleGithub}
 						disabled={isLoading}
 						className="flex-1"
 						label="GitHub"
-						icon={<FaGithub className="text-neutral-700 dark:text-neutral-200" />}
 					/>
 				</div>
 
@@ -253,7 +249,6 @@ export default function AuthForm({ activeTab, onTabChange }: Props) {
 							onChange={(e) => setSignup((s) => ({ ...s, displayName: e.target.value }))}
 							placeholder="Your 100% real name."
 							required
-							variant="default"
 							disabled={isLoading}
 						/>
 					)}
@@ -302,7 +297,7 @@ export default function AuthForm({ activeTab, onTabChange }: Props) {
 								type="button"
 								onClick={handleForgot}
 								disabled={isLoading}
-								className="text-sm text-neutral-500 dark:text-neutral-300 hover:text-[#ff3e00] transition-colors duration-200 px-2 py-1 rounded-md hover:bg-orange-50 dark:hover:bg-orange-900/20 disabled:opacity-50 disabled:cursor-not-allowed"
+								className="text-sm text-neutral-500 dark:text-neutral-300 focus:text-[#ff3e00] transition-colors duration-200 px-2 py-1 rounded-md focus:bg-orange-50 dark:hover:bg-orange-900/20 disabled:opacity-50 disabled:cursor-not-allowed"
 							>
 								Forgot?
 							</button>

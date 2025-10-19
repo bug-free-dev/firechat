@@ -4,9 +4,7 @@ import React, { useState } from 'react';
 import { toast } from 'react-hot-toast';
 import { RiKey2Line, RiLockPasswordLine } from 'react-icons/ri';
 
-import FireButton from '@/app/components/UI/FireButton';
-import FireInput from '@/app/components/UI/FireInput';
-import FireSlide, { FireSlideProps } from '@/app/components/UI/FireSlide';
+import { FireButton, FireInput, FireSlide, type FireSlideProps } from '.';
 
 export type FirePromptProps = Omit<FireSlideProps, 'children'> & {
 	value: string;
@@ -17,7 +15,7 @@ export type FirePromptProps = Omit<FireSlideProps, 'children'> & {
 	loadingText?: string;
 };
 
-export default function FirePrompt({
+export const FirePrompt: React.FC<FirePromptProps> = ({
 	open,
 	onClose,
 	value,
@@ -29,7 +27,7 @@ export default function FirePrompt({
 	backdropStatic = false,
 	id,
 	loadingText = 'Verifying identity...',
-}: FirePromptProps) {
+}) => {
 	const [loading, setLoading] = useState(false);
 
 	const handleSubmit = async () => {
@@ -102,4 +100,4 @@ export default function FirePrompt({
 			</div>
 		</FireSlide>
 	);
-}
+};

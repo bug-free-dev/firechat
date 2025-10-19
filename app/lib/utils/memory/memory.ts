@@ -19,7 +19,7 @@ let loadAllUsersInFlight: Promise<void> | null = null;
 const perUserFreqCache = new Map<string, FrequentUserCache>();
 const perUserFreqInFlight = new Map<string, Promise<FireCachedUser[]>>();
 
-/* ==================== Core Loader ==================== */
+/* <------- Core Loader -------> */
 
 async function loadAllUsers(): Promise<void> {
 	if (loadAllUsersInFlight) return loadAllUsersInFlight;
@@ -63,7 +63,7 @@ async function loadAllUsers(): Promise<void> {
 	return loadAllUsersInFlight;
 }
 
-/* ==================== Cache Management ==================== */
+/* <------- Cache Management -------> */
 
 async function ensureFresh(): Promise<void> {
 	const age = create.nowMs() - cache.timestamp;
@@ -73,7 +73,7 @@ async function ensureFresh(): Promise<void> {
 	if (isStale) await loadAllUsers();
 }
 
-/* ==================== Granular Cache Invalidation ==================== */
+/* <------- Granular Cache Invalidation -------> */
 
 /**
  * Remove user from cache
@@ -188,7 +188,7 @@ export async function reloadCache(): Promise<void> {
 	perUserFreqCache.clear();
 }
 
-/* ==================== Auto-Invalidation Wrapper ==================== */
+/* <------- Auto-Invalidation Wrapper -------> */
 
 /**
  * Execute operation and auto-invalidate cache
@@ -199,7 +199,7 @@ export async function withInvalidation<T>(uid: string, operation: () => Promise<
 	return result;
 }
 
-/* ==================== Username & Identifier Validation ==================== */
+/* <------- Username & Identifier Validation -------> */
 
 /**
  * Check if username is available (case-insensitive)
@@ -256,23 +256,7 @@ export async function isIdentifierAvailable(identifierKey: string): Promise<Vali
 	};
 }
 
-/**
- * Legacy compatibility - returns boolean only
- */
-export async function checkUsernameUnique(usernamey: string): Promise<boolean> {
-	const result = await isUsernameAvailable(usernamey);
-	return result.available;
-}
-
-/**
- * Legacy compatibility - returns boolean only
- */
-export async function checkIdentifierKeyUnique(identifierKey: string): Promise<boolean> {
-	const result = await isIdentifierAvailable(identifierKey);
-	return result.available;
-}
-
-/* ==================== Public API ==================== */
+/* <------- Public API -------> */
 
 export async function getAllCachedUsers(): Promise<FireCachedUser[]> {
 	await ensureFresh();
@@ -320,7 +304,7 @@ export async function getUserByUid(uid: string): Promise<FireCachedUser | null> 
 	return user ? cloneSerializableUser(user) : null;
 }
 
-/* ==================== Frequent Users ==================== */
+/* <------- Frequent Users -------> */
 
 async function aggregateInteractions(forUid: string, limit: number): Promise<string[]> {
 	const interactionCount = new Map<string, number>();

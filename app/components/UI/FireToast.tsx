@@ -17,7 +17,7 @@ type FirechatToastProps = {
 	actions: ActionButton[];
 };
 
-export function FireToast({ title, message, actions }: FirechatToastProps) {
+export const FireToast = ({ title, message, actions }: FirechatToastProps) => {
 	const limited = actions?.length ? actions.slice(0, 3) : [];
 
 	toast.custom(
@@ -103,4 +103,4 @@ export function FireToast({ title, message, actions }: FirechatToastProps) {
 		),
 		{ position: 'top-center', duration: 4500 }
 	);
-}
+};

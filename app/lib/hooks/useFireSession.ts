@@ -13,13 +13,13 @@ import { rtdb } from '@/app/lib/firebase/FireClient';
 import type { ServerResult, SessionDoc } from '@/app/lib/types';
 import { compare } from '@/app/lib/utils/time';
 
-/* ==================== CONSTANTS ==================== */
+/* <------- CONSTANTS -------> */
 
 const POLL_INTERVAL_MS = 5000;
 const CACHE_INVALIDATION_MS = 10000;
 const MAX_SESSIONS_IN_MEMORY = 100;
 
-/* ==================== TYPES ==================== */
+/* <------- TYPES -------> */
 
 export interface SessionServices {
 	getUserSessionsAndInvites: (
@@ -111,7 +111,7 @@ export interface UseFireSessionReturn {
 	clear: () => void;
 }
 
-/* ==================== HOOK ==================== */
+/* <------- HOOK -------> */
 
 export function useFireSession(options: UseFireSessionOptions): UseFireSessionReturn {
 	const {
@@ -150,7 +150,7 @@ export function useFireSession(options: UseFireSessionOptions): UseFireSessionRe
 		};
 	}, []);
 
-	/* ==================== COMPUTED VALUES ==================== */
+	/* <------- COMPUTED VALUES -------> */
 
 	const sortedSessions = useMemo<SessionDoc[]>(() => {
 		const arr = Array.from(sessionsMapRef.current.values());
@@ -173,7 +173,7 @@ export function useFireSession(options: UseFireSessionOptions): UseFireSessionRe
 		return arr;
 	}, [invitedSessions]);
 
-	/* ==================== STATE SYNC ==================== */
+	/* <------- STATE SYNC -------> */
 
 	const triggerSync = useCallback((): void => {
 		if (isMountedRef.current) {
@@ -182,7 +182,7 @@ export function useFireSession(options: UseFireSessionOptions): UseFireSessionRe
 		}
 	}, []);
 
-	/* ==================== FETCH SESSIONS (Race Condition Protected) ==================== */
+	/* <------- FETCH SESSIONS (Race Condition Protected) -------> */
 
 	const fetchSessions = useCallback(
 		async (force = false): Promise<void> => {
@@ -249,7 +249,7 @@ export function useFireSession(options: UseFireSessionOptions): UseFireSessionRe
 		[userUid, services, triggerSync]
 	);
 
-	/* ==================== REALTIME LISTENER ==================== */
+	/* <------- REALTIME LISTENER -------> */
 
 	const setupRealtimeListener = useCallback(() => {
 		if (!enableRealtime || !userUid?.trim() || !rtdb) return;
@@ -280,7 +280,7 @@ export function useFireSession(options: UseFireSessionOptions): UseFireSessionRe
 		} catch {}
 	}, [enableRealtime, userUid, fetchSessions]);
 
-	/* ==================== POLLING FALLBACK ==================== */
+	/* <------- POLLING FALLBACK -------> */
 
 	const setupPolling = useCallback(() => {
 		if (!autoRefresh || !userUid?.trim()) return;
@@ -296,13 +296,13 @@ export function useFireSession(options: UseFireSessionOptions): UseFireSessionRe
 		}, pollingInterval);
 	}, [autoRefresh, userUid, loading, pollingInterval, fetchSessions]);
 
-	/* ==================== INITIAL LOAD ==================== */
+	/* <------- INITIAL LOAD -------> */
 
 	useEffect(() => {
 		void fetchSessions(true);
 	}, [fetchSessions]);
 
-	/* ==================== REALTIME & POLLING SETUP ==================== */
+	/* <------- REALTIME & POLLING SETUP -------> */
 
 	useEffect(() => {
 		setupRealtimeListener();
@@ -321,7 +321,7 @@ export function useFireSession(options: UseFireSessionOptions): UseFireSessionRe
 		};
 	}, [setupRealtimeListener, setupPolling]);
 
-	/* ==================== ACTIONS ==================== */
+	/* <------- ACTIONS -------> */
 
 	const createSession = useCallback(
 		async (params: {
@@ -685,7 +685,7 @@ export function useFireSession(options: UseFireSessionOptions): UseFireSessionRe
 		}
 	}, []);
 
-	/* ==================== CLEANUP ==================== */
+	/* <------- CLEANUP -------> */
 
 	useEffect(() => {
 		return () => {
@@ -693,7 +693,7 @@ export function useFireSession(options: UseFireSessionOptions): UseFireSessionRe
 		};
 	}, [clear]);
 
-	/* ==================== RETURN ==================== */
+	/* <------- RETURN -------> */
 
 	return {
 		sessions: sortedSessions,
