@@ -73,7 +73,7 @@ export const FirePrompt: React.FC<FirePromptProps> = ({
 			<div className="relative w-full h-full min-h-[400px] flex flex-col items-center justify-center overflow-hidden ">
 				{/* Main content */}
 				<div className="relative z-10 max-w-md w-full px-6 text-center flex flex-col gap-6">
-					<h1 className="font-dyna text-4xl sm:text-5xl text-neutral-900 inline-flex items-center justify-center gap-3">
+					<h1 className="font-knewave text-4xl sm:text-5xl text-neutral-900 inline-flex items-center justify-center gap-3">
 						<RiLockPasswordLine className="text-lime-500 w-10 h-10" />
 						Verify Identifier
 					</h1>

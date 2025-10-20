@@ -52,7 +52,7 @@ export const FireArea: React.FC<FireAreaProps> = ({
 	return (
 		<div className={`relative w-full ${className}`}>
 			{label && (
-				<label className="font-dyna text-sm text-neutral-600 mb-3 block select-none">
+				<label className="font-knewave text-sm text-neutral-600 mb-3 block select-none">
 					{label}
 				</label>
 			)}

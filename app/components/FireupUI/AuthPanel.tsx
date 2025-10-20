@@ -196,7 +196,7 @@ export default function AuthForm({ activeTab, onTabChange }: Props) {
 				className="w-full"
 			/>
 
-			<h2 className="mt-6 font-bold text-2xl text-neutral-900 dark:text-neutral-100 text-center mb-1">
+			<h2 className="mt-6 font-bold text-2xl text-neutral-800 dark:text-neutral-100 text-center mb-1 font-comic">
 				{activeTab === 'login' ? (
 					<span className="inline-flex items-center gap-2 ">
 						<PiFireLight className="text-orange-500 h-8 w-8" /> Welcome Back
@@ -297,14 +297,14 @@ export default function AuthForm({ activeTab, onTabChange }: Props) {
 								type="button"
 								onClick={handleForgot}
 								disabled={isLoading}
-								className="text-sm text-neutral-500 dark:text-neutral-300 focus:text-[#ff3e00] transition-colors duration-200 px-2 py-1 rounded-md focus:bg-orange-50 dark:hover:bg-orange-900/20 disabled:opacity-50 disabled:cursor-not-allowed"
+								className="text-sm text-neutral-500 dark:text-neutral-300 focus:text-indigo-500 transition-colors duration-200 px-2 py-1 rounded-md focus:bg-sky-50 dark:hover:bg-orange-900/20 disabled:opacity-50 disabled:cursor-not-allowed"
 							>
 								Forgot?
 							</button>
 						)}
 					</div>
 
-					<div className="text-xs text-neutral-500 dark:text-neutral-300 text-center mt-4 p-4 bg-neutral-50/80 dark:bg-neutral-800/60 rounded-t-lg border border-neutral-100 dark:border-neutral-700">
+					<div className="text-xs text-neutral-500 dark:text-neutral-300 text-center mt-4 p-4 bg-neutral-50/80 dark:bg-neutral-800/60 rounded-lg border border-neutral-100 dark:border-neutral-700">
 						{activeTab === 'signup' ? (
 							<span>
 								By creating an account you agree to be kind and keep the chat chill.

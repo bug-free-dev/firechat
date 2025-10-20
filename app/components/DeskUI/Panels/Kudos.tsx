@@ -119,7 +119,7 @@ export const KudosPanel: React.FC<KudosPanelProps> = ({
 				<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 w-full px-2 sm:px-0">
 					{/* Heading */}
 					<div className="flex flex-col items-center gap-2 mb-6">
-						<h2 className="font-dyna text-[var(--monokai-yellow)] text-3xl text-center font-semibold">
+						<h2 className="font-comic text-[var(--monokai-yellow)] text-3xl text-center font-semibold">
 							<FiGift className="inline-block mr-2 text-[var(--monokai-yellow)]" /> Kudos
 						</h2>
 						<p className="text-sm text-neutral-600">Quick appreciation</p>

@@ -85,7 +85,7 @@ export const ChatsTab: React.FC<ChatsTabProps> = ({
 			{mergedSessions.length === 0 ? (
 				<div className="flex flex-col items-center justify-center py-20 text-center">
 					<MdOutlineWhatshot className="w-20 h-20 mb-6 text-orange-300 opacity-50" />
-					<h3 className="text-2xl font-dyna text-neutral-700 mb-2">No sparks yet</h3>
+					<h3 className="text-2xl font-knewave text-neutral-700 mb-2">No sparks yet</h3>
 					<p className="text-neutral-500 mb-6 max-w-sm">
 						Fire up your first session and start chatting with your classmates!
 					</p>

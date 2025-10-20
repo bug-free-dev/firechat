@@ -192,7 +192,7 @@ export const SessionsPanel: React.FC<SessionsPanelProps> = ({
 				{/* Header with Kudos Balance */}
 				<div className="flex flex-col items-center justify-between gap-4 mb-6 text-center">
 					<div>
-						<h1 className="font-dyna text-3xl font-semibold text-neutral-800 flex items-center gap-3 justify-center ">
+						<h1 className="font-comic text-3xl font-semibold text-neutral-700 flex items-center gap-3 justify-center ">
 							<IoChatbubblesOutline className="text-lime-500" />
 							Sessions
 						</h1>

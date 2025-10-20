@@ -1,12 +1,13 @@
 :root {
 	/* Fonts */
-	--font-geist: 'Geist', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
 	--font-rubik: 'Rubik', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
 	--font-moonrocks: 'Rubik Moonrocks', cursive;
-	--font-dynapuff: 'DynaPuff', cursive;
+	--font-knewave:"Knewave", cursive;
+   --font-comic:"Bubblegum Sans",
+      cursive;
 	--font-jolly: 'Jolly Lodger', cursive;
 	--font-righteous: 'Righteous', cursive;
-	--font-quicksand: 'Quicksand', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+	--font-quicksand: 'Quicksand', 'Geist',system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
 	--font-main: var(--font-quicksand);
 
 	/* Brand / UI */
@@ -16,7 +17,7 @@
 	--fc-border: #e6e7ea;
 	--fc-text: #111827;
 	--fc-accent: #202022;
-	--fc-accent-press: #ff5e29;
+	--fc-accent-press: #262527;
 
 	/* animation tokens */
 	--transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -33,8 +34,9 @@
 	font-family: var(--font-moonrocks);
 }
 
-.font-dyna {
-	font-family: var(--font-dynapuff);
+.font-knewave {
+	font-family: var(--font-knewave);
+   font-size: 40;
 }
 
 .font-jolly {
@@ -47,4 +49,12 @@
 
 .font-quicksand {
 	font-family: var(--font-quicksand);
+}
+
+.font-comic{
+   font-family:var(--font-comic)
+}
+
+.font-rubik{
+font-family:var(--font-rubik)
 }

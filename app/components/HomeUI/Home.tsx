@@ -78,7 +78,7 @@ export default function Home() {
 
 			<div className="flex flex-col items-center gap-3 animate-fade-in-up">
 				<Image src="/Firechat.svg" alt="Firechat" width={120} height={120} className="mb-1" />
-				<h1 className="text-3xl font-semibold text-neutral-900 text-center">
+				<h1 className="text-3xl font-semibold text-neutral-900 text-center font-comic">
 					Firechat — small circles, clear talk
 				</h1>
 				<p className="max-w-xl text-center text-neutral-700/70 text-base">

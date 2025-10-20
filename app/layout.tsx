@@ -15,14 +15,13 @@ export const metadata: Metadata = {
 };
 const toastConfig: ToastOptions = {
 	position: 'bottom-right',
-	duration: 2500,
+	duration:1000,
 	style: {
 		background: '#ffffff',
 		color: '#111827',
 		fontSize: '0.95rem',
 		fontWeight: 500,
 		borderRadius: '0.75rem',
-		boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
 		padding: '14px 18px',
 	},
 };

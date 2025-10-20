@@ -43,7 +43,7 @@ export function Picky({ value, onChange, step = 1, total = 1 }: PickyProps) {
 			<div className="w-full max-w-2xl space-y-10 relative z-10 animate-fade-in-up">
 				{/* Heading */}
 				<div className="text-center">
-					<h1 className="font-dyna mb-7 text-4xl font-semibold text-slate-900 flex items-center justify-center gap-3">
+					<h1 className="font-comic mb-7 text-4xl font-semibold text-slate-900 flex items-center justify-center gap-3">
 						<RiUserLine className="text-rose-500" />
 						Picky
 					</h1>
