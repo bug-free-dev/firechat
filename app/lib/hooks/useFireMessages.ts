@@ -1,6 +1,7 @@
 'use client';
 
 import {
+	type DataSnapshot,
 	limitToLast,
 	off as rtdbOff,
 	onChildAdded,
@@ -14,33 +15,40 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { clearUserTyping, setUserTyping } from '@/app/lib/api/typingAPI';
 import { rtdb } from '@/app/lib/firebase/FireClient';
-import type { ChatMessage, FireCachedUser, MessageAttachment, ServerResult } from '@/app/lib/types';
+import type { ChatMessage, FireCachedUser, ServerResult } from '@/app/lib/types';
 import {
 	compareMsgsAsc,
-	genTempId,
-	matchMessageContent,
 	parseMessageFromSnapshot,
 	parseTypingUserFromSnapshot,
-} from '@/app/lib/utils/message/helper';
+} from '@/app/lib/utils/message/helpers';
 import type {
-	MessagesServices,
+	RTDBListeners,
 	SnapshotCallback,
 	UseMessagesOptions,
 	UseMessagesReturn,
-} from '@/app/lib/utils/message/types';
+} from '@/app/lib/utils/message/typeDefs';
 
-/* <------- CONSTANTS -------> */
+/* <----------- CONSTANTS -----------> */
 const DEFAULT_INITIAL_LIMIT = 50;
 const DEFAULT_LIVE_LIMIT = 100;
 const DEFAULT_MAX_MESSAGES = 500;
 const DEFAULT_TYPING_DEBOUNCE_MS = 1200;
 const TYPING_CLEAR_DELAY_MS = 200;
-const OPTIMISTIC_FALLBACK_MS = 30_000;
-const MAX_TEXT_LENGTH = 10000;
-const MAX_EMOJI_LENGTH = 10;
-const MAX_PAGINATION_LIMIT = 200;
+const OPTIMISTIC_SYNC_DELAY_MS = 2000;
 
-/* <------- HOOK -------> */
+/* <----------- INTERFACES -----------> */
+interface MessageState {
+	version: number;
+	sending: boolean;
+	inFlightCount: number;
+}
+
+interface TypingState {
+	version: number;
+	isActive: boolean;
+}
+
+/* <----------- HOOK -----------> */
 
 export function useFireMessages(params: UseMessagesOptions): UseMessagesReturn {
 	const { sessionId, userUid, services, options = {} } = params;
@@ -53,31 +61,42 @@ export function useFireMessages(params: UseMessagesOptions): UseMessagesReturn {
 		typingDebounceMs = DEFAULT_TYPING_DEBOUNCE_MS,
 	} = options;
 
-	if (!sessionId?.trim()) throw new Error('[useFireMessages] sessionId is required');
-	if (!userUid?.trim()) throw new Error('[useFireMessages] userUid is required');
+	// Validate required params
+	if (!sessionId?.trim()) {
+		throw new Error('[useFireMessages] sessionId is required');
+	}
+	if (!userUid?.trim()) {
+		throw new Error('[useFireMessages] userUid is required');
+	}
 
-	/* ---------- reactive state (minimal) ---------- */
-	const [version, setVersion] = useState(0); // bump to trigger re-render of messages/typing arrays
-	const [inFlightCount, setInFlightCount] = useState(0);
+	// State
+	const [messageState, setMessageState] = useState<MessageState>({
+		version: 0,
+		sending: false,
+		inFlightCount: 0,
+	});
+	const [typingState, setTypingState] = useState<TypingState>({
+		version: 0,
+		isActive: false,
+	});
 
-	/* ---------- refs (data stores) ---------- */
+	// Refs - Data stores
 	const messagesMapRef = useRef<Map<string, ChatMessage>>(new Map());
-	// optimisticTemp: tempId -> timeoutId
-	const optimisticTempRef = useRef<Map<string, NodeJS.Timeout>>(new Map());
-	const typingUsersRef = useRef<Map<string, FireCachedUser>>(new Map());
-
+	const pendingMessagesRef = useRef<Set<string>>(new Set());
+	const typingUsersMapRef = useRef<Map<string, FireCachedUser>>(new Map());
 	const isMountedRef = useRef<boolean>(true);
-	const cleanupInProgressRef = useRef<boolean>(false);
 
-	/* ---------- rtdb listener refs ---------- */
+	// Refs - RTDB
 	const rtdbQueryRef = useRef<RTDBQuery | null>(null);
-	const rtdbListenersRef = useRef<Record<string, SnapshotCallback | undefined>>({});
+	const rtdbListenersRef = useRef<RTDBListeners>({});
 	const typingRefRef = useRef<ReturnType<typeof rtdbRef> | null>(null);
 
-	/* ---------- typing timers ---------- */
+	// Refs - Typing timers
 	const typingDebounceTimerRef = useRef<NodeJS.Timeout | null>(null);
 	const typingClearTimerRef = useRef<NodeJS.Timeout | null>(null);
-	const lastTypingSentRef = useRef<boolean | null>(null);
+
+	// Refs - Cleanup flags
+	const cleanupInProgressRef = useRef<boolean>(false);
 
 	useEffect(() => {
 		isMountedRef.current = true;
@@ -86,12 +105,100 @@ export function useFireMessages(params: UseMessagesOptions): UseMessagesReturn {
 		};
 	}, []);
 
-	const triggerVersion = useCallback(() => {
-		if (!isMountedRef.current || cleanupInProgressRef.current) return;
-		setVersion((v) => v + 1);
+	/* <----------- COMPUTED VALUES -----------> */
+
+	const messages = useMemo<ChatMessage[]>(() => {
+		const allMessages = Array.from(messagesMapRef.current.values());
+		allMessages.sort(compareMsgsAsc);
+
+		// Memory management - keep only recent messages
+		if (allMessages.length > maxMessagesInMemory) {
+			const keep = allMessages.slice(allMessages.length - maxMessagesInMemory);
+			messagesMapRef.current = new Map(keep.map((m) => [m.id!, m]));
+			return keep;
+		}
+
+		return allMessages;
+	}, [messageState.version, maxMessagesInMemory]);
+
+	const typingUsers = useMemo<FireCachedUser[]>(() => {
+		return Array.from(typingUsersMapRef.current.values()).filter((user) => user.uid !== userUid);
+	}, [typingState.version, userUid]);
+
+	/* <----------- STATE TRIGGERS -----------> */
+
+	const triggerMessagesUpdate = useCallback((): void => {
+		if (isMountedRef.current && !cleanupInProgressRef.current) {
+			setMessageState((prev) => ({
+				...prev,
+				version: prev.version + 1,
+			}));
+		}
 	}, []);
 
-	/* <------- RTDB: messages listeners -------> */
+	const triggerTypingUpdate = useCallback((): void => {
+		if (isMountedRef.current && !cleanupInProgressRef.current) {
+			setTypingState((prev) => ({
+				...prev,
+				version: prev.version + 1,
+			}));
+		}
+	}, []);
+
+	const updateInFlightCount = useCallback((delta: number): void => {
+		if (isMountedRef.current && !cleanupInProgressRef.current) {
+			setMessageState((prev) => {
+				const newCount = Math.max(0, prev.inFlightCount + delta);
+				return {
+					...prev,
+					inFlightCount: newCount,
+					sending: newCount > 0,
+				};
+			});
+		}
+	}, []);
+
+	/* <----------- LOCAL MESSAGE UPDATES -----------> */
+
+	const upsertMessageLocal = useCallback(
+		(msg: ChatMessage): void => {
+			if (!msg.id?.trim()) {
+				return;
+			}
+
+			const existing = messagesMapRef.current.get(msg.id);
+
+			// Skip if identical (deep comparison for efficiency)
+			if (existing && JSON.stringify(existing) === JSON.stringify(msg)) {
+				return;
+			}
+
+			// Skip if pending (optimistic update already applied)
+			if (pendingMessagesRef.current.has(msg.id)) {
+				pendingMessagesRef.current.delete(msg.id);
+			}
+
+			messagesMapRef.current.set(msg.id, msg);
+			triggerMessagesUpdate();
+		},
+		[triggerMessagesUpdate]
+	);
+
+	const removeMessageLocal = useCallback(
+		(msgId: string): void => {
+			if (!msgId?.trim() || !messagesMapRef.current.has(msgId)) {
+				return;
+			}
+
+			messagesMapRef.current.delete(msgId);
+			pendingMessagesRef.current.delete(msgId);
+			triggerMessagesUpdate();
+		},
+		[triggerMessagesUpdate]
+	);
+
+	/* <----------- RTDB: LIVE MESSAGES LISTENERS -----------> */
+
 	useEffect(() => {
 		if (!sessionId || !rtdb) return;
 
@@ -100,87 +207,68 @@ export function useFireMessages(params: UseMessagesOptions): UseMessagesReturn {
 		const q: RTDBQuery = rtdbQuery(baseRef, limitToLast(liveLimit));
 		rtdbQueryRef.current = q;
 
-		const onAdd: SnapshotCallback = (snap) => {
+		const onAdd: SnapshotCallback = (snap: DataSnapshot): void => {
 			if (cleanupInProgressRef.current) return;
+
 			try {
 				const incoming = parseMessageFromSnapshot(snap, sessionId);
-				if (!incoming?.id) return;
-
-				// If a temp optimistic message exists that matches this server message, replace it.
-				// This prevents duplicate rendering: find matching temp -> delete it -> insert server message.
-				const entries = Array.from(messagesMapRef.current.entries());
-				for (const [key, val] of entries) {
-					if (key.startsWith('tmp_') && matchMessageContent(val, incoming)) {
-						// cleanup temp timeout
-						const t = optimisticTempRef.current.get(key);
-						if (t) clearTimeout(t);
-						optimisticTempRef.current.delete(key);
-						messagesMapRef.current.delete(key);
-						break; // only one match expected
-					}
+				if (incoming?.id) {
+					upsertMessageLocal(incoming);
 				}
-
-				// Insert server message (overwrites if exists)
-				messagesMapRef.current.set(incoming.id, incoming);
-				triggerVersion();
 			} catch {
-				// parser failure - skip (silent per design)
+				/**Ignore*/
 			}
 		};
 
-		const onChange: SnapshotCallback = (snap) => {
+		const onChange: SnapshotCallback = (snap: DataSnapshot): void => {
 			if (cleanupInProgressRef.current) return;
+
 			try {
 				const incoming = parseMessageFromSnapshot(snap, sessionId);
-				if (!incoming?.id) return;
-				// apply update directly (reactions, edits, status)
+				if (!incoming?.id?.trim()) return;
+
 				messagesMapRef.current.set(incoming.id, incoming);
-				triggerVersion();
+				triggerMessagesUpdate();
 			} catch {
-				// skip invalid
+				/**Ignore */
 			}
 		};
 
-		const onRem: SnapshotCallback = (snap) => {
+		const onRem: SnapshotCallback = (snap: DataSnapshot): void => {
 			if (cleanupInProgressRef.current) return;
+
 			try {
-				const key = snap.key;
-				if (!key) return;
-				// remove message locally
-				const existed = messagesMapRef.current.delete(key);
-				// cleanup optimistic timer if present
-				const t = optimisticTempRef.current.get(key);
-				if (t) {
-					clearTimeout(t);
-					optimisticTempRef.current.delete(key);
+				const { key } = snap;
+				if (key?.trim()) {
+					removeMessageLocal(key);
 				}
-				if (existed) triggerVersion();
 			} catch {
-				// skip
+				/**Ignore */
 			}
 		};
 
-		rtdbListenersRef.current.added = onAdd;
-		rtdbListenersRef.current.changed = onChange;
-		rtdbListenersRef.current.removed = onRem;
+		const listeners: RTDBListeners = {
+			added: onAdd,
+			changed: onChange,
+			removed: onRem,
+		};
+		rtdbListenersRef.current = listeners;
 
 		onChildAdded(q, onAdd);
 		onChildChanged(q, onChange);
 		onChildRemoved(q, onRem);
 
-		return () => {
+		return (): void => {
 			try {
-				if (onAdd) rtdbOff(q, 'child_added', onAdd);
-				if (onChange) rtdbOff(q, 'child_changed', onChange);
-				if (onRem) rtdbOff(q, 'child_removed', onRem);
-			} catch {
-				// cleanup best-effort
-			}
-			rtdbQueryRef.current = null;
+				if (listeners.added) rtdbOff(q, 'child_added', listeners.added);
+				if (listeners.changed) rtdbOff(q, 'child_changed', listeners.changed);
+				if (listeners.removed) rtdbOff(q, 'child_removed', listeners.removed);
+			} catch {}
 		};
-	}, [sessionId, liveLimit, triggerVersion]);
+	}, [sessionId, liveLimit, upsertMessageLocal, removeMessageLocal, triggerMessagesUpdate]);
 
-	/* <------- RTDB: typing listeners -------> */
+	/* <----------- RTDB: TYPING INDICATORS LISTENERS -----------> */
+
 	useEffect(() => {
 		if (!sessionId || !rtdb || !userUid) return;
 
@@ -188,90 +276,73 @@ export function useFireMessages(params: UseMessagesOptions): UseMessagesReturn {
 		const tRef = rtdbRef(rtdb, typingPath);
 		typingRefRef.current = tRef;
 
-		const onTypingAdd: SnapshotCallback = (snap) => {
+		const onTypingAdd: SnapshotCallback = (snap: DataSnapshot): void => {
 			if (cleanupInProgressRef.current) return;
+
 			try {
 				const user = parseTypingUserFromSnapshot(snap);
 				if (!user?.uid || user.uid === userUid) return;
-				typingUsersRef.current.set(user.uid, user);
-				triggerVersion();
-			} catch {
-				// skip
-			}
+
+				typingUsersMapRef.current.set(user.uid, user);
+				triggerTypingUpdate();
+			} catch {}
 		};
 
-		const onTypingChange: SnapshotCallback = (snap) => {
+		const onTypingChange: SnapshotCallback = (snap: DataSnapshot): void => {
 			if (cleanupInProgressRef.current) return;
+
 			try {
 				const user = parseTypingUserFromSnapshot(snap);
 				if (!user?.uid || user.uid === userUid) return;
-				typingUsersRef.current.set(user.uid, user);
-				triggerVersion();
-			} catch {
-				// skip
-			}
+
+				typingUsersMapRef.current.set(user.uid, user);
+				triggerTypingUpdate();
+			} catch {}
 		};
 
-		const onTypingRemove: SnapshotCallback = (snap) => {
+		const onTypingRemove: SnapshotCallback = (snap: DataSnapshot): void => {
 			if (cleanupInProgressRef.current) return;
+
 			try {
-				const key = snap.key;
-				if (!key) return;
-				typingUsersRef.current.delete(key);
-				triggerVersion();
-			} catch {
-				// skip
-			}
+				const { key } = snap;
+				if (!key || !typingUsersMapRef.current.has(key)) return;
+
+				typingUsersMapRef.current.delete(key);
+				triggerTypingUpdate();
+			} catch {}
 		};
 
-		rtdbListenersRef.current.typingAdded = onTypingAdd;
-		rtdbListenersRef.current.typingChanged = onTypingChange;
-		rtdbListenersRef.current.typingRemoved = onTypingRemove;
+		const typingListeners: RTDBListeners = {
+			typingAdded: onTypingAdd,
+			typingChanged: onTypingChange,
+			typingRemoved: onTypingRemove,
+		};
+		rtdbListenersRef.current = { ...rtdbListenersRef.current, ...typingListeners };
 
 		onChildAdded(tRef, onTypingAdd);
 		onChildChanged(tRef, onTypingChange);
 		onChildRemoved(tRef, onTypingRemove);
 
-		return () => {
+		return (): void => {
 			try {
-				if (onTypingAdd) rtdbOff(tRef, 'child_added', onTypingAdd);
-				if (onTypingChange) rtdbOff(tRef, 'child_changed', onTypingChange);
-				if (onTypingRemove) rtdbOff(tRef, 'child_removed', onTypingRemove);
+				if (typingListeners.typingAdded)
+					rtdbOff(tRef, 'child_added', typingListeners.typingAdded);
+				if (typingListeners.typingChanged)
+					rtdbOff(tRef, 'child_changed', typingListeners.typingChanged);
+				if (typingListeners.typingRemoved)
+					rtdbOff(tRef, 'child_removed', typingListeners.typingRemoved);
 			} catch {
-				// best-effort
+				/* empty */
 			}
-			typingRefRef.current = null;
 		};
-	}, [sessionId, userUid, triggerVersion]);
+	}, [sessionId, userUid, triggerTypingUpdate]);
 
-	/* <------- computed arrays -------> */
-	const messages = useMemo(() => {
-		const arr = Array.from(messagesMapRef.current.values());
-		arr.sort(compareMsgsAsc);
+	/* <----------- TYPING INDICATOR (Server-Side Write) -----------> */
 
-		if (arr.length > maxMessagesInMemory) {
-			const keep = arr.slice(-maxMessagesInMemory);
-			// rebuild map asynchronously (non-blocking)
-			queueMicrotask(() => {
-				if (!isMountedRef.current || cleanupInProgressRef.current) return;
-				messagesMapRef.current = new Map(keep.map((m) => [m.id!, m]));
-			});
-			return keep;
-		}
-
-		return arr;
-	}, [version, maxMessagesInMemory]);
-
-	const typingUsers = useMemo(() => {
-		return Array.from(typingUsersRef.current.values()).filter((u) => u.uid !== userUid);
-	}, [version, userUid]);
-
-	/* <------- typing writes (debounced + dedupe) -------> */
 	const writeTypingIndicator = useCallback(
-		async (isTyping: boolean) => {
-			if (!sessionId || !userUid) return;
-			if (lastTypingSentRef.current === isTyping) return;
-			lastTypingSentRef.current = isTyping;
+		async (isTyping: boolean): Promise<void> => {
+			if (!sessionId?.trim() || !userUid?.trim()) return;
+
 			try {
 				await setUserTyping({
 					sessionId,
@@ -280,49 +351,59 @@ export function useFireMessages(params: UseMessagesOptions): UseMessagesReturn {
 					avatarUrl: typingProfile?.avatarUrl ?? null,
 					isTyping,
 				});
-			} catch {
-				// allow retry later
-				lastTypingSentRef.current = null;
-			}
+			} catch {}
 		},
 		[sessionId, userUid, typingProfile]
 	);
 
 	const setTyping = useCallback(
-		(isTyping: boolean) => {
+		(isTyping: boolean): void => {
+			// Clear any pending clear timer
 			if (typingClearTimerRef.current) {
 				clearTimeout(typingClearTimerRef.current);
 				typingClearTimerRef.current = null;
 			}
 
 			if (isTyping) {
-				// start typing
-				void writeTypingIndicator(true);
-				if (typingDebounceTimerRef.current) clearTimeout(typingDebounceTimerRef.current);
+				// Only write if not already active
+				if (!typingState.isActive) {
+					setTypingState((prev) => ({ ...prev, isActive: true }));
+					void writeTypingIndicator(true);
+				}
+
+				// Reset debounce timer
+				if (typingDebounceTimerRef.current) {
+					clearTimeout(typingDebounceTimerRef.current);
+				}
+
 				typingDebounceTimerRef.current = setTimeout(() => {
+					setTypingState((prev) => ({ ...prev, isActive: false }));
 					void writeTypingIndicator(false);
 					typingDebounceTimerRef.current = null;
 				}, typingDebounceMs);
 			} else {
+				// Clear immediately with slight delay to batch rapid calls
 				typingClearTimerRef.current = setTimeout(() => {
 					if (typingDebounceTimerRef.current) {
 						clearTimeout(typingDebounceTimerRef.current);
 						typingDebounceTimerRef.current = null;
 					}
+					setTypingState((prev) => ({ ...prev, isActive: false }));
 					void writeTypingIndicator(false);
 					typingClearTimerRef.current = null;
 				}, TYPING_CLEAR_DELAY_MS);
 			}
 		},
-		[writeTypingIndicator, typingDebounceMs]
+		[writeTypingIndicator, typingDebounceMs, typingState.isActive]
 	);
 
-	/* <------- sendMessage (optimistic temp -> promote/rollback) -------> */
+	/* <----------- SEND MESSAGE -----------> */
+
 	const sendMessage = useCallback(
 		async (
 			text: string,
 			replyTo?: string,
-			attachments?: readonly MessageAttachment[]
+			extras?: Record<string, unknown>
 		): Promise<ServerResult<ChatMessage>> => {
 			if (!sessionId?.trim()) {
 				return { ok: false, error: 'INVALID_INPUT', reason: 'missing sessionId' };
@@ -331,292 +412,300 @@ export function useFireMessages(params: UseMessagesOptions): UseMessagesReturn {
 				return { ok: false, error: 'AUTH_REQUIRED', reason: 'missing userUid' };
 			}
 
-			const trimmed = (text ?? '').trim();
-			const hasText = Boolean(trimmed);
-			const hasAttachments = Boolean(attachments?.length);
-
-			if (!hasText && !hasAttachments) {
-				return { ok: false, error: 'INVALID_INPUT', reason: 'text or attachments required' };
-			}
-			if (trimmed && trimmed.length > MAX_TEXT_LENGTH) {
-				return {
-					ok: false,
-					error: 'INVALID_INPUT',
-					reason: `text too long (max ${MAX_TEXT_LENGTH})`,
-				};
+			const trimmedText = text?.trim();
+			if (!trimmedText) {
+				return { ok: false, error: 'INVALID_INPUT', reason: 'text required' };
 			}
 
-			// create optimistic temp message
-			const tempId = genTempId();
-			const nowIso = new Date().toISOString();
-			const tempMsg: ChatMessage = {
-				id: tempId,
-				roomId: sessionId,
-				sessionId,
-				sender: userUid,
-				type: 'markdown',
-				text: trimmed,
-				replyTo: replyTo?.trim() || undefined,
-				reactions: {},
-				attachments: (attachments as MessageAttachment[]) || [],
-				extras: undefined,
-				status: 'sent',
-				createdAt: nowIso,
-			};
+			// Security: Validate text length
+			if (trimmedText.length > 10000) {
+				return { ok: false, error: 'INVALID_INPUT', reason: 'text too long (max 10000 chars)' };
+			}
 
-			// insert temp immediately
-			messagesMapRef.current.set(tempId, tempMsg);
-
-			// schedule fallback removal if promotion never arrives
-			const fallback = setTimeout(() => {
-				optimisticTempRef.current.delete(tempId);
-				// remove temp if still present
-				if (messagesMapRef.current.has(tempId)) {
-					messagesMapRef.current.delete(tempId);
-					triggerVersion();
-				}
-			}, OPTIMISTIC_FALLBACK_MS);
-			optimisticTempRef.current.set(tempId, fallback);
-
-			// UI update and in-flight
-			triggerVersion();
-			setInFlightCount((c) => c + 1);
+			updateInFlightCount(1);
 
 			try {
-				const res = await (services as MessagesServices).sendMessage({
+				const res = await services.sendMessage({
 					sessionId,
 					senderUid: userUid,
-					text: trimmed,
+					text: trimmedText,
 					replyTo: replyTo?.trim() || undefined,
-					attachments: (attachments as MessageAttachment[]) || [],
+					extras,
 				});
 
-				if (!res.ok) {
-					// rollback temp immediately
-					const t = optimisticTempRef.current.get(tempId);
-					if (t) clearTimeout(t);
-					optimisticTempRef.current.delete(tempId);
-					messagesMapRef.current.delete(tempId);
-					triggerVersion();
-					return res;
-				}
+				if (!res.ok) return res;
 
-				const t = optimisticTempRef.current.get(tempId);
-				if (t) {
-					clearTimeout(t);
-					optimisticTempRef.current.delete(tempId);
+				// Optimistic update
+				if (res.data?.id?.trim()) {
+					pendingMessagesRef.current.add(res.data.id);
+					messagesMapRef.current.set(res.data.id, res.data);
+					triggerMessagesUpdate();
+
+					// Clear pending flag after RTDB sync
+					setTimeout(() => {
+						if (res.data?.id) {
+							pendingMessagesRef.current.delete(res.data.id);
+						}
+					}, OPTIMISTIC_SYNC_DELAY_MS);
 				}
-				// in case the server message already arrived via RTDB, ensure no duplicate:
-				if (!messagesMapRef.current.has(res.data!.id!)) {
-					messagesMapRef.current.delete(tempId);
-					messagesMapRef.current.set(res.data!.id!, res.data!);
-				} else {
-					// if server already inserted, just remove temp
-					messagesMapRef.current.delete(tempId);
-				}
-				triggerVersion();
 
 				return res;
 			} catch (err) {
-				// network/unexpected: rollback temp
-				const t = optimisticTempRef.current.get(tempId);
-				if (t) clearTimeout(t);
-				optimisticTempRef.current.delete(tempId);
-				messagesMapRef.current.delete(tempId);
-				triggerVersion();
-				const reason = err instanceof Error ? err.message : 'Unknown error';
-				return { ok: false, error: 'SEND_FAILED', reason };
+				const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+				return { ok: false, error: 'SEND_FAILED', reason: errorMessage };
 			} finally {
-				setInFlightCount((c) => Math.max(0, c - 1));
+				updateInFlightCount(-1);
 			}
 		},
-		[sessionId, userUid, services]
+		[sessionId, userUid, services, triggerMessagesUpdate, updateInFlightCount]
 	);
 
-	/* <------- fetchOlder (pagination) -------> */
+	/* <----------- FETCH OLDER MESSAGES -----------> */
+
 	const fetchOlder = useCallback(
-		async (beforeIso?: string, limit = initialLimit): Promise<ServerResult<ChatMessage[]>> => {
-			if (!sessionId?.trim())
+		async (
+			beforeIso?: string,
+			limit: number = initialLimit
+		): Promise<ServerResult<ChatMessage[]>> => {
+			if (!sessionId?.trim()) {
 				return { ok: false, error: 'INVALID_INPUT', reason: 'missing sessionId' };
-			const safeLimit = Math.min(Math.max(1, limit), MAX_PAGINATION_LIMIT);
+			}
+
+			// Security: Validate limit
+			const safeLimit = Math.min(Math.max(1, limit), 200);
 
 			try {
-				const res = await (services as MessagesServices).getMessages({
+				const res = await services.getMessages({
 					sessionId,
 					limit: safeLimit,
 					before: beforeIso?.trim() || undefined,
 				});
+
 				if (!res.ok) return res;
 
-				let added = false;
+				let hasNewMessages = false;
 				for (const m of res.data) {
-					if (m?.id && !messagesMapRef.current.has(m.id)) {
+					if (m?.id?.trim() && !messagesMapRef.current.has(m.id)) {
 						messagesMapRef.current.set(m.id, m);
-						added = true;
+						hasNewMessages = true;
 					}
 				}
-				if (added) triggerVersion();
+
+				if (hasNewMessages) {
+					triggerMessagesUpdate();
+				}
+
 				return { ok: true, data: res.data };
 			} catch (err) {
-				const reason = err instanceof Error ? err.message : 'Unknown error';
-				return { ok: false, error: 'FETCH_FAILED', reason };
+				const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+				return { ok: false, error: 'FETCH_FAILED', reason: errorMessage };
 			}
 		},
-		[sessionId, services, initialLimit]
+		[sessionId, services, initialLimit, triggerMessagesUpdate]
 	);
 
-	/* <------- reactions (optimistic + rollback) -------> */
+	/* <----------- REACTIONS -----------> */
+
 	const addReaction = useCallback(
 		async (messageId: string, emoji: string): Promise<ServerResult<null>> => {
-			if (!messageId?.trim())
+			if (!messageId?.trim()) {
 				return { ok: false, error: 'INVALID_INPUT', reason: 'missing messageId' };
-			if (!userUid?.trim())
+			}
+			if (!userUid?.trim()) {
 				return { ok: false, error: 'AUTH_REQUIRED', reason: 'missing userUid' };
-			if (!emoji?.trim()) return { ok: false, error: 'INVALID_INPUT', reason: 'missing emoji' };
-			if (emoji.length > MAX_EMOJI_LENGTH)
-				return { ok: false, error: 'INVALID_INPUT', reason: `emoji too long` };
+			}
+			if (!emoji?.trim()) {
+				return { ok: false, error: 'INVALID_INPUT', reason: 'missing emoji' };
+			}
+
+			// Security: Validate emoji (basic check)
+			if (emoji.length > 10) {
+				return { ok: false, error: 'INVALID_INPUT', reason: 'emoji too long' };
+			}
 
 			const m = messagesMapRef.current.get(messageId);
-			if (!m) return { ok: false, error: 'NOT_FOUND', reason: 'message not found' };
+			if (!m) {
+				return { ok: false, error: 'NOT_FOUND', reason: 'message not found' };
+			}
 
-			const prev = m.reactions ? { ...m.reactions } : {};
-			const arr = Array.isArray(prev[emoji]) ? [...prev[emoji]] : [];
-			if (arr.includes(userUid)) return { ok: true, data: null };
+			const prevReactions = { ...(m.reactions ?? {}) };
+			const arr = Array.isArray(prevReactions[emoji]) ? [...prevReactions[emoji]] : [];
 
+			if (arr.includes(userUid)) {
+				return { ok: true, data: null };
+			}
+
+			// Optimistic update
 			arr.push(userUid);
-			const next = { ...prev, [emoji]: arr };
-			messagesMapRef.current.set(messageId, { ...m, reactions: next });
-			triggerVersion();
+			const updatedMessage = { ...m, reactions: { ...prevReactions, [emoji]: arr } };
+			messagesMapRef.current.set(messageId, updatedMessage);
+			triggerMessagesUpdate();
 
 			try {
-				const res = await (services as MessagesServices).addReaction({
+				const res = await services.addReaction({
 					messageId,
 					sessionId,
 					userId: userUid,
 					emoji,
 				});
+
 				if (!res.ok) {
-					messagesMapRef.current.set(messageId, {
-						...m,
-						reactions: Object.keys(prev).length ? prev : undefined,
-					});
-					triggerVersion();
+					// Rollback on failure
+					const rollback = messagesMapRef.current.get(messageId);
+					if (rollback) {
+						messagesMapRef.current.set(messageId, { ...rollback, reactions: prevReactions });
+						triggerMessagesUpdate();
+					}
 				}
 				return res;
 			} catch (err) {
-				messagesMapRef.current.set(messageId, {
-					...m,
-					reactions: Object.keys(prev).length ? prev : undefined,
-				});
-				triggerVersion();
-				const reason = err instanceof Error ? err.message : 'Unknown error';
-				return { ok: false, error: 'REACT_FAILED', reason };
+				// Rollback on error
+				const rollback = messagesMapRef.current.get(messageId);
+				if (rollback) {
+					messagesMapRef.current.set(messageId, { ...rollback, reactions: prevReactions });
+					triggerMessagesUpdate();
+				}
+				const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+				return { ok: false, error: 'REACT_FAILED', reason: errorMessage };
 			}
 		},
-		[services, userUid, sessionId]
+		[services, userUid, sessionId, triggerMessagesUpdate]
 	);
 
 	const removeReaction = useCallback(
 		async (messageId: string, emoji: string): Promise<ServerResult<null>> => {
-			if (!messageId?.trim())
+			if (!messageId?.trim()) {
 				return { ok: false, error: 'INVALID_INPUT', reason: 'missing messageId' };
-			if (!userUid?.trim())
+			}
+			if (!userUid?.trim()) {
 				return { ok: false, error: 'AUTH_REQUIRED', reason: 'missing userUid' };
-			if (!emoji?.trim()) return { ok: false, error: 'INVALID_INPUT', reason: 'missing emoji' };
+			}
+			if (!emoji?.trim()) {
+				return { ok: false, error: 'INVALID_INPUT', reason: 'missing emoji' };
+			}
 
 			const m = messagesMapRef.current.get(messageId);
-			if (!m) return { ok: false, error: 'NOT_FOUND', reason: 'message not found' };
+			if (!m) {
+				return { ok: false, error: 'NOT_FOUND', reason: 'message not found' };
+			}
 
-			const prev = m.reactions ? { ...m.reactions } : {};
-			const arr = Array.isArray(prev[emoji]) ? [...prev[emoji]] : [];
+			const prevReactions = { ...(m.reactions ?? {}) };
+			const arr = Array.isArray(prevReactions[emoji]) ? [...prevReactions[emoji]] : [];
 			const idx = arr.indexOf(userUid);
-			if (idx === -1) return { ok: true, data: null };
 
+			if (idx === -1) {
+				return { ok: true, data: null };
+			}
+
+			// Optimistic update
 			arr.splice(idx, 1);
-			const next = { ...prev };
-			if (arr.length > 0) next[emoji] = arr;
-			else delete next[emoji];
+			const nextReactions = { ...prevReactions };
+			if (arr.length > 0) {
+				nextReactions[emoji] = arr;
+			} else {
+				delete nextReactions[emoji];
+			}
 
-			messagesMapRef.current.set(messageId, {
+			const updatedMessage = {
 				...m,
-				reactions: Object.keys(next).length ? next : undefined,
-			});
-			triggerVersion();
+				reactions: Object.keys(nextReactions).length ? nextReactions : {},
+			};
+			messagesMapRef.current.set(messageId, updatedMessage);
+			triggerMessagesUpdate();
 
 			try {
-				const res = await (services as MessagesServices).removeReaction({
+				const res = await services.removeReaction({
 					messageId,
 					sessionId,
 					userId: userUid,
 					emoji,
 				});
+
 				if (!res.ok) {
-					messagesMapRef.current.set(messageId, {
-						...m,
-						reactions: Object.keys(prev).length ? prev : undefined,
-					});
-					triggerVersion();
+					// Rollback on failure
+					const rollback = messagesMapRef.current.get(messageId);
+					if (rollback) {
+						messagesMapRef.current.set(messageId, { ...rollback, reactions: prevReactions });
+						triggerMessagesUpdate();
+					}
 				}
 				return res;
 			} catch (err) {
-				messagesMapRef.current.set(messageId, {
-					...m,
-					reactions: Object.keys(prev).length ? prev : undefined,
-				});
-				triggerVersion();
-				const reason = err instanceof Error ? err.message : 'Unknown error';
-				return { ok: false, error: 'REACT_REMOVE_FAILED', reason };
+				// Rollback on error
+				const rollback = messagesMapRef.current.get(messageId);
+				if (rollback) {
+					messagesMapRef.current.set(messageId, { ...rollback, reactions: prevReactions });
+					triggerMessagesUpdate();
+				}
+				const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+				return { ok: false, error: 'REACT_REMOVE_FAILED', reason: errorMessage };
 			}
 		},
-		[services, userUid, sessionId]
+		[services, userUid, sessionId, triggerMessagesUpdate]
 	);
 
-	/* <------- delete message (optimistic) -------> */
+	/* <----------- DELETE MESSAGE -----------> */
+
 	const deleteMessage = useCallback(
 		async (messageId: string): Promise<ServerResult<null>> => {
-			if (!messageId?.trim())
+			if (!messageId?.trim()) {
 				return { ok: false, error: 'INVALID_INPUT', reason: 'missing messageId' };
-			if (!userUid?.trim())
+			}
+			if (!userUid?.trim()) {
 				return { ok: false, error: 'AUTH_REQUIRED', reason: 'missing userUid' };
+			}
 
 			const m = messagesMapRef.current.get(messageId);
-			if (!m) return { ok: false, error: 'NOT_FOUND', reason: 'message not found' };
+			if (!m) {
+				return { ok: false, error: 'NOT_FOUND', reason: 'message not found' };
+			}
 
+			// Optimistic removal
 			const backup = { ...m };
-			messagesMapRef.current.delete(messageId);
-			triggerVersion();
+			removeMessageLocal(messageId);
 
 			try {
-				const res = await (services as MessagesServices).deleteMessage({
+				const res = await services.deleteMessage({
 					messageId,
 					sessionId,
 					callerUid: userUid,
 				});
+
 				if (!res.ok) {
+					// Rollback on failure
 					messagesMapRef.current.set(messageId, backup);
-					triggerVersion();
+					triggerMessagesUpdate();
 				}
+
 				return res;
 			} catch (err) {
+				// Rollback on error
 				messagesMapRef.current.set(messageId, backup);
-				triggerVersion();
-				const reason = err instanceof Error ? err.message : 'Unknown error';
-				return { ok: false, error: 'DELETE_FAILED', reason };
+				triggerMessagesUpdate();
+				const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+				return { ok: false, error: 'DELETE_FAILED', reason: errorMessage };
 			}
 		},
-		[services, userUid, sessionId]
+		[services, userUid, sessionId, removeMessageLocal, triggerMessagesUpdate]
 	);
 
-	/* <------- clear / cleanup -------> */
-	const clear = useCallback(() => {
+	/* <----------- CLEANUP -----------> */
+
+	const clear = useCallback((): void => {
 		cleanupInProgressRef.current = true;
 
+		// Clear data structures
 		messagesMapRef.current.clear();
-		typingUsersRef.current.clear();
+		pendingMessagesRef.current.clear();
+		typingUsersMapRef.current.clear();
 
-		optimisticTempRef.current.forEach((t) => clearTimeout(t));
-		optimisticTempRef.current.clear();
+		// Clear state
+		if (isMountedRef.current) {
+			setMessageState({ version: 0, sending: false, inFlightCount: 0 });
+			setTypingState({ version: 0, isActive: false });
+		}
 
+		// Clear timers
 		if (typingDebounceTimerRef.current) {
 			clearTimeout(typingDebounceTimerRef.current);
 			typingDebounceTimerRef.current = null;
@@ -626,63 +715,54 @@ export function useFireMessages(params: UseMessagesOptions): UseMessagesReturn {
 			typingClearTimerRef.current = null;
 		}
 
-		// Remove listeners
+		// Cleanup RTDB message listeners
 		if (rtdbQueryRef.current) {
 			const q = rtdbQueryRef.current;
 			const listeners = rtdbListenersRef.current;
+
 			try {
 				if (listeners.added) rtdbOff(q, 'child_added', listeners.added);
 				if (listeners.changed) rtdbOff(q, 'child_changed', listeners.changed);
 				if (listeners.removed) rtdbOff(q, 'child_removed', listeners.removed);
-			} catch {
-				// best-effort
-			}
-			rtdbQueryRef.current = null;
+			} catch {}
 		}
 
+		// Cleanup RTDB typing listeners
 		if (typingRefRef.current) {
 			const tRef = typingRefRef.current;
 			const listeners = rtdbListenersRef.current;
+
 			try {
 				if (listeners.typingAdded) rtdbOff(tRef, 'child_added', listeners.typingAdded);
 				if (listeners.typingChanged) rtdbOff(tRef, 'child_changed', listeners.typingChanged);
 				if (listeners.typingRemoved) rtdbOff(tRef, 'child_removed', listeners.typingRemoved);
-			} catch {
-				// best-effort
-			}
-			typingRefRef.current = null;
+			} catch {}
 		}
 
-		// Clear typing indicator server-side
+		// Clear typing indicator on server
 		if (sessionId?.trim() && userUid?.trim()) {
-			void clearUserTyping({ sessionId, userUid }).catch(() => {
-				/* ignore */
-			});
+			void clearUserTyping({ sessionId, userUid });
 		}
 
-		// reset reactive state
-		if (isMountedRef.current) {
-			setVersion(0);
-			setInFlightCount(0);
-		}
-
-		// release cleanup flag shortly after
+		// Reset cleanup flag after a delay
 		setTimeout(() => {
 			cleanupInProgressRef.current = false;
 		}, 100);
 	}, [sessionId, userUid]);
 
+	// Cleanup on unmount
 	useEffect(() => {
 		return () => {
 			clear();
 		};
 	}, [clear]);
 
-	/* <------- public API -------> */
+	/* <----------- RETURN -----------> */
+
 	return {
 		messages,
-		sending: inFlightCount > 0,
-		inFlightCount,
+		sending: messageState.sending,
+		inFlightCount: messageState.inFlightCount,
 		typingUsers,
 		setTyping,
 		sendMessage,

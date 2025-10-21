@@ -1,8 +1,8 @@
+/* <------- API PAYLOAD TYPES -------> */
+
 import type { DataSnapshot } from 'firebase/database';
 
-import type { ChatMessage, FireCachedUser, MessageAttachment, ServerResult } from '@/app/lib/types';
-
-/* <------- API PAYLOAD TYPES -------> */
+import { ChatMessage, FireCachedUser, ServerResult } from '@/app/lib/types';
 
 /**
  * Payload for sending a message
@@ -13,7 +13,6 @@ export interface SendMessagePayload {
 	readonly text: string;
 	readonly type?: ChatMessage['type'];
 	readonly replyTo?: string;
-	readonly attachments?: readonly MessageAttachment[];
 	readonly extras?: Readonly<Record<string, unknown>>;
 }
 
@@ -82,11 +81,7 @@ export interface UseMessagesReturn {
 	readonly inFlightCount: number;
 	readonly typingUsers: FireCachedUser[];
 	readonly setTyping: (isTyping: boolean) => void;
-	readonly sendMessage: (
-		text: string,
-		replyTo?: string,
-		attachments?: readonly MessageAttachment[]
-	) => Promise<ServerResult<ChatMessage>>;
+	readonly sendMessage: (text: string, replyTo?: string) => Promise<ServerResult<ChatMessage>>;
 	readonly fetchOlder: (
 		beforeIso?: string,
 		limit?: number
@@ -114,7 +109,6 @@ export interface RTDBMessagePayload {
 	text?: string;
 	replyTo?: string;
 	reactions?: Record<string, string[]>;
-	attachments?: MessageAttachment[];
 	extras?: Record<string, unknown>;
 	status?: string;
 	createdAt?: string | number | FireTimeObject;
@@ -135,3 +129,11 @@ export interface RTDBTypingPayload {
 /* <------- LISTENER TYPES -------> */
 
 export type SnapshotCallback = (snap: DataSnapshot) => void;
+export interface RTDBListeners {
+	added?: SnapshotCallback;
+	changed?: SnapshotCallback;
+	removed?: SnapshotCallback;
+	typingAdded?: SnapshotCallback;
+	typingChanged?: SnapshotCallback;
+	typingRemoved?: SnapshotCallback;
+}

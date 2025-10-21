@@ -17,7 +17,7 @@ import { RiFireLine } from 'react-icons/ri';
 
 import { FireAvatar } from '@/app/components/UI';
 import { FireProfile, SessionDoc } from '@/app/lib/types';
-import { getUserByUid } from '@/app/lib/utils/memory/memory';
+import { getUserByUid } from '@/app/lib/utils/memory';
 import { formatTime } from '@/app/lib/utils/time';
 
 interface SessionCardProps {
@@ -114,9 +114,9 @@ export const SessionCard: React.FC<SessionCardProps> = ({
 			? {
 					icon: FiLock,
 					text: 'Locked',
-					color: 'text-rose-600',
-					bg: 'bg-rose-50/60',
-					border: 'border-rose-200/60',
+					color: 'text-red-600',
+					bg: 'bg-red-50/60',
+					border: 'border-red-200/60',
 				}
 			: {
 					icon: FiXCircle,
@@ -130,7 +130,7 @@ export const SessionCard: React.FC<SessionCardProps> = ({
 
 	const borderClass = isInvited
 		? 'border-2 border-dashed border-orange-300/85'
-		: 'border border-neutral-200/40 ring-1 ring-neutral-200/20';
+		: 'ring-2 ring-neutral-200/40';
 
 	const handleJoinClick = (e: React.MouseEvent) => {
 		e.preventDefault();
@@ -147,7 +147,7 @@ export const SessionCard: React.FC<SessionCardProps> = ({
 
 	return (
 		<div
-			className={`group relative bg-white/60 backdrop-blur-sm rounded-2xl p-4 transition-all duration-200 hover:-translate-y-1.5 ${borderClass}`}
+			className={`group relative bg-white/60 backdrop-blur-sm rounded-2xl p-4 transition-all duration-200 hover:shadow-sm ${borderClass}`}
 			onClick={() => {
 				if (isParticipant && !isInvited && session.isActive && session.id) {
 					router.push(`/room/${session.id}`);
@@ -210,7 +210,7 @@ export const SessionCard: React.FC<SessionCardProps> = ({
 											onEndSession(session.id || '');
 											setMenuOpen(false);
 										}}
-										className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-neutral-50 text-left transition-colors"
+										className="w-full flex items-center gap-2 px-3 py-1.5 text-sm hover:bg-neutral-50 text-left transition-colors"
 									>
 										<FiXCircle className="w-4 h-4" />
 										End Session
@@ -295,7 +295,7 @@ export const SessionCard: React.FC<SessionCardProps> = ({
 				{isInvited && session.isActive && onJoinSession && (
 					<button
 						onClick={handleJoinClick}
-						className="flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 text-sm font-semibold rounded-lg text-white bg-neutral-900 hover:bg-neutral-800 transition-colors"
+						className="flex-1 inline-flex items-center justify-center gap-2 px-3 py-1.5 text-sm font-semibold rounded-lg text-white bg-neutral-900 hover:bg-neutral-800 transition-colors"
 					>
 						<RiFireLine className="w-5 h-5" />
 						Join Now
@@ -310,7 +310,7 @@ export const SessionCard: React.FC<SessionCardProps> = ({
 							e.stopPropagation();
 							onEndSession(session.id || '');
 						}}
-						className="flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 text-sm font-semibold rounded-lg text-white bg-red-500 hover:bg-red-600 transition-all"
+						className="flex-1 inline-flex items-center justify-center gap-2 px-3 py-1.5 text-sm font-semibold rounded-lg text-white bg-red-500 hover:bg-red-600 transition-all"
 					>
 						<FiXCircle className="w-5 h-5" />
 						End Session
@@ -325,7 +325,7 @@ export const SessionCard: React.FC<SessionCardProps> = ({
 							e.stopPropagation();
 							onLeaveSession(session.id || '');
 						}}
-						className="flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 text-sm font-semibold rounded-lg text-rose-600 bg-white border border-rose-200 hover:bg-rose-50 transition-all"
+						className="flex-1 inline-flex items-center justify-center gap-2 px-3 py-1.5 text-sm font-semibold rounded-lg text-red-600 bg-white border-2 border-red-200 hover:bg-red-50 transition-all"
 					>
 						<FiLogOut className="w-5 h-5" />
 						Leave
@@ -336,7 +336,7 @@ export const SessionCard: React.FC<SessionCardProps> = ({
 				{!isParticipant && !isInvited && session.isActive && onJoinSession && (
 					<button
 						onClick={handleJoinClick}
-						className="flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 text-sm font-semibold rounded-lg text-white bg-neutral-900 hover:bg-neutral-800 transition-all"
+						className="flex-1 inline-flex items-center justify-center gap-2 px-3 py-1.5 text-sm font-semibold rounded-lg text-white bg-neutral-900 hover:bg-neutral-800 transition-all"
 					>
 						<RiFireLine className="w-5 h-5" />
 						Join
@@ -351,7 +351,7 @@ export const SessionCard: React.FC<SessionCardProps> = ({
 							e.stopPropagation();
 							if (session.id) router.push(`/room/${session.id}`);
 						}}
-						className="flex-1 inline-flex items-center justify-center px-3 py-2 text-sm font-semibold rounded-lg text-neutral-700 bg-neutral-50 hover:bg-neutral-100 transition-all"
+						className="flex-1 inline-flex items-center justify-center px-3 py-1.5 text-sm font-semibold rounded-lg text-neutral-700 bg-neutral-50 hover:bg-neutral-100 transition-all"
 					>
 						Open Room
 					</button>
@@ -359,7 +359,7 @@ export const SessionCard: React.FC<SessionCardProps> = ({
 			</div>
 
 			{isParticipant && !isInvited && session.isActive && (
-				<div className="absolute top-2 right-2 text-[10px] text-neutral-400 opacity-0 group-hover:opacity-100 transition-opacity">
+				<div className="absolute top-1 right-2 text-[10px] text-neutral-400 opacity-0 group-hover:opacity-100 transition-opacity">
 					Click to open
 				</div>
 			)}

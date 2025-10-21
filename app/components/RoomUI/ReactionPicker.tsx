@@ -71,6 +71,10 @@ const ReactionPicker: React.FC<ReactionPickerProps> = ({
 		style.flexWrap = 'wrap';
 		style.justifyContent = 'center';
 		style.alignItems = 'center';
+
+		// Minimal border and shadow
+		style.border = '1px solid rgba(0, 0, 0, 0.1)';
+		style.boxShadow = '0 1px 3px rgba(0, 0, 0, 0.1)';
 	}
 
 	return (

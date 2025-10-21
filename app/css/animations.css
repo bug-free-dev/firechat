@@ -200,10 +200,6 @@
 	animation: gradient-shift 8s ease infinite;
 }
 
-.animate-shimmer {
-	animation: shimmer 1.5s ease-in-out infinite;
-}
-
 /* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
 	*,

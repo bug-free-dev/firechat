@@ -76,20 +76,19 @@ export default function FlarePanel() {
 			</div>
 
 			{/* Pro tip */}
-<div className="text-center p-2 bg-gradient-to-r from-indigo-100 to-indigo-200 dark:from-indigo-900/30 rounded-lg ring-2 ring-indigo-300/50 ">
-  <div className="text-xs text-neutral-700 dark:text-neutral-200 mb-3 flex items-center justify-center gap-2">
-    <BiRocket className="text-indigo-500 w-4 h-4" />
-    <span className="font-medium">Pro tip</span>
-  </div>
-  <p className="text-xs text-neutral-700 dark:text-neutral-200">
-    A short identifier (like{' '}
-    <span className="font-semibold text-indigo-700 bg-white/80 px-2 py-0.5 rounded-md shadow-sm dark:bg-indigo-950/40">
-      You@Firechat69
-    </span>
-    ) makes joining faster.
-  </p>
-</div>
-
+			<div className="text-center p-2 bg-gradient-to-r from-indigo-100 to-indigo-200 dark:from-indigo-900/30 rounded-lg ring-2 ring-indigo-300/50 ">
+				<div className="text-xs text-neutral-700 dark:text-neutral-200 mb-3 flex items-center justify-center gap-2">
+					<BiRocket className="text-indigo-500 w-4 h-4" />
+					<span className="font-medium">Pro tip</span>
+				</div>
+				<p className="text-xs text-neutral-700 dark:text-neutral-200">
+					A short identifier (like{' '}
+					<span className="font-semibold text-indigo-700 bg-white/80 px-2 py-0.5 rounded-md shadow-sm dark:bg-indigo-950/40">
+						You@Firechat69
+					</span>
+					) makes joining faster.
+				</p>
+			</div>
 		</div>
 	);
 }

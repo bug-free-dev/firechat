@@ -4,7 +4,6 @@ import React, { useState } from 'react';
 import {
 	FiCheck,
 	FiEdit2,
-	FiGlobe,
 	FiLock,
 	FiLogOut,
 	FiUnlock,
@@ -12,7 +11,7 @@ import {
 	FiUsers,
 	FiX,
 } from 'react-icons/fi';
-import { RiPlanetLine, RiStarLine } from 'react-icons/ri';
+import { RiPlanetLine } from 'react-icons/ri';
 
 import { SessionDoc } from '@/app/lib/types';
 
@@ -79,31 +78,7 @@ const SessionHeader: React.FC<SessionHeaderProps> = ({
 	};
 
 	return (
-		<header className="relative w-full bg-gradient-to-br from-white via-blue-50/30 to-violet-50/20 backdrop-blur-sm overflow-hidden shadow-sm">
-			{/* Floating decorative planets */}
-			<div className="absolute inset-0 pointer-events-none overflow-hidden opacity-30">
-				<RiPlanetLine
-					className="absolute top-4 right-12 text-violet-400/70 animate-float-elegant"
-					size={32}
-					style={{ animationDelay: '0s' }}
-				/>
-				<RiStarLine
-					className="absolute top-8 right-32 text-blue-400/70 animate-drift"
-					size={20}
-					style={{ animationDelay: '1s' }}
-				/>
-				<FiGlobe
-					className="absolute top-6 left-16 text-cyan-400/70 animate-drift"
-					size={24}
-					style={{ animationDelay: '2s' }}
-				/>
-				<RiStarLine
-					className="absolute bottom-4 left-32 text-violet-300/70 animate-float-elegant"
-					size={16}
-					style={{ animationDelay: '3s' }}
-				/>
-			</div>
-
+		<header className="relative w-full bg-white backdrop-blur-sm overflow-hidden border-b-neutral-300 border-b">
 			<div className="relative max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 py-4 animate-fade-in-up">
 				<div className="flex items-center justify-between gap-4">
 					<div className="min-w-0 flex-1">
@@ -125,7 +100,7 @@ const SessionHeader: React.FC<SessionHeaderProps> = ({
 									className="p-2 rounded-lg ring-2 ring-emerald-200/70 bg-emerald-50/50 hover:bg-emerald-100/80 text-emerald-600 transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-emerald-400/70 focus:ring-offset-2"
 									aria-label="Save session title"
 								>
-									<FiCheck className="w-4 h-4" strokeWidth={2.5} />
+									<FiCheck className="w-3 h-3" strokeWidth={2.5} />
 								</button>
 
 								<button
@@ -134,15 +109,15 @@ const SessionHeader: React.FC<SessionHeaderProps> = ({
 									className="p-2 rounded-lg ring-2 ring-neutral-200/70 bg-white/50 hover:bg-neutral-50 text-neutral-500 transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-neutral-400/70 focus:ring-offset-2"
 									aria-label="Cancel edit"
 								>
-									<FiX className="w-4 h-4" strokeWidth={2.5} />
+									<FiX className="w-3 h-3" strokeWidth={2.5} />
 								</button>
 							</div>
 						) : (
 							<div className="flex items-center gap-3">
 								<div className="flex items-center gap-2">
-									<RiPlanetLine className="w-6 h-6 text-violet-500/70" strokeWidth={1.5} />
+									<RiPlanetLine className="w-6 h-6 text-sky-500/70" />
 									<h2 className="font-semibold text-lg sm:text-xl text-neutral-800 truncate">
-										{session.title || 'Chat Session'}
+										{session.title || 'Untitled Session'}
 									</h2>
 								</div>
 
@@ -185,9 +160,9 @@ const SessionHeader: React.FC<SessionHeaderProps> = ({
 								aria-label={session.isLocked ? 'Unlock session' : 'Lock session'}
 							>
 								{session.isLocked ? (
-									<FiUnlock className="w-4 h-4" strokeWidth={2} />
+									<FiUnlock className="w-3 h-3" strokeWidth={2} />
 								) : (
-									<FiLock className="w-4 h-4" strokeWidth={2} />
+									<FiLock className="w-3 h-3" strokeWidth={2} />
 								)}
 								<span className="hidden sm:inline text-sm font-medium">
 									{session.isLocked ? 'Unlock' : 'Lock'}
@@ -201,7 +176,7 @@ const SessionHeader: React.FC<SessionHeaderProps> = ({
 								className="px-3 py-2 rounded-lg ring-2 ring-blue-200/70 bg-blue-50/60 hover:bg-blue-100/80 hover:ring-blue-300/70 text-blue-600/70 transition-all duration-200 hover:scale-105 flex items-center gap-2 focus:outline-none focus:ring-blue-400/70 focus:ring-offset-2"
 								aria-label="Invite users"
 							>
-								<FiUserPlus className="w-4 h-4" strokeWidth={2} />
+								<FiUserPlus className="w-3 h-3" strokeWidth={2} />
 								<span className="hidden sm:inline text-sm font-medium">Invite</span>
 							</button>
 						)}
@@ -210,12 +185,12 @@ const SessionHeader: React.FC<SessionHeaderProps> = ({
 							onClick={isCreator ? onEndSession : onLeaveSession}
 							className={`px-3 py-2 rounded-lg ring-2 transition-all duration-200 hover:scale-105 flex items-center gap-2 focus:outline-none focus:ring-offset-2 ${
 								isCreator
-									? 'ring-rose-200/70 bg-rose-50/60 hover:bg-rose-100/80 hover:ring-rose-300/70 text-rose-600/70 focus:ring-rose-400/70'
+									? 'ring-red-200/70 bg-red-50/60 hover:bg-red-100/80 hover:ring-red-300/70 text-red-600/70 focus:ring-red-400/70'
 									: 'ring-neutral-200/70 bg-white/60 hover:bg-neutral-50 hover:ring-neutral-300/70 text-neutral-700/70 focus:ring-neutral-400/70'
 							}`}
 							aria-label={isCreator ? 'End session' : 'Leave session'}
 						>
-							<FiLogOut className="w-4 h-4" strokeWidth={2} />
+							<FiLogOut className="w-3 h-3" strokeWidth={1.5} />
 							<span className="hidden sm:inline text-sm font-medium">
 								{isCreator ? 'End' : 'Leave'}
 							</span>

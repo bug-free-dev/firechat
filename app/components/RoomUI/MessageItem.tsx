@@ -30,9 +30,9 @@ interface MessageItemProps {
 	onCopy?: () => void;
 }
 
-const SWIPE_THRESHOLD = 50;
-const LONG_PRESS_DURATION = 500;
-const ACTION_BUTTONS_AUTO_HIDE_DELAY = 2000; // 2 seconds
+const SWIPE_THRESHOLD = 40;
+const MAX_SWIPE = 50;
+const LONG_PRESS_TIME = 500;
 
 const MessageItem: React.FC<MessageItemProps> = ({
 	message,
@@ -49,159 +49,135 @@ const MessageItem: React.FC<MessageItemProps> = ({
 	onCopy,
 	onDelete,
 }) => {
-	// UI state
 	const [showActions, setShowActions] = useState(false);
 	const [showReactionPicker, setShowReactionPicker] = useState(false);
 	const [reactionAnchorRect, setReactionAnchorRect] = useState<DOMRect | null>(null);
 	const [swipeOffset, setSwipeOffset] = useState(0);
 
-	// Drag / long-press
-	const touchStartX = useRef<number | null>(null);
-	const touchStartY = useRef<number | null>(null);
-	const longPressTimeout = useRef<number | null>(null);
-	const dragDistance = useRef(0);
-	const isLongPress = useRef(false);
-	const autoHideTimeout = useRef<number | null>(null);
+	const touchStart = useRef<{ x: number; y: number; time: number } | null>(null);
+	const longPressTimer = useRef<number | null>(null);
+	const isDragging = useRef(false);
+	const hasReplied = useRef(false);
+	const autoHideTimer = useRef<number | null>(null);
 
-	// Refs for DOM nodes
-	const outerRef = useRef<HTMLDivElement | null>(null);
 	const bubbleRef = useRef<HTMLDivElement | null>(null);
 	const reactionBtnRef = useRef<HTMLButtonElement | null>(null);
 	const actionsRef = useRef<HTMLDivElement | null>(null);
 
-	// Auto-hide action buttons after 2 seconds
+	useEffect(() => {
+		const handleClickOutside = (e: PointerEvent) => {
+			const target = e.target as Node;
+			if (
+				!bubbleRef.current?.contains(target) &&
+				!actionsRef.current?.contains(target) &&
+				!reactionBtnRef.current?.contains(target)
+			) {
+				setShowActions(false);
+				setShowReactionPicker(false);
+			}
+		};
+
+		document.addEventListener('pointerdown', handleClickOutside);
+		return () => document.removeEventListener('pointerdown', handleClickOutside);
+	}, []);
+
 	useEffect(() => {
 		if (showActions) {
-			// Clear any existing timeout
-			if (autoHideTimeout.current) {
-				window.clearTimeout(autoHideTimeout.current);
-			}
+			if (autoHideTimer.current) clearTimeout(autoHideTimer.current);
 
-			// Set new timeout to hide after 2 seconds
-			autoHideTimeout.current = window.setTimeout(() => {
+			autoHideTimer.current = window.setTimeout(() => {
 				setShowActions(false);
-			}, ACTION_BUTTONS_AUTO_HIDE_DELAY);
+			}, 2000);
 		}
 
 		return () => {
-			if (autoHideTimeout.current) {
-				window.clearTimeout(autoHideTimeout.current);
-				autoHideTimeout.current = null;
+			if (autoHideTimer.current) {
+				clearTimeout(autoHideTimer.current);
+				autoHideTimer.current = null;
 			}
 		};
 	}, [showActions]);
 
-	// Close when clicking outside (action buttons or bubble)
-	useEffect(() => {
-		const handlePointerDown = (e: PointerEvent) => {
-			const target = e.target as Node;
-			if (
-				bubbleRef.current &&
-				(bubbleRef.current.contains(target) ||
-					actionsRef.current?.contains(target) ||
-					reactionBtnRef.current?.contains(target))
-			) {
-				// click inside bubble or controls — do nothing
-				return;
-			}
-			// else hide
-			setShowActions(false);
-			setShowReactionPicker(false);
-		};
-
-		document.addEventListener('pointerdown', handlePointerDown);
-		return () => document.removeEventListener('pointerdown', handlePointerDown);
-	}, []);
-
-	// touch handlers — detect long press and swipe
 	const handleTouchStart = (e: React.TouchEvent) => {
-		touchStartX.current = e.touches[0]?.clientX ?? null;
-		touchStartY.current = e.touches[0]?.clientY ?? null;
-		dragDistance.current = 0;
-		isLongPress.current = false;
-		if (longPressTimeout.current) {
-			window.clearTimeout(longPressTimeout.current);
-			longPressTimeout.current = null;
-		}
-		longPressTimeout.current = window.setTimeout(() => {
-			isLongPress.current = true;
-			// open reaction picker anchored to reaction button if present; fallback to bubble
+		const touch = e.touches[0];
+		if (!touch) return;
+
+		touchStart.current = { x: touch.clientX, y: touch.clientY, time: Date.now() };
+		isDragging.current = false;
+		hasReplied.current = false;
+
+		if (longPressTimer.current) clearTimeout(longPressTimer.current);
+
+		longPressTimer.current = window.setTimeout(() => {
 			const rect =
 				reactionBtnRef.current?.getBoundingClientRect() ??
-				bubbleRef.current?.getBoundingClientRect() ??
-				null;
-			setReactionAnchorRect(rect);
+				bubbleRef.current?.getBoundingClientRect();
+			setReactionAnchorRect(rect ?? null);
 			setShowReactionPicker(true);
-		}, LONG_PRESS_DURATION);
+		}, LONG_PRESS_TIME);
 	};
 
 	const handleTouchMove = (e: React.TouchEvent) => {
-		if (touchStartX.current === null) return;
-		const currentX = e.touches[0]?.clientX;
-		const currentY = e.touches[0]?.clientY;
-		if (currentX === null || currentY === null) return;
+		if (!touchStart.current) return;
 
-		const deltaX = currentX - touchStartX.current;
-		const deltaY = currentY - (touchStartY.current ?? 0);
+		const touch = e.touches[0];
+		if (!touch) return;
 
-		// if vertical scroll is significant, cancel long press
-		if (Math.abs(deltaY) > 20) {
-			if (longPressTimeout.current) {
-				window.clearTimeout(longPressTimeout.current);
-				longPressTimeout.current = null;
+		const deltaX = touch.clientX - touchStart.current.x;
+		const deltaY = touch.clientY - touchStart.current.y;
+
+		if (Math.abs(deltaY) > 10) {
+			if (longPressTimer.current) {
+				clearTimeout(longPressTimer.current);
+				longPressTimer.current = null;
 			}
 			return;
 		}
 
-		dragDistance.current = deltaX;
+		if (Math.abs(deltaX) > 5) {
+			isDragging.current = true;
+			if (longPressTimer.current) {
+				clearTimeout(longPressTimer.current);
+				longPressTimer.current = null;
+			}
+		}
 
-		// Apply visual swipe offset (only positive swipes)
 		if (deltaX > 0) {
-			setSwipeOffset(Math.min(deltaX, SWIPE_THRESHOLD * 1.5));
+			const progress = Math.min(deltaX / MAX_SWIPE, 1);
+			const eased = deltaX * (1 - progress * 0.5);
+			setSwipeOffset(Math.min(eased, MAX_SWIPE));
 		}
 	};
 
 	const handleTouchEnd = () => {
-		if (longPressTimeout.current) {
-			window.clearTimeout(longPressTimeout.current);
-			longPressTimeout.current = null;
+		if (longPressTimer.current) {
+			clearTimeout(longPressTimer.current);
+			longPressTimer.current = null;
 		}
 
-		// swipe-to-reply
-		if (
-			!isLongPress.current &&
-			Math.abs(dragDistance.current) > SWIPE_THRESHOLD &&
-			dragDistance.current > 0
-		) {
+		if (swipeOffset > SWIPE_THRESHOLD && !hasReplied.current) {
+			hasReplied.current = true;
 			onReply();
 		}
 
-		// Reset swipe offset with animation
 		setSwipeOffset(0);
-
-		dragDistance.current = 0;
-		isLongPress.current = false;
-		touchStartX.current = null;
-		touchStartY.current = null;
+		isDragging.current = false;
+		touchStart.current = null;
 	};
 
-	// Click on bubble toggles action buttons (but not when dragging or after long-press)
 	const handleBubbleClick = () => {
-		if (Math.abs(dragDistance.current) > 10) return;
-		if (isLongPress.current) return;
-		setShowActions((s) => !s);
+		if (!isDragging.current) {
+			setShowActions((s) => !s);
+		}
 	};
 
-	// Action button clicks must not propagate (so they don't toggle showActions)
-	const stopAnd = (fn?: () => void) => (e: React.MouseEvent) => {
+	const stopPropagation = (fn?: () => void) => (e: React.MouseEvent) => {
 		e.stopPropagation();
 		fn?.();
-		// after action performed, hide actions (except when opening reaction picker)
 		setShowActions(false);
 	};
 
 	const handleCopy = useCallback(() => {
-		// executed via stopAnd wrapper
 		if (!message.text) {
 			toast.error('Nothing to copy');
 			return;
@@ -211,30 +187,16 @@ const MessageItem: React.FC<MessageItemProps> = ({
 
 	const handleReactionBtn = (e: React.MouseEvent) => {
 		e.stopPropagation();
-		// anchor to the button
 		const rect =
 			reactionBtnRef.current?.getBoundingClientRect() ??
-			bubbleRef.current?.getBoundingClientRect() ??
-			null;
-		setReactionAnchorRect(rect);
+			bubbleRef.current?.getBoundingClientRect();
+		setReactionAnchorRect(rect ?? null);
 		setShowReactionPicker((s) => !s);
-		// keep actions visible while reaction picker open (optional)
 		setShowActions(false);
 	};
 
-	// select reaction from picker
-	const handleSelectReaction = (emoji: string) => {
-		onToggleReaction(emoji);
-	};
-
-	// delete/copy/reply handlers — wrapped to stop propagation
-	const handleReplyClick = stopAnd(onReply);
-	const handleCopyClick = stopAnd(handleCopy);
-	const handleDeleteClick = stopAnd(onDelete ? onDelete : undefined);
-
 	return (
 		<div
-			ref={outerRef}
 			className={`flex gap-3 items-end ${isMine ? 'flex-row-reverse' : 'flex-row'} mb-4 transition-transform duration-200 ease-out`}
 			style={{ transform: `translateX(${swipeOffset}px)` }}
 			onTouchStart={handleTouchStart}
@@ -254,16 +216,15 @@ const MessageItem: React.FC<MessageItemProps> = ({
 				)}
 
 				<div className="relative" ref={bubbleRef}>
-					{/* Action Buttons (shown only when toggled) */}
 					{showActions && (
 						<div
 							ref={actionsRef}
-							className={` absolute top-full fc-slide-in-left ${isMine ? 'right-5' : 'left-5'} flex gap-2 items-center`}
+							className={`absolute bottom-5 fc-slide-in-left ${isMine ? 'right-5' : 'left-5'} flex gap-2 items-center`}
 							style={{ transform: 'translateY(6px)' }}
 							onClick={(e) => e.stopPropagation()}
 						>
 							<button
-								onClick={handleReplyClick}
+								onClick={stopPropagation(onReply)}
 								aria-label="Reply"
 								className="p-1 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-600 transition-colors"
 								type="button"
@@ -282,7 +243,7 @@ const MessageItem: React.FC<MessageItemProps> = ({
 							</button>
 
 							<button
-								onClick={handleCopyClick}
+								onClick={stopPropagation(handleCopy)}
 								aria-label="Copy"
 								className="p-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-600 transition-colors"
 								type="button"
@@ -292,7 +253,7 @@ const MessageItem: React.FC<MessageItemProps> = ({
 
 							{isMine && onDelete && (
 								<button
-									onClick={handleDeleteClick}
+									onClick={stopPropagation(onDelete)}
 									aria-label="Delete"
 									className="p-1 rounded-lg bg-red-50 hover:bg-red-100 text-red-600 transition-colors"
 									type="button"
@@ -303,7 +264,6 @@ const MessageItem: React.FC<MessageItemProps> = ({
 						</div>
 					)}
 
-					{/* Message bubble */}
 					<div
 						className={`rounded-2xl py-2 px-3 break-words transition-all duration-200 ${isMine ? 'bg-neutral-900 text-white' : 'bg-white border border-neutral-200 text-neutral-800'}`}
 					>
@@ -332,11 +292,13 @@ const MessageItem: React.FC<MessageItemProps> = ({
 				</div>
 			</div>
 
-			{/* Reaction picker as a fixed element anchored to reaction button */}
 			{showReactionPicker && (
 				<ReactionPicker
 					anchorRect={reactionAnchorRect}
-					onSelect={handleSelectReaction}
+					onSelect={(emoji) => {
+						onToggleReaction(emoji);
+						setShowReactionPicker(false);
+					}}
 					onClose={() => setShowReactionPicker(false)}
 				/>
 			)}

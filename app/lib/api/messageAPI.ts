@@ -2,18 +2,14 @@
 
 import { adminRTDB } from '@/app/lib/firebase/FireAdmin';
 import type { ChatMessage, RTDBMessage, ServerResult } from '@/app/lib/types';
-import {
-	parseRTDBMessage,
-	sanitizeMessageForRTDB,
-	validateAttachmentUrls,
-} from '@/app/lib/utils/message/helper';
+import { parseRTDBMessage, sanitizeMessageForRTDB } from '@/app/lib/utils/message/helpers';
 import type {
 	DeleteMessageParams,
 	GetMessagesParams,
 	ReactionParams,
 	SendMessagePayload,
-} from '@/app/lib/utils/message/types';
-import { validateSendMessagePayload } from '@/app/lib/utils/message/validators';
+} from '@/app/lib/utils/message/typeDefs';
+import { validateSendMessagePayload } from '@/app/lib/utils/message/validator';
 import { compare, create } from '@/app/lib/utils/time';
 
 /* <------------------- CONSTANTS -------------------> */
@@ -29,33 +25,30 @@ const DEFAULT_FETCH_LIMIT = 50;
  * @returns Result with created message or error
  */
 export async function sendMessage(payload: SendMessagePayload): Promise<ServerResult<ChatMessage>> {
-	// Validate payload
 	const validationError = validateSendMessagePayload(payload);
 	if (validationError) return validationError;
 
-	const { sessionId, senderUid, type = 'markdown', text, replyTo, attachments, extras } = payload;
+	const { sessionId, senderUid, type = 'markdown', text, replyTo, extras } = payload;
+	const trimmedText = text.trim();
 
 	try {
-		if (!adminRTDB) {
+		if (!adminRTDB)
 			return { ok: false, error: 'RTDB_UNAVAILABLE', reason: 'Admin RTDB not initialized' };
-		}
 
-		/* <--- Verify session exists and user is participant ---> */
 		const sessionSnap = await adminRTDB.ref(`liveSessions/${sessionId}`).get();
-		if (!sessionSnap.exists()) {
+		if (!sessionSnap.exists())
 			return { ok: false, error: 'SESSION_NOT_FOUND', reason: 'Session does not exist' };
-		}
 
 		const sessionVal = sessionSnap.val() as {
-			metadata?: { status: string };
+			metadata?: { status?: string };
 			participants?: Record<string, unknown>;
 		};
-
-		if (sessionVal.metadata?.status !== 'active') {
+		if (sessionVal.metadata?.status !== 'active')
 			return { ok: false, error: 'SESSION_INACTIVE', reason: 'Session is not active' };
-		}
-
-		if (!sessionVal.participants?.[senderUid]) {
+		if (
+			!sessionVal.participants ||
+			!Object.prototype.hasOwnProperty.call(sessionVal.participants, senderUid)
+		) {
 			return {
 				ok: false,
 				error: 'NOT_PARTICIPANT',
@@ -63,26 +56,11 @@ export async function sendMessage(payload: SendMessagePayload): Promise<ServerRe
 			};
 		}
 
-		/* <--- Validate attachments if present ---> */
-		if (attachments?.length) {
-			if (!validateAttachmentUrls(attachments)) {
-				return {
-					ok: false,
-					error: 'INVALID_ATTACHMENT',
-					reason: 'Attachments must be from Firebase Storage',
-				};
-			}
-		}
-
-		/* <--- Generate message ID ---> */
 		const messageRef = adminRTDB.ref(`liveMessages/${sessionId}`).push();
 		const messageId = messageRef.key;
-
-		if (!messageId) {
+		if (!messageId)
 			return { ok: false, error: 'FAILED', reason: 'Could not generate message ID' };
-		}
 
-		/* <--- Create message object ---> */
 		const now = create.nowISO();
 		const message: ChatMessage = {
 			id: messageId,
@@ -90,21 +68,21 @@ export async function sendMessage(payload: SendMessagePayload): Promise<ServerRe
 			sessionId,
 			sender: senderUid,
 			type,
-			text: text.trim(),
+			text: trimmedText,
 			replyTo: replyTo?.trim() || undefined,
 			reactions: {},
-			attachments: attachments || [],
 			extras,
 			status: 'sent',
 			createdAt: now,
 		};
 
-		/* <--- Sanitize and write to RTDB ---> */
 		const rtdbPayload = sanitizeMessageForRTDB(message);
-		await messageRef.set(rtdbPayload);
 
-		/* <--- Update session metadata ---> */
-		await adminRTDB.ref(`liveSessions/${sessionId}/metadata/updatedAt`).set(now);
+		const updates: Record<string, unknown> = {
+			[`liveMessages/${sessionId}/${messageId}`]: rtdbPayload,
+			[`liveSessions/${sessionId}/metadata/updatedAt`]: now,
+		};
+		await adminRTDB.ref().update(updates);
 
 		return { ok: true, data: message };
 	} catch (err) {

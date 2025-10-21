@@ -14,7 +14,7 @@ import { Taggy } from '@/app/components/SlidesUI/Taggy';
 import { FireHeader } from '@/app/components/UI/FireHeader';
 import { useAuthState } from '@/app/lib/routing/context/AuthStateContext';
 import { launchUserProfile } from '@/app/lib/utils/launch';
-import { Memory } from '@/app/lib/utils/storage';
+import { Memory } from '@/app/lib/utils/localStorage';
 
 import {
 	MESSAGES,

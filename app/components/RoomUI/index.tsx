@@ -169,11 +169,7 @@ export default function Room() {
 			'code' in err &&
 			(err as { code?: unknown }).code === 'permission-denied';
 
-		setError(
-			isPermissionDenied
-				? 'You need permission to view this session'
-				: 'Uninvited users cannot access the session!'
-		);
+		setError(isPermissionDenied ? 'You need permission to view this session' : 'Session unavailable!');
 		setAccessState('denied');
 		setLoading(false);
 	}, []);
@@ -436,7 +432,7 @@ export default function Room() {
 	if (profileLoading || loading) {
 		return (
 			<div className="flex items-center justify-center h-screen bg-neutral-50">
-				<FireLoader message="..." />
+				<FireLoader />
 			</div>
 		);
 	}

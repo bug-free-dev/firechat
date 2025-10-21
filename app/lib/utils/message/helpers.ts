@@ -1,7 +1,7 @@
 import type { DataSnapshot } from 'firebase/database';
-import { isEqual } from 'lodash-es';
 
-import type { ChatMessage, FireCachedUser, MessageAttachment, RTDBMessage } from '@/app/lib/types';
+import type { ChatMessage, FireCachedUser, RTDBMessage } from '@/app/lib/types';
+import { EMOJI_SHORTCUTS } from '@/app/lib/types';
 import { compare, create } from '@/app/lib/utils/time';
 
 /* <------- TYPE GUARDS -------> */
@@ -12,19 +12,6 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 
 function isStringArray(value: unknown): value is string[] {
 	return Array.isArray(value) && value.every((item) => typeof item === 'string');
-}
-
-function isAttachment(value: unknown): value is MessageAttachment {
-	return (
-		isRecord(value) &&
-		typeof value.id === 'string' &&
-		typeof value.type === 'string' &&
-		typeof value.url === 'string'
-	);
-}
-
-function isAttachmentArray(value: unknown): value is MessageAttachment[] {
-	return Array.isArray(value) && value.every(isAttachment);
 }
 
 /* <------- FIELD EXTRACTORS -------> */
@@ -55,14 +42,6 @@ export function parseReactions(reactionsData: unknown): Record<string, string[]>
 }
 
 /**
- * Parse attachments from RTDB data
- */
-export function parseAttachments(attachmentsData: unknown): MessageAttachment[] {
-	if (!isAttachmentArray(attachmentsData)) return [];
-	return attachmentsData;
-}
-
-/**
  * Sanitize message for RTDB storage
  */
 export function sanitizeMessageForRTDB(msg: ChatMessage): Record<string, unknown> {
@@ -80,10 +59,6 @@ export function sanitizeMessageForRTDB(msg: ChatMessage): Record<string, unknown
 
 	if (msg.replyTo) {
 		sanitized.replyTo = msg.replyTo;
-	}
-
-	if (msg.attachments?.length) {
-		sanitized.attachments = msg.attachments;
 	}
 
 	if (msg.extras) {
@@ -106,7 +81,6 @@ export function parseRTDBMessage(messageId: string, data: RTDBMessage): ChatMess
 		text: data.text,
 		replyTo: data.replyTo,
 		reactions: data.reactions ?? {},
-		attachments: data.attachments ?? [],
 		extras: data.extras,
 		status: data.status,
 		createdAt: data.createdAt,
@@ -148,9 +122,8 @@ export function parseMessageFromSnapshot(
 		text: textField ?? '',
 		replyTo: replyToField,
 		reactions: parseReactions(rec.reactions),
-		attachments: parseAttachments(rec.attachments),
 		extras: isRecord(rec.extras) ? rec.extras : undefined,
-		status: (getStr(rec, 'status') as ChatMessage['status']) ?? 'delivered',
+		status: (getStr(rec, 'status') as ChatMessage['status']) ?? 'read',
 		createdAt: createdAtField ?? new Date().toISOString(),
 	};
 }
@@ -193,44 +166,27 @@ export function compareMsgsAsc(a: ChatMessage, b: ChatMessage): number {
 	return compare.asc(a.createdAt, b.createdAt);
 }
 
-/**
- * Check if URL is from Firebase Storage (security)
- */
-export function isFirebaseStorageUrl(url: string): boolean {
-	return url.startsWith('https://firebasestorage.googleapis.com/');
-}
-
-/**
- * Validate attachment URLs (security check)
- */
-export function validateAttachmentUrls(attachments: readonly MessageAttachment[]): boolean {
-	return attachments.every((att) => isFirebaseStorageUrl(att.url));
-}
-
 /** Generate a stable-enough client temporary id for optimistic messages */
 export const genTempId = (): string =>
 	`tmp_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 9)}`;
 
+// app/components/RoomUI/uti ls/emojify.ts
+
 /**
- * Cheap content comparison: used to match a server message to a pre-existing temp message.
- * We avoid deep compare for the common fast path; fallback to lodash 'isEqual' for attachments/extras.
+ * Replaces emoji shortcuts like ":smile:" with actual emoji characters.
+ * - Ignores shortcuts inside URLs.
+ * - Efficient for large messages.
  */
-export const matchMessageContent = (a: ChatMessage, b: ChatMessage): boolean => {
-	if (!a || !b) return false;
-	if (a.sender !== b.sender) return false;
-	if ((a.text ?? '') !== (b.text ?? '')) return false;
-	if ((a.replyTo ?? '') !== (b.replyTo ?? '')) return false;
+export function emojify(text: string): string {
+	if (!text) return '';
 
-	const aAtt = a.attachments ?? [];
-	const bAtt = b.attachments ?? [];
-	if (aAtt.length !== bAtt.length) return false;
+	// Build regex dynamically like /(:smile:|:fire:|:heart:)/g
+	const pattern = new RegExp(
+		`(${Object.keys(EMOJI_SHORTCUTS)
+			.map((k) => k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
+			.join('|')})`,
+		'g'
+	);
 
-	for (let i = 0; i < aAtt.length; i++) {
-		if (aAtt[i].url !== bAtt[i].url) {
-			return isEqual(a.attachments, b.attachments) && isEqual(a.extras || {}, b.extras || {});
-		}
-	}
-
-	// attachments urls all match, treat as same content
-	return true;
-};
+	return text.replace(pattern, (match) => EMOJI_SHORTCUTS[match] || match);
+}

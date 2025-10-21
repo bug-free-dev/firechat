@@ -5,13 +5,12 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Confetti from 'react-confetti';
 import toast from 'react-hot-toast';
+import { HiOutlineEmojiHappy, HiOutlineLightningBolt  } from 'react-icons/hi';
 import { PiRocketBold } from 'react-icons/pi';
 import {
 	RiChat3Line,
 	RiFireLine,
 	RiGiftLine,
-	RiLightbulbLine,
-	RiRocketLine,
 	RiUser3Line,
 } from 'react-icons/ri';
 
@@ -21,19 +20,55 @@ import { useAuthState } from '@/app/lib/routing/context/AuthStateContext';
 import { MinimalIcon } from './MinimalIcon';
 
 const FEATURES = [
-	{ icon: <RiRocketLine />, label: 'Fast', bg: 'bg-sky-50/70', txt: 'text-sky-600/70' },
-	{ icon: <RiChat3Line />, label: 'Chat', bg: 'bg-clear-50/70', txt: 'text-orange-600/70' },
-	{ icon: <RiFireLine />, label: 'Trends', bg: 'bg-rose-50/70', txt: 'text-rose-600/70' },
-	{ icon: <RiGiftLine />, label: 'Gifts', bg: 'bg-amber-50/70', txt: 'text-amber-600/70' },
-	{ icon: <RiUser3Line />, label: 'Groups', bg: 'bg-emerald-50/70', txt: 'text-emerald-600/70' },
-	{ icon: <RiLightbulbLine />, label: 'Polls', bg: 'bg-cyan-50/70', txt: 'text-cyan-600/70' },
+	{ 
+		icon: <HiOutlineLightningBolt />, 
+		label: 'Fast', 
+		tagline: 'Lightning Speed',
+		bg: 'bg-yellow-50/70', 
+		txt: 'text-yellow-600/70' 
+	},
+	{ 
+		icon: <RiChat3Line />, 
+		label: 'Chat', 
+		tagline: 'Real Conversations',
+		bg: 'bg-orange-50/70', 
+		txt: 'text-orange-600/70' 
+	},
+	{ 
+		icon: <RiFireLine />, 
+		label: 'Trends', 
+		tagline: 'Stay Updated',
+		bg: 'bg-rose-50/70', 
+		txt: 'text-rose-600/70' 
+	},
+	{ 
+		icon: <RiGiftLine />, 
+		label: 'Gifts', 
+		tagline: 'Spread Joy',
+		bg: 'bg-amber-50/70', 
+		txt: 'text-amber-600/70' 
+	},
+	{ 
+		icon: <RiUser3Line />, 
+		label: 'Groups', 
+		tagline: 'Connect Together',
+		bg: 'bg-emerald-50/70', 
+		txt: 'text-emerald-600/70' 
+	},
+	{ 
+		icon: <HiOutlineEmojiHappy />, 
+		label: 'Fun', 
+		tagline: 'Pure Vibes',
+		bg: 'bg-cyan-50/70', 
+		txt: 'text-cyan-600/70' 
+	},
 ];
 
 export default function Home() {
 	const [showConfetti, setShowConfetti] = useState(false);
 	const { authState, isLoading } = useAuthState();
 	const router = useRouter();
-	const [orangeirecting, setRedirecting] = useState(false);
+	const [redirecting, setRedirecting] = useState(false);
 	const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
 
 	useEffect(() => {
@@ -45,7 +80,7 @@ export default function Home() {
 	}, []);
 
 	useEffect(() => {
-		if (isLoading || orangeirecting) return;
+		if (isLoading || redirecting) return;
 		const timer = setTimeout(() => {
 			setRedirecting(true);
 			switch (authState) {
@@ -62,7 +97,7 @@ export default function Home() {
 			}
 		}, 5000);
 		return () => clearTimeout(timer);
-	}, [authState, isLoading, router, orangeirecting]);
+	}, [authState, isLoading, router, redirecting]);
 
 	const handleWelcome = () => {
 		toast.success('Welcome to Firechat!');
@@ -86,12 +121,13 @@ export default function Home() {
 				</p>
 			</div>
 
-			<div className="mt-8 flex flex-wrap gap-1 justify-center">
+			<div className="mt-8 flex flex-wrap gap-4 justify-center max-w-4xl">
 				{FEATURES.map((f) => (
 					<MinimalIcon
 						key={f.label}
 						icon={f.icon}
 						label={f.label}
+						tagline={f.tagline}
 						bgClass={f.bg}
 						txtClass={f.txt}
 					/>
@@ -101,12 +137,12 @@ export default function Home() {
 			<button
 				onClick={handleWelcome}
 				className="
-    mt-8 inline-flex items-center gap-3 px-6 py-2 rounded-full
-    bg-sky-500/70 text-white font-medium text-sm
-    hover:bg-sky-500/80 hover:scale-105
-    focus:outline-none focus:ring-2 focus:ring-sky-400/50 focus:ring-offset-2
-    transition-all duration-200 ease-in-out shadow-md
-  "
+					mt-8 inline-flex items-center gap-3 px-6 py-2 rounded-full
+					bg-indigo-500/70 text-white font-medium text-sm
+					hover:bg-indigo-500/80 hover:scale-105
+					focus:outline-none focus:ring-2 focus:ring-indigo-400/50 focus:ring-offset-2
+					transition-all duration-200 ease-in-out shadow-md
+				"
 				aria-label="Grab your desk"
 			>
 				<PiRocketBold className="w-5 h-5" />
@@ -114,8 +150,8 @@ export default function Home() {
 			</button>
 
 			<div className="mt-10 text-center max-w-lg">
-				<h3 className="text-xl font-medium text-neutral-900 mb-2">
-					Keep it tight. Keep it kind.
+				<h3 className="text-xl font-medium text-neutral-900 mb-2 font-comic">
+					Join the community now!
 				</h3>
 				<p className="text-neutral-700/50">
 					Focused rooms, zero clutter, and small features that make conversations feel human.

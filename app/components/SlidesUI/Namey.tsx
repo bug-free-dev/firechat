@@ -63,7 +63,7 @@ export function Namey({ value, onChange, step = 1, total = 7 }: NameyProps) {
 			</div>
 
 			{/* Main Content */}
-			<div className="relative z-10 max-w-2xl w-full mx-auto px-6 text-center animate-fade-in-up">
+			<div className="relative z-10 max-w-2xl w-full mx-auto px-6 text-center animate-slide-up">
 				{/* Brand Heading */}
 				<div className="mb-12">
 					<h1 className="font-comic text-5xl lg:text-6xl text-slate-900 inline-flex items-center justify-center gap-3 mb-4">

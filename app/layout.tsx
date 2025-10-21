@@ -1,6 +1,8 @@
 import './globals.css';
+import 'katex/dist/katex.min.css';
 
 import { Analytics } from '@vercel/analytics/next';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 import type { Metadata } from 'next';
 import { Toaster, type ToastOptions } from 'react-hot-toast';
 
@@ -15,7 +17,7 @@ export const metadata: Metadata = {
 };
 const toastConfig: ToastOptions = {
 	position: 'bottom-right',
-	duration:1000,
+	duration: 1000,
 	style: {
 		background: '#ffffff',
 		color: '#111827',
@@ -37,6 +39,7 @@ export default function RootLayout({
 				<AuthProvider>{children}</AuthProvider>
 				<Toaster {...toastConfig} />
 				<Analytics />
+				<SpeedInsights />
 			</body>
 		</html>
 	);

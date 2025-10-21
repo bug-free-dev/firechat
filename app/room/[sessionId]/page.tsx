@@ -1,13 +1,12 @@
 'use client';
 
-import { FireHeader } from '@/app/components/UI';
+import Room from '@/app/components/RoomUI';
 import { ProtectedRoute } from '@/app/lib/routing/component/ProtectedRoute';
 
 export default function Page() {
 	return (
 		<ProtectedRoute>
-			<FireHeader />
-			<span>In progress</span>
+			<Room />
 		</ProtectedRoute>
 	);
 }

@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { FaBell, FaCircle, FaClock } from 'react-icons/fa';
+import { FaCircle, FaClock } from 'react-icons/fa';
+import { FiBell } from 'react-icons/fi';
 
 import { FireAvatar } from '@/app/components/UI';
 import type { FireProfile, InboxThread } from '@/app/lib/types';
@@ -62,7 +63,7 @@ export function InboxThreadCard({ thread, currentUser, onOpenInbox }: InboxThrea
 	return (
 		<button
 			onClick={() => onOpenInbox?.(thread.id)}
-			className={`w-full text-left p-4 rounded-xl border-2 transition-all duration-300 hover:shadow-lg ${
+			className={`w-full text-left p-4 rounded-xl border-2 transition-all duration-300 hover:shadow-sm ${
 				hasUnread
 					? 'bg-orange-50/50 border-orange-200/40 hover:border-orange-300/50'
 					: 'bg-white border-neutral-200/40 hover:border-neutral-300/50'
@@ -88,7 +89,7 @@ export function InboxThreadCard({ thread, currentUser, onOpenInbox }: InboxThrea
 
 						{hasUnread && (
 							<div className="flex items-center gap-1">
-								<FaBell className="w-3 h-3 text-orange-500 " />
+								<FiBell className="w-5 h-5 text-orange-500 " />
 								<span className="px-2 py-0.5 bg-orange-500 text-white text-xs font-bold rounded-full">
 									{thread.unreadCount}
 								</span>

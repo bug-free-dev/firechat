@@ -4,7 +4,7 @@ import { FieldValue } from 'firebase-admin/firestore';
 
 import { adminAuth, adminDb } from '@/app/lib/firebase/FireAdmin';
 import type { FireProfile } from '@/app/lib/types';
-import { invalidateUser } from '@/app/lib/utils/memory/memory';
+import { invalidateUser } from '@/app/lib/utils/memory';
 import { toISO } from '@/app/lib/utils/time';
 
 /**

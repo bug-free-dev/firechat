@@ -91,7 +91,7 @@ export function Launchy({
 			</div>
 
 			{/* Main Content */}
-			<div className="mt-1 relative z-10 max-w-4xl w-full mx-auto px-6 text-center animate-fade-in-up">
+			<div className="mt-1 relative z-10 max-w-4xl w-full mx-auto px-6 text-center animate-slide-up">
 				<h1 className="font-comic text-5xl lg:text-4xl text-rose-500 mb-5 flex items-center justify-center gap-4 drop-shadow-sm">
 					<FaRocket className="animate-float-elegant w-16 h-16" />
 					Launch!

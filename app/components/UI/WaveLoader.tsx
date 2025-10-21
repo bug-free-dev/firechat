@@ -9,7 +9,7 @@ interface WaveLoaderProps {
 	text?: string;
 }
 
-const defaultColors = ['bg-cyan-400/30', 'bg-yellow-400/30', 'bg-lime-400/30'];
+const defaultColors = ['bg-cyan-400/60', 'bg-yellow-400/60', 'bg-lime-400/60'];
 
 export const WaveLoader: React.FC<WaveLoaderProps> = ({
 	size = 2,

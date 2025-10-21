@@ -29,8 +29,8 @@ import {
 	updateAuthProfile,
 } from '@/app/lib/utils/auth';
 import { verifyIdentifierKeyAsync } from '@/app/lib/utils/hashy';
+import { Memory } from '@/app/lib/utils/localStorage';
 import { normalizeProfile } from '@/app/lib/utils/sanitizer';
-import { Memory } from '@/app/lib/utils/storage';
 
 import { AuthState, computeAuthState, isAuthFlowPath, isPublicPath } from '../util/helper';
 

@@ -2,12 +2,11 @@
 	/* Fonts */
 	--font-rubik: 'Rubik', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
 	--font-moonrocks: 'Rubik Moonrocks', cursive;
-	--font-knewave:"Knewave", cursive;
-   --font-comic:"Bubblegum Sans",
-      cursive;
+	--font-knewave: 'Knewave', cursive;
+	--font-comic: 'Bubblegum Sans', cursive;
 	--font-jolly: 'Jolly Lodger', cursive;
 	--font-righteous: 'Righteous', cursive;
-	--font-quicksand: 'Quicksand', 'Geist',system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+	--font-quicksand: 'Quicksand', 'Geist', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
 	--font-main: var(--font-quicksand);
 
 	/* Brand / UI */
@@ -36,7 +35,7 @@
 
 .font-knewave {
 	font-family: var(--font-knewave);
-   font-size: 40;
+	font-size: 40;
 }
 
 .font-jolly {
@@ -51,10 +50,10 @@
 	font-family: var(--font-quicksand);
 }
 
-.font-comic{
-   font-family:var(--font-comic)
+.font-comic {
+	font-family: var(--font-comic);
 }
 
-.font-rubik{
-font-family:var(--font-rubik)
+.font-rubik {
+	font-family: var(--font-rubik);
 }

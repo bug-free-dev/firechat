@@ -54,7 +54,7 @@ export const NavTabs: React.FC<DeskTabsProps> = ({ activeTab, onTabChange }) => 
 	const indicatorStyle = useMemo(() => {
 		if (activeIndex === -1) return { opacity: 0 };
 		const width = `calc(${100 / tabs.length}% - 0.3rem)`;
-		const translateX = `calc(${activeIndex * 100}% + 0.3rem)`;
+		const translateX = `calc(${activeIndex * 100}% + 0.4rem)`;
 		return {
 			width,
 			transform: `translateX(${translateX})`,
@@ -69,9 +69,9 @@ export const NavTabs: React.FC<DeskTabsProps> = ({ activeTab, onTabChange }) => 
 
 	// Base classes
 	const containerBase =
-		'relative bg-white border border-neutral-200 rounded-full px-2.5 py-1 flex gap-1 overflow-hidden';
+		'relative bg-white border border-neutral-200 rounded-full px-2.5 flex gap-1 overflow-hidden';
 	const buttonBase =
-		'relative z-10 flex-1 flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-semibold rounded-full transition-colors duration-300';
+		'relative z-10 flex-1 flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold rounded-full transition-colors duration-300';
 
 	return (
 		<div

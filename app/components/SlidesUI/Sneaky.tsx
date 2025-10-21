@@ -40,7 +40,7 @@ export function Sneaky({ value, onChange, step = 2, total = 7 }: SneakyProps) {
 				</div>
 			</div>
 
-			<div className="mt-1 relative z-10 max-w-2xl w-full mx-auto px-6 text-center animate-fade-in-up">
+			<div className="mt-1 relative z-10 max-w-2xl w-full mx-auto px-6 text-center animate-slide-up">
 				<div className="mb-14">
 					<h1 className="font-comic text-5xl lg:text-6xl text-slate-900 inline-flex items-center justify-center gap-3 mb-4">
 						<RiShieldKeyholeLine className="text-purple-500 w-12 h-12 animate-pulse-soft" />

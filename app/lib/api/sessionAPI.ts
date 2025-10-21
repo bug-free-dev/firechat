@@ -9,7 +9,7 @@ import {
 	readRTDBSession,
 	refundKudos,
 	verifyIdentifierAccess,
-} from '@/app/lib/utils/sessions/helper';
+} from '@/app/lib/utils/sessions/helpers';
 
 import { adminDb, adminRTDB } from '../firebase/FireAdmin';
 import type {

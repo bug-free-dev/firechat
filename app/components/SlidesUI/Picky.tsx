@@ -40,7 +40,7 @@ export function Picky({ value, onChange, step = 1, total = 1 }: PickyProps) {
 				<RiSparklingLine className="absolute bottom-[28%] right-[15%] w-6 h-6 text-violet-400/35 animate-pulse-soft" />
 			</div>
 
-			<div className="w-full max-w-2xl space-y-10 relative z-10 animate-fade-in-up">
+			<div className="w-full max-w-2xl space-y-10 relative z-10 animate-slide-up">
 				{/* Heading */}
 				<div className="text-center">
 					<h1 className="font-comic mb-7 text-4xl font-semibold text-slate-900 flex items-center justify-center gap-3">

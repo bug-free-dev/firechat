@@ -69,7 +69,7 @@ export function Quirky({ value, onChange, step = 3, total = 7 }: QuirkyProps) {
 				</div>
 			</div>
 
-			<div className="mt-3 relative z-10 max-w-3xl w-full mx-auto px-6 text-center animate-fade-in-up">
+			<div className="mt-3 relative z-10 max-w-3xl w-full mx-auto px-6 text-center animate-slide-up">
 				<div className="mb-14">
 					<h1 className="font-comic text-5xl lg:text-6xl text-slate-900 inline-flex items-center justify-center gap-3 mb-4">
 						<RiSparklingLine className="text-indigo-500 w-12 h-12 animate-pulse-soft" />
