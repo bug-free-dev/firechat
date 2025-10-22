@@ -482,7 +482,7 @@ export default function Desk() {
 
 							<button
 								onClick={() => setCreateInviteOpen(true)}
-								className="py-2 px-3 rounded-lg bg-orange-100 text-orange-700 font-medium hover:bg-orange-200 transition"
+								className="py-2 px-3 rounded-lg bg-indigo-100 text-indigo-700 font-medium hover:bg-indigo-200 transition"
 							>
 								Pick contacts
 							</button>

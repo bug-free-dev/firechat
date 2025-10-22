@@ -285,7 +285,7 @@ const MessageItem: React.FC<MessageItemProps> = ({
 								type="button"
 								title="Reply"
 							>
-								<FiCornerUpLeft size={14} />
+								<FiCornerUpLeft size={15} />
 							</button>
 
 							<button
@@ -296,7 +296,7 @@ const MessageItem: React.FC<MessageItemProps> = ({
 								type="button"
 								title="React"
 							>
-								<FiSmile size={14} />
+								<FiSmile size={15} />
 							</button>
 
 							<button
@@ -306,17 +306,17 @@ const MessageItem: React.FC<MessageItemProps> = ({
 								type="button"
 								title="Copy message"
 							>
-								{copied ? <FiCheckCircle size={14} /> : <FiClipboard size={14} />}
+								{copied ? <FiCheckCircle size={15} /> : <FiClipboard size={15} />}
 							</button>
 
 							<button
 								onClick={handleThemeToggle}
 								aria-label="Change theme"
-								className="p-1.5 rounded hover:bg-purple-50 text-purple-600 transition-colors"
+								className="p-1.5 rounded hover:bg-orange-50 text-orange-600 transition-colors"
 								type="button"
 								title="Syntax theme"
 							>
-								<IoColorPaletteOutline size={14} />
+								<IoColorPaletteOutline size={15} />
 							</button>
 
 							{isMine && onDelete && (
@@ -327,7 +327,7 @@ const MessageItem: React.FC<MessageItemProps> = ({
 									type="button"
 									title="Delete message"
 								>
-									<FiTrash2 size={14} />
+									<FiTrash2 size={15} />
 								</button>
 							)}
 						</div>
@@ -335,7 +335,7 @@ const MessageItem: React.FC<MessageItemProps> = ({
 
 					{/* Message bubble */}
 					<div
-						className={`rounded-2xl max-w-65 py-2 px-3 break-words transition-all duration-150 ${isMine ? 'bg-neutral-900 text-white' : 'bg-white border border-neutral-200 text-neutral-800'}`}
+						className={`rounded-2xl max-w-65 py-2 px-3 break-words transition-all duration-150 z-0 ${isMine ? 'bg-neutral-900 text-white' : 'bg-white border border-neutral-200 text-neutral-800'}`}
 					>
 						{message.replyTo && replyToMessage && (
 							<ReplyPreview replyToMessage={replyToMessage} sender={replyToSender} compact />

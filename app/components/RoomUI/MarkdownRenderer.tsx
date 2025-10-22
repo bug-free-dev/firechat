@@ -23,9 +23,8 @@ const MAX_LENGTH = 500;
 
 const THEMES = [
 	{ id: 'github-dark', name: 'GitHub Dark' },
-	{ id: 'atom-one-dark', name: 'Atom One Dark' },
+	{ id: 'atom-one-dark', name: 'One Dark' },
 	{ id: 'monokai', name: 'Monokai' },
-	{ id: 'nord', name: 'Nord' },
 	{ id: 'vs2015', name: 'VS 2015' },
 ] as const;
 
@@ -90,7 +89,7 @@ const createMarkdownComponents = (): Components => ({
 		);
 	},
 	pre: ({ children, ...props }: React.HTMLAttributes<HTMLPreElement>) => (
-		<pre className="font-quicksand rounded-lg overflow-x-auto mb-4" {...props}>
+		<pre className="rounded-lg overflow-x-auto mb-4" {...props}>
 			{children}
 		</pre>
 	),
@@ -169,13 +168,13 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
 			/>
 
 			{showThemeSelector && (
-				<div className="absolute bottom-5 right-0 transform z-[100] animate-slide-up  duration-200">
-					<div className="py-1 w-30 bg-white rounded-lg shadow-md border border-neutral-200">
+				<div className="absolute -bottom-14 -left-1 transform z-[150] animate-slide-up  duration-200">
+					<div className="w-25 overflow-y-auto bg-white rounded-lg shadow-md border border-neutral-200">
 						{THEMES.map((t) => (
 							<button
 								key={t.id}
 								onClick={() => handleThemeChange(t.id)}
-								className={`w-full px-3 py-2 text-left text-sm transition-colors ${
+								className={`w-full px-2 py-0.75 text-left text-sm transition-colors ${
 									theme === t.id
 										? 'bg-blue-50 text-blue-700 font-medium'
 										: 'hover:bg-neutral-50 text-neutral-900'

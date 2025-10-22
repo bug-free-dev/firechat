@@ -201,7 +201,7 @@ export const SessionCard: React.FC<SessionCardProps> = ({
 						</button>
 
 						{menuOpen && (
-							<div className="absolute right-0 mt-2 w-44 bg-white rounded-lg shadow-lg border border-neutral-200 z-20 py-1">
+							<div className="absolute right-0 mt-2 w-44 bg-white rounded-lg shadow-lg border border-neutral-200 z-20 p-1">
 								{onEndSession && session.isActive && (
 									<button
 										onClick={(e) => {
@@ -210,7 +210,7 @@ export const SessionCard: React.FC<SessionCardProps> = ({
 											onEndSession(session.id || '');
 											setMenuOpen(false);
 										}}
-										className="w-full flex items-center gap-2 px-3 py-1.5 text-sm hover:bg-neutral-50 text-left transition-colors"
+										className="w-full flex rounded-lg items-center gap-2 px-3 py-2 text-sm hover:bg-neutral-50 text-left transition-colors"
 									>
 										<FiXCircle className="w-4 h-4" />
 										End Session
@@ -225,7 +225,7 @@ export const SessionCard: React.FC<SessionCardProps> = ({
 											onLockSession(session.id || '');
 											setMenuOpen(false);
 										}}
-										className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-neutral-50 text-left transition-colors"
+										className="w-full flex rounded-lg items-center gap-2 px-3 py-2 text-sm hover:bg-neutral-50 text-left transition-colors"
 									>
 										<FiLock className="w-4 h-4" />
 										{session.isLocked ? 'Unlock' : 'Lock'}
@@ -240,7 +240,7 @@ export const SessionCard: React.FC<SessionCardProps> = ({
 											onInvite(session);
 											setMenuOpen(false);
 										}}
-										className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-neutral-50 text-left transition-colors"
+										className="w-full flex rounded-lg items-center gap-2 px-3 py-2 text-sm hover:bg-neutral-50 text-left transition-colors"
 									>
 										<FiShare2 className="w-4 h-4" />
 										Invite & Copy link
