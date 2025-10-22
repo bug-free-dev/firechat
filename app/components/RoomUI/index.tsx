@@ -169,7 +169,9 @@ export default function Room() {
 			'code' in err &&
 			(err as { code?: unknown }).code === 'permission-denied';
 
-		setError(isPermissionDenied ? 'You need permission to view this session' : 'Session unavailable!');
+		setError(
+			isPermissionDenied ? 'You need permission to view this session' : 'Session unavailable!'
+		);
 		setAccessState('denied');
 		setLoading(false);
 	}, []);

@@ -16,29 +16,26 @@ const ReactionsDisplay: React.FC<ReactionsDisplayProps> = ({
 	if (!reactions || Object.keys(reactions).length === 0) return null;
 
 	return (
-		<div className="flex flex-wrap gap-1.5 mt-2 backdrop-blur-md">
+		<div className="absolute -bottom-3 left-3 flex flex-wrap gap-1.5 z-10">
 			{Object.entries(reactions).map(([emoji, users]) => {
 				const hasReacted = users.includes(currentUserId);
 
 				return (
 					<button
 						key={emoji}
-						onClick={() => onToggle(emoji)}
-						className={`flex items-center gap-1.5 px-1.5 rounded-full text-xs font-medium transition-all duration-200 
-						backdrop-blur-sm border border-white/20 shadow-sm
+						onClick={(e) => {
+							e.stopPropagation();
+							onToggle(emoji);
+						}}
+						className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium transition-all duration-200 shadow-sm border-2
 						${
 							hasReacted
-								? 'bg-white/20 text-neutral-900 ]'
-								: 'bg-white/10 text-neutral-700 hover:bg-white/20 hover:scale-[1.07]'
+								? 'bg-slate-50 border-slate-500/30 text-slate-700 scale-105'
+								: 'bg-white border-gray-300 text-slate-700 hover:bg-slate-50 hover:border-slate-400 hover:scale-105'
 						}`}
-						style={{
-							WebkitBackdropFilter: 'blur(8px)',
-						}}
 					>
-						<span className="text-base sm:text-sm transition-transform duration-200 group-hover:scale-110">
-							{emoji}
-						</span>
-						<span className="text-[11px]">{users.length}</span>
+						<span className="text-sm">{emoji}</span>
+						<span className="text-xs font-semibold">{users.length}</span>
 					</button>
 				);
 			})}

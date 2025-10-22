@@ -12,7 +12,6 @@ export interface ReactionPickerProps {
 }
 
 const DEFAULT_WIDTH = 220;
-const GAP = 8;
 
 const ReactionPicker: React.FC<ReactionPickerProps> = ({
 	anchorRect,
@@ -33,58 +32,55 @@ const ReactionPicker: React.FC<ReactionPickerProps> = ({
 		return () => document.removeEventListener('pointerdown', handlePointerDown);
 	}, [onClose]);
 
-	// compute position
-	const style: React.CSSProperties = { visibility: 'hidden', position: 'fixed', zIndex: 9999 };
+	// compute simple absolute position (classic + cute)
+	const style: React.CSSProperties = {
+		visibility: 'hidden',
+		position: 'absolute',
+		zIndex: 100000,
+		bottom: '1.5rem',
+		left: 8,
+		width: DEFAULT_WIDTH,
+		maxWidth: DEFAULT_WIDTH,
+		background: 'white',
+		borderRadius: 12,
+		padding: 5,
+		display: 'flex',
+		gap: 4,
+		flexWrap: 'wrap',
+		justifyContent: 'center',
+		alignItems: 'center',
+		border: '1px solid rgba(0,0,0,0.08)',
+		boxShadow: '0 6px 18px rgba(0,0,0,0.12)',
+	};
 
 	if (anchorRect) {
 		const vw = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
-		const vh = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
 		const width = Math.min(maxWidth, vw - 16);
 		const centerX = anchorRect.left + anchorRect.width / 2;
 		let left = Math.round(centerX - width / 2);
 		left = Math.max(8, Math.min(left, vw - width - 8));
 
-		// attempt to place below; if not enough space, place above
-		const estimatedHeight = 56; // one row of emojis ~56px; picker can grow; using small estimate is fine
-		const spaceBelow = vh - anchorRect.bottom;
-		const spaceAbove = anchorRect.top;
-		let top: number;
-		if (spaceBelow >= estimatedHeight + GAP) {
-			top = Math.round(anchorRect.bottom + GAP);
-		} else if (spaceAbove >= estimatedHeight + GAP) {
-			top = Math.round(anchorRect.top - estimatedHeight - GAP);
-		} else {
-			// neither side has enough room: clamp to fit in viewport
-			top = Math.max(8, Math.min(anchorRect.bottom + GAP, vh - estimatedHeight - 8));
-		}
-
 		style.left = left;
-		style.top = top;
 		style.width = width;
 		style.maxWidth = width;
 		style.visibility = 'visible';
-		style.background = 'white';
-		style.borderRadius = 12;
-		style.padding = '8px';
-		style.display = 'flex';
-		style.gap = '2px';
-		style.flexWrap = 'wrap';
-		style.justifyContent = 'center';
-		style.alignItems = 'center';
-
-		// Minimal border and shadow
-		style.border = '1px solid rgba(0, 0, 0, 0.1)';
-		style.boxShadow = '0 1px 3px rgba(0, 0, 0, 0.1)';
 	}
 
 	return (
-		<div ref={nodeRef} style={style} role="dialog" aria-label="Reaction picker">
+		// kept a dedicated classname for simple animation: fc-slide-in-left
+		<div
+			ref={nodeRef}
+			style={style}
+			role="dialog"
+			aria-label="Reaction picker"
+			className="fc-slide-in-left"
+		>
 			{REACTION_EMOJIS.map((emoji) => (
 				<button
 					key={emoji}
 					type="button"
 					onPointerDown={(e) => {
-						// use pointerdown so selection feels snappy on mobile
+						// pointerdown for snappy mobile feel
 						e.stopPropagation();
 						e.preventDefault();
 						onSelect(emoji);

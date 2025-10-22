@@ -10,7 +10,13 @@ interface MinimalIconProps {
 	txtClass: string;
 }
 
-export const MinimalIcon: React.FC<MinimalIconProps> = ({ icon, label, tagline, bgClass, txtClass }) => {
+export const MinimalIcon: React.FC<MinimalIconProps> = ({
+	icon,
+	label,
+	tagline,
+	bgClass,
+	txtClass,
+}) => {
 	return (
 		<div className="flex flex-col items-center gap-2 w-32">
 			<div className={`${bgClass} p-3 rounded-full flex items-center justify-center`}>

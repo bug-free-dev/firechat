@@ -11,7 +11,6 @@ import {
 	FiUsers,
 	FiX,
 } from 'react-icons/fi';
-import { RiPlanetLine } from 'react-icons/ri';
 
 import { SessionDoc } from '@/app/lib/types';
 
@@ -78,7 +77,7 @@ const SessionHeader: React.FC<SessionHeaderProps> = ({
 	};
 
 	return (
-		<header className="relative w-full bg-white backdrop-blur-sm overflow-hidden border-b-neutral-300 border-b">
+		<header className="relative w-full bg-white backdrop-blur-sm overflow-hidden border-b-neutral-200 border-b">
 			<div className="relative max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 py-4 animate-fade-in-up">
 				<div className="flex items-center justify-between gap-4">
 					<div className="min-w-0 flex-1">
@@ -115,7 +114,6 @@ const SessionHeader: React.FC<SessionHeaderProps> = ({
 						) : (
 							<div className="flex items-center gap-3">
 								<div className="flex items-center gap-2">
-									<RiPlanetLine className="w-6 h-6 text-sky-500/70" />
 									<h2 className="font-semibold text-lg sm:text-xl text-neutral-800 truncate">
 										{session.title || 'Untitled Session'}
 									</h2>

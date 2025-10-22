@@ -5,14 +5,9 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Confetti from 'react-confetti';
 import toast from 'react-hot-toast';
-import { HiOutlineEmojiHappy, HiOutlineLightningBolt  } from 'react-icons/hi';
+import { HiOutlineEmojiHappy, HiOutlineLightningBolt } from 'react-icons/hi';
 import { PiRocketBold } from 'react-icons/pi';
-import {
-	RiChat3Line,
-	RiFireLine,
-	RiGiftLine,
-	RiUser3Line,
-} from 'react-icons/ri';
+import { RiChat3Line, RiFireLine, RiGiftLine, RiUser3Line } from 'react-icons/ri';
 
 import { FireHeader } from '@/app/components/UI';
 import { useAuthState } from '@/app/lib/routing/context/AuthStateContext';
@@ -20,47 +15,47 @@ import { useAuthState } from '@/app/lib/routing/context/AuthStateContext';
 import { MinimalIcon } from './MinimalIcon';
 
 const FEATURES = [
-	{ 
-		icon: <HiOutlineLightningBolt />, 
-		label: 'Fast', 
+	{
+		icon: <HiOutlineLightningBolt />,
+		label: 'Fast',
 		tagline: 'Lightning Speed',
-		bg: 'bg-yellow-50/70', 
-		txt: 'text-yellow-600/70' 
+		bg: 'bg-yellow-50/70',
+		txt: 'text-yellow-600/70',
 	},
-	{ 
-		icon: <RiChat3Line />, 
-		label: 'Chat', 
+	{
+		icon: <RiChat3Line />,
+		label: 'Chat',
 		tagline: 'Real Conversations',
-		bg: 'bg-orange-50/70', 
-		txt: 'text-orange-600/70' 
+		bg: 'bg-orange-50/70',
+		txt: 'text-orange-600/70',
 	},
-	{ 
-		icon: <RiFireLine />, 
-		label: 'Trends', 
+	{
+		icon: <RiFireLine />,
+		label: 'Trends',
 		tagline: 'Stay Updated',
-		bg: 'bg-rose-50/70', 
-		txt: 'text-rose-600/70' 
+		bg: 'bg-rose-50/70',
+		txt: 'text-rose-600/70',
 	},
-	{ 
-		icon: <RiGiftLine />, 
-		label: 'Gifts', 
+	{
+		icon: <RiGiftLine />,
+		label: 'Gifts',
 		tagline: 'Spread Joy',
-		bg: 'bg-amber-50/70', 
-		txt: 'text-amber-600/70' 
+		bg: 'bg-amber-50/70',
+		txt: 'text-amber-600/70',
 	},
-	{ 
-		icon: <RiUser3Line />, 
-		label: 'Groups', 
+	{
+		icon: <RiUser3Line />,
+		label: 'Groups',
 		tagline: 'Connect Together',
-		bg: 'bg-emerald-50/70', 
-		txt: 'text-emerald-600/70' 
+		bg: 'bg-emerald-50/70',
+		txt: 'text-emerald-600/70',
 	},
-	{ 
-		icon: <HiOutlineEmojiHappy />, 
-		label: 'Fun', 
+	{
+		icon: <HiOutlineEmojiHappy />,
+		label: 'Fun',
 		tagline: 'Pure Vibes',
-		bg: 'bg-cyan-50/70', 
-		txt: 'text-cyan-600/70' 
+		bg: 'bg-cyan-50/70',
+		txt: 'text-cyan-600/70',
 	},
 ];
 

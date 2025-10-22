@@ -129,8 +129,8 @@ export const SessionCard: React.FC<SessionCardProps> = ({
 	const StatusIcon = statusConfig.icon as React.ElementType;
 
 	const borderClass = isInvited
-		? 'border-2 border-dashed border-orange-300/85'
-		: 'ring-2 ring-neutral-200/40';
+		? 'border-2 border-dashed border-orange-300/85 outline-none'
+		: 'ring-2 ring-neutral-200/40 outline-none';
 
 	const handleJoinClick = (e: React.MouseEvent) => {
 		e.preventDefault();

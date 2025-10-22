@@ -2,8 +2,10 @@
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'react-hot-toast';
-import { FiClipboard, FiCornerUpLeft, FiSmile, FiTrash2 } from 'react-icons/fi';
+import { FiCheckCircle, FiClipboard, FiCornerUpLeft, FiSmile, FiTrash2 } from 'react-icons/fi';
+import { IoColorPaletteOutline } from 'react-icons/io5';
 
+import { useSwipeReply } from '@/app/lib/hooks/useSwipe';
 import { ChatMessage, FireCachedUser } from '@/app/lib/types';
 import { formatTime } from '@/app/lib/utils/time';
 
@@ -30,9 +32,9 @@ interface MessageItemProps {
 	onCopy?: () => void;
 }
 
-const SWIPE_THRESHOLD = 40;
-const MAX_SWIPE = 50;
-const LONG_PRESS_TIME = 500;
+const SWIPE_TRIGGER_THRESHOLD = 70; // Trigger reply at 70px
+const LONG_PRESS_DURATION = 500;
+const ACTION_AUTO_HIDE_MS = 3000;
 
 const MessageItem: React.FC<MessageItemProps> = ({
 	message,
@@ -52,18 +54,33 @@ const MessageItem: React.FC<MessageItemProps> = ({
 	const [showActions, setShowActions] = useState(false);
 	const [showReactionPicker, setShowReactionPicker] = useState(false);
 	const [reactionAnchorRect, setReactionAnchorRect] = useState<DOMRect | null>(null);
-	const [swipeOffset, setSwipeOffset] = useState(0);
+	const [copied, setCopied] = useState(false);
+	const [showThemeSelector, setShowThemeSelector] = useState(false);
 
-	const touchStart = useRef<{ x: number; y: number; time: number } | null>(null);
-	const longPressTimer = useRef<number | null>(null);
-	const isDragging = useRef(false);
-	const hasReplied = useRef(false);
-	const autoHideTimer = useRef<number | null>(null);
-
+	// Local refs for UI behavior
 	const bubbleRef = useRef<HTMLDivElement | null>(null);
 	const reactionBtnRef = useRef<HTMLButtonElement | null>(null);
 	const actionsRef = useRef<HTMLDivElement | null>(null);
 
+	// keep auto-hide timer for actions
+	const autoHideTimer = useRef<number | null>(null);
+
+	// track brief swipe activity to prevent click toggles
+	const wasSwiping = useRef(false);
+
+	// local touch start/local long press handling (we keep this for reaction long-press)
+	const touchStartLocal = useRef<{ x: number; y: number; time: number } | null>(null);
+	const longPressTimer = useRef<number | null>(null);
+
+	// Use the external hook for swipe-to-reply behavior
+	const {
+		swipeOffset,
+		handleTouchStart: hookTouchStart,
+		handleTouchMove: hookTouchMove,
+		handleTouchEnd: hookTouchEnd,
+	} = useSwipeReply(onReply);
+
+	// Click outside handler
 	useEffect(() => {
 		const handleClickOutside = (e: PointerEvent) => {
 			const target = e.target as Node;
@@ -74,6 +91,7 @@ const MessageItem: React.FC<MessageItemProps> = ({
 			) {
 				setShowActions(false);
 				setShowReactionPicker(false);
+				setShowThemeSelector(false);
 			}
 		};
 
@@ -81,13 +99,14 @@ const MessageItem: React.FC<MessageItemProps> = ({
 		return () => document.removeEventListener('pointerdown', handleClickOutside);
 	}, []);
 
+	// Auto-hide actions after delay
 	useEffect(() => {
 		if (showActions) {
 			if (autoHideTimer.current) clearTimeout(autoHideTimer.current);
 
 			autoHideTimer.current = window.setTimeout(() => {
 				setShowActions(false);
-			}, 2000);
+			}, ACTION_AUTO_HIDE_MS);
 		}
 
 		return () => {
@@ -98,84 +117,93 @@ const MessageItem: React.FC<MessageItemProps> = ({
 		};
 	}, [showActions]);
 
-	const handleTouchStart = (e: React.TouchEvent) => {
-		const touch = e.touches[0];
-		if (!touch) return;
+	// Wrapper handlers that integrate the hook and keep local long-press behavior
+	const handleTouchStart = useCallback(
+		(e: React.TouchEvent) => {
+			const touch = e.touches[0];
+			if (!touch) return;
 
-		touchStart.current = { x: touch.clientX, y: touch.clientY, time: Date.now() };
-		isDragging.current = false;
-		hasReplied.current = false;
+			// local tracking for long press
+			touchStartLocal.current = { x: touch.clientX, y: touch.clientY, time: Date.now() };
+			wasSwiping.current = false;
 
-		if (longPressTimer.current) clearTimeout(longPressTimer.current);
+			if (longPressTimer.current) clearTimeout(longPressTimer.current);
 
-		longPressTimer.current = window.setTimeout(() => {
-			const rect =
-				reactionBtnRef.current?.getBoundingClientRect() ??
-				bubbleRef.current?.getBoundingClientRect();
-			setReactionAnchorRect(rect ?? null);
-			setShowReactionPicker(true);
-		}, LONG_PRESS_TIME);
-	};
+			longPressTimer.current = window.setTimeout(() => {
+				// only open reaction picker if user hasn't started swiping
+				const rect = bubbleRef.current?.getBoundingClientRect();
+				setReactionAnchorRect(rect ?? null);
+				setShowReactionPicker(true);
+				if ('vibrate' in navigator) {
+					navigator.vibrate(50);
+				}
+			}, LONG_PRESS_DURATION);
 
-	const handleTouchMove = (e: React.TouchEvent) => {
-		if (!touchStart.current) return;
+			// call hook's touch start
+			hookTouchStart(e);
+		},
+		[hookTouchStart]
+	);
 
-		const touch = e.touches[0];
-		if (!touch) return;
+	const handleTouchMove = useCallback(
+		(e: React.TouchEvent) => {
+			const touch = e.touches[0];
+			if (touch && touchStartLocal.current) {
+				const deltaX = touch.clientX - touchStartLocal.current.x;
+				const deltaY = touch.clientY - touchStartLocal.current.y;
 
-		const deltaX = touch.clientX - touchStart.current.x;
-		const deltaY = touch.clientY - touchStart.current.y;
+				// Cancel long press if moved vertically or horizontally beyond small threshold
+				if (Math.abs(deltaY) > 10 || Math.abs(deltaX) > 10) {
+					if (longPressTimer.current) {
+						clearTimeout(longPressTimer.current);
+						longPressTimer.current = null;
+					}
+				}
 
-		if (Math.abs(deltaY) > 10) {
-			if (longPressTimer.current) {
-				clearTimeout(longPressTimer.current);
-				longPressTimer.current = null;
+				// Mark that user was swiping if horizontal move is significant
+				if (Math.abs(deltaX) > 10) {
+					wasSwiping.current = true;
+				}
 			}
-			return;
-		}
 
-		if (Math.abs(deltaX) > 5) {
-			isDragging.current = true;
-			if (longPressTimer.current) {
-				clearTimeout(longPressTimer.current);
-				longPressTimer.current = null;
-			}
-		}
+			// call hook's touch move to handle swipeOffset state
+			hookTouchMove(e);
+		},
+		[hookTouchMove]
+	);
 
-		if (deltaX > 0) {
-			const progress = Math.min(deltaX / MAX_SWIPE, 1);
-			const eased = deltaX * (1 - progress * 0.5);
-			setSwipeOffset(Math.min(eased, MAX_SWIPE));
-		}
-	};
-
-	const handleTouchEnd = () => {
+	const handleTouchEnd = useCallback(() => {
 		if (longPressTimer.current) {
 			clearTimeout(longPressTimer.current);
 			longPressTimer.current = null;
 		}
 
-		if (swipeOffset > SWIPE_THRESHOLD && !hasReplied.current) {
-			hasReplied.current = true;
-			onReply();
-		}
+		// call hook's touch end which triggers onReply if threshold met
+		hookTouchEnd();
 
-		setSwipeOffset(0);
-		isDragging.current = false;
-		touchStart.current = null;
-	};
+		// Reset local tracking after a brief delay to prevent click from firing immediately after swipe
+		setTimeout(() => {
+			wasSwiping.current = false;
+		}, 100);
 
-	const handleBubbleClick = () => {
-		if (!isDragging.current) {
+		touchStartLocal.current = null;
+	}, [hookTouchEnd]);
+
+	const handleBubbleClick = useCallback(() => {
+		// Don't toggle actions if user was just swiping
+		if (!wasSwiping.current) {
 			setShowActions((s) => !s);
 		}
-	};
+	}, []);
 
-	const stopPropagation = (fn?: () => void) => (e: React.MouseEvent) => {
-		e.stopPropagation();
-		fn?.();
-		setShowActions(false);
-	};
+	const stopPropagation = useCallback(
+		(fn?: () => void) => (e: React.MouseEvent) => {
+			e.stopPropagation();
+			fn?.();
+			setShowActions(false);
+		},
+		[]
+	);
 
 	const handleCopy = useCallback(() => {
 		if (!message.text) {
@@ -183,31 +211,58 @@ const MessageItem: React.FC<MessageItemProps> = ({
 			return;
 		}
 		onCopy?.();
+		setCopied(true);
+		setTimeout(() => setCopied(false), 2000);
 	}, [message.text, onCopy]);
 
-	const handleReactionBtn = (e: React.MouseEvent) => {
+	const handleReactionBtn = useCallback((e: React.MouseEvent) => {
 		e.stopPropagation();
-		const rect =
-			reactionBtnRef.current?.getBoundingClientRect() ??
-			bubbleRef.current?.getBoundingClientRect();
+		const rect = bubbleRef.current?.getBoundingClientRect();
 		setReactionAnchorRect(rect ?? null);
 		setShowReactionPicker((s) => !s);
 		setShowActions(false);
-	};
+	}, []);
+
+	const handleThemeToggle = useCallback((e: React.MouseEvent) => {
+		e.stopPropagation();
+		setShowThemeSelector((s) => !s);
+	}, []);
+
+	// Calculate reply icon opacity and scale based on swipe progress
+	const replyIconOpacity = Math.min(swipeOffset / SWIPE_TRIGGER_THRESHOLD, 1);
+	const replyIconScale = Math.min(0.7 + (swipeOffset / SWIPE_TRIGGER_THRESHOLD) * 0.3, 1);
+	const showReplyIcon = swipeOffset > 20;
 
 	return (
 		<div
-			className={`flex gap-3 items-end ${isMine ? 'flex-row-reverse' : 'flex-row'} mb-4 transition-transform duration-200 ease-out`}
+			className={`flex gap-3 items-end ${isMine ? 'flex-row-reverse' : 'flex-row'} mb-4 transition-transform duration-200 ease-out relative z-0`}
 			style={{ transform: `translateX(${swipeOffset}px)` }}
 			onTouchStart={handleTouchStart}
 			onTouchMove={handleTouchMove}
 			onTouchEnd={handleTouchEnd}
 			onClick={handleBubbleClick}
 		>
+			{/* Reply icon indicator during swipe */}
+			{showReplyIcon && (
+				<div
+					className="absolute left-0 top-1/2 -translate-y-1/2 pointer-events-none"
+					style={{
+						opacity: replyIconOpacity,
+						transform: `translateY(-50%) scale(${replyIconScale})`,
+						transition: 'opacity 0.1s, transform 0.1s',
+					}}
+				>
+					<FiCornerUpLeft
+						size={20}
+						className={`${swipeOffset >= SWIPE_TRIGGER_THRESHOLD ? 'text-blue-600' : 'text-neutral-400'}`}
+					/>
+				</div>
+			)}
+
 			{showAvatar ? (
 				<FireAvatar seed={message.sender} size={28} src={avatarUrl} />
 			) : (
-				<div className="w-9 flex-shrink-0" />
+				<div className="w-7 flex-shrink-0" />
 			)}
 
 			<div className={`flex flex-col max-w-[75%] ${isMine ? 'items-end' : 'items-start'}`}>
@@ -216,18 +271,19 @@ const MessageItem: React.FC<MessageItemProps> = ({
 				)}
 
 				<div className="relative" ref={bubbleRef}>
+					{/* Compact action buttons */}
 					{showActions && (
 						<div
 							ref={actionsRef}
-							className={`absolute bottom-5 fc-slide-in-left ${isMine ? 'right-5' : 'left-5'} flex gap-2 items-center`}
-							style={{ transform: 'translateY(6px)' }}
+							className={`absolute bottom-3 ${isMine ? 'right-2' : 'left-2'} flex gap-1 items-center bg-white rounded-xl shadow-lg border border-neutral-200 p-1 z-[100] fc-slide-in-left duration-150`}
 							onClick={(e) => e.stopPropagation()}
 						>
 							<button
 								onClick={stopPropagation(onReply)}
 								aria-label="Reply"
-								className="p-1 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-600 transition-colors"
+								className="p-1.5 rounded hover:bg-blue-50 text-blue-600 transition-colors"
 								type="button"
+								title="Reply"
 							>
 								<FiCornerUpLeft size={14} />
 							</button>
@@ -236,8 +292,9 @@ const MessageItem: React.FC<MessageItemProps> = ({
 								ref={reactionBtnRef}
 								onClick={handleReactionBtn}
 								aria-label="React"
-								className="p-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-600 transition-colors"
+								className="p-1.5 rounded hover:bg-indigo-50 text-indigo-600 transition-colors"
 								type="button"
+								title="React"
 							>
 								<FiSmile size={14} />
 							</button>
@@ -245,18 +302,30 @@ const MessageItem: React.FC<MessageItemProps> = ({
 							<button
 								onClick={stopPropagation(handleCopy)}
 								aria-label="Copy"
-								className="p-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-600 transition-colors"
+								className="p-1.5 rounded hover:bg-emerald-50 text-emerald-600 transition-colors"
 								type="button"
+								title="Copy message"
 							>
-								<FiClipboard size={14} />
+								{copied ? <FiCheckCircle size={14} /> : <FiClipboard size={14} />}
+							</button>
+
+							<button
+								onClick={handleThemeToggle}
+								aria-label="Change theme"
+								className="p-1.5 rounded hover:bg-purple-50 text-purple-600 transition-colors"
+								type="button"
+								title="Syntax theme"
+							>
+								<IoColorPaletteOutline size={14} />
 							</button>
 
 							{isMine && onDelete && (
 								<button
 									onClick={stopPropagation(onDelete)}
 									aria-label="Delete"
-									className="p-1 rounded-lg bg-red-50 hover:bg-red-100 text-red-600 transition-colors"
+									className="p-1.5 rounded hover:bg-red-50 text-red-600 transition-colors"
 									type="button"
+									title="Delete message"
 								>
 									<FiTrash2 size={14} />
 								</button>
@@ -264,8 +333,9 @@ const MessageItem: React.FC<MessageItemProps> = ({
 						</div>
 					)}
 
+					{/* Message bubble */}
 					<div
-						className={`rounded-2xl py-2 px-3 break-words transition-all duration-200 ${isMine ? 'bg-neutral-900 text-white' : 'bg-white border border-neutral-200 text-neutral-800'}`}
+						className={`rounded-2xl max-w-65 py-2 px-3 break-words transition-all duration-150 ${isMine ? 'bg-neutral-900 text-white' : 'bg-white border border-neutral-200 text-neutral-800'}`}
 					>
 						{message.replyTo && replyToMessage && (
 							<ReplyPreview replyToMessage={replyToMessage} sender={replyToSender} compact />
@@ -274,16 +344,19 @@ const MessageItem: React.FC<MessageItemProps> = ({
 						<MarkdownRenderer
 							content={message.text}
 							className={`text-sm sm:text-base ${isMine ? 'text-white' : 'text-neutral-800'}`}
+							showThemeSelector={showThemeSelector}
+							onThemeSelectorClose={() => setShowThemeSelector(false)}
 						/>
-
-						{message.reactions && (
-							<ReactionsDisplay
-								reactions={message.reactions}
-								currentUserId={currentUserId}
-								onToggle={onToggleReaction}
-							/>
-						)}
 					</div>
+
+					{/* Reactions */}
+					{message.reactions && (
+						<ReactionsDisplay
+							reactions={message.reactions}
+							currentUserId={currentUserId}
+							onToggle={onToggleReaction}
+						/>
+					)}
 				</div>
 
 				<div className="flex items-center gap-2 mt-1 px-1 text-xs text-neutral-400">
@@ -306,4 +379,4 @@ const MessageItem: React.FC<MessageItemProps> = ({
 	);
 };
 
-export default MessageItem;
+export default React.memo(MessageItem);

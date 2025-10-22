@@ -110,7 +110,7 @@ const Orchestra: React.FC<OrchestraProps> = ({
 			try {
 				const res = await sendMsg(text, replyToId);
 				if (!res.ok) {
-					toast.error(`Failed to send: ${res.error}`);
+					toast.error(`Failed to send`);
 					return;
 				}
 				setReplyingTo(undefined);
