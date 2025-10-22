@@ -16,7 +16,7 @@ export type MessageStatus = 'sent' | 'delivered' | 'read';
  * Client-side chat message structure
  */
 export interface ChatMessage {
-	readonly id?: ID;
+	readonly id: ID;
 	readonly roomId: string;
 	readonly sessionId?: string;
 	readonly sender: UID;

@@ -24,7 +24,7 @@ export default function TypingIndicator({ typingUsers }: TypingIndicatorProps) {
 		<div
 			role="status"
 			aria-live="polite"
-			className="relative inline-flex items-center gap-2 px-4 py-2 rounded-3xl
+			className="relative inline-flex items-center gap-2 px-4 py-1.5 rounded-3xl
 				bg-white/80 backdrop-blur-md border border-neutral-200/40
 				text-neutral-800 text-sm select-none z-50"
 		>

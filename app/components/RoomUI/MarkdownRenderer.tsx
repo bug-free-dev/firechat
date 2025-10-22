@@ -168,7 +168,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
 			/>
 
 			{showThemeSelector && (
-				<div className="absolute -bottom-14 -left-1 transform z-[150] animate-slide-up  duration-200">
+				<div className="absolute -bottom-14 left-2 transform z-[150] animate-slide-up  duration-200">
 					<div className="w-25 overflow-y-auto bg-white rounded-lg shadow-md border border-neutral-200">
 						{THEMES.map((t) => (
 							<button

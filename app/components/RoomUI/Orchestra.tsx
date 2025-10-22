@@ -36,7 +36,7 @@ export interface OrchestraProps {
 	searchUsers?: (query: string) => Promise<FireCachedUser[]>;
 }
 
-const Orchestra: React.FC<OrchestraProps> = ({
+const Orchestra: React.FC<OrchestraProps> = React.memo(({
 	session,
 	currentUser,
 	profiles = {},
@@ -403,6 +403,6 @@ const Orchestra: React.FC<OrchestraProps> = ({
 			/>
 		</div>
 	);
-};
+});
 
 export default Orchestra;

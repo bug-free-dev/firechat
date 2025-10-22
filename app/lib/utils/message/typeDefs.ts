@@ -126,6 +126,18 @@ export interface RTDBTypingPayload {
 	meta?: Record<string, unknown>;
 }
 
+export interface OptimisticMessage extends ChatMessage {
+   readonly _optimistic: true;
+   readonly _timestamp: number;
+}
+
+export type OptimisticOperation = {
+   readonly id: string;
+   readonly type: 'send' | 'react_add' | 'react_remove' | 'delete';
+   readonly timestamp: number;
+   readonly rollback?: () => void;
+};
+
 /* <------- LISTENER TYPES -------> */
 
 export type SnapshotCallback = (snap: DataSnapshot) => void;

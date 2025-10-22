@@ -18,15 +18,19 @@ import { rtdb } from '@/app/lib/firebase/FireClient';
 import type { ChatMessage, FireCachedUser, ServerResult } from '@/app/lib/types';
 import {
 	compareMsgsAsc,
+	createOptimisticMessage,
 	parseMessageFromSnapshot,
 	parseTypingUserFromSnapshot,
 } from '@/app/lib/utils/message/helpers';
 import type {
+   OptimisticMessage,
+   OptimisticOperation,
 	RTDBListeners,
 	SnapshotCallback,
 	UseMessagesOptions,
 	UseMessagesReturn,
 } from '@/app/lib/utils/message/typeDefs';
+import { toMillis } from '@/app/lib/utils/time';
 
 /* <----------- CONSTANTS -----------> */
 const DEFAULT_INITIAL_LIMIT = 50;
@@ -34,19 +38,11 @@ const DEFAULT_LIVE_LIMIT = 100;
 const DEFAULT_MAX_MESSAGES = 500;
 const DEFAULT_TYPING_DEBOUNCE_MS = 1200;
 const TYPING_CLEAR_DELAY_MS = 200;
-const OPTIMISTIC_SYNC_DELAY_MS = 2000;
-
-/* <----------- INTERFACES -----------> */
-interface MessageState {
-	version: number;
-	sending: boolean;
-	inFlightCount: number;
-}
-
-interface TypingState {
-	version: number;
-	isActive: boolean;
-}
+const OPTIMISTIC_TIMEOUT_MS = 5000;
+const OPTIMISTIC_MATCH_THRESHOLD_MS = 3000;
+const MAX_TEXT_LENGTH = 10000;
+const MAX_LIMIT = 200;
+const MAX_EMOJI_LENGTH = 10;
 
 /* <----------- HOOK -----------> */
 
@@ -69,22 +65,16 @@ export function useFireMessages(params: UseMessagesOptions): UseMessagesReturn {
 		throw new Error('[useFireMessages] userUid is required');
 	}
 
-	// State
-	const [messageState, setMessageState] = useState<MessageState>({
-		version: 0,
-		sending: false,
-		inFlightCount: 0,
-	});
-	const [typingState, setTypingState] = useState<TypingState>({
-		version: 0,
-		isActive: false,
-	});
+	// State - Optimized for minimal re-renders
+	const [messageVersion, setMessageVersion] = useState(0);
+	const [inFlightCount, setInFlightCount] = useState(0);
+	const [typingVersion, setTypingVersion] = useState(0);
 
-	// Refs - Data stores
-	const messagesMapRef = useRef<Map<string, ChatMessage>>(new Map());
-	const pendingMessagesRef = useRef<Set<string>>(new Set());
+	// Refs - Core data stores
+	const messagesMapRef = useRef<Map<string, ChatMessage | OptimisticMessage>>(new Map());
+	const optimisticOpsRef = useRef<Map<string, OptimisticOperation>>(new Map());
 	const typingUsersMapRef = useRef<Map<string, FireCachedUser>>(new Map());
-	const isMountedRef = useRef<boolean>(true);
+	const isMountedRef = useRef(true);
 
 	// Refs - RTDB
 	const rtdbQueryRef = useRef<RTDBQuery | null>(null);
@@ -94,9 +84,12 @@ export function useFireMessages(params: UseMessagesOptions): UseMessagesReturn {
 	// Refs - Typing timers
 	const typingDebounceTimerRef = useRef<NodeJS.Timeout | null>(null);
 	const typingClearTimerRef = useRef<NodeJS.Timeout | null>(null);
+	const isTypingActiveRef = useRef(false);
 
-	// Refs - Cleanup flags
-	const cleanupInProgressRef = useRef<boolean>(false);
+	// Refs - Performance optimizations
+	const cleanupInProgressRef = useRef(false);
+	const messagesCacheRef = useRef<ChatMessage[] | null>(null);
+	const typingCacheRef = useRef<FireCachedUser[] | null>(null);
 
 	useEffect(() => {
 		isMountedRef.current = true;
@@ -105,77 +98,77 @@ export function useFireMessages(params: UseMessagesOptions): UseMessagesReturn {
 		};
 	}, []);
 
-	/* <----------- COMPUTED VALUES -----------> */
-
-	const messages = useMemo<ChatMessage[]>(() => {
-		const allMessages = Array.from(messagesMapRef.current.values());
-		allMessages.sort(compareMsgsAsc);
-
-		// Memory management - keep only recent messages
-		if (allMessages.length > maxMessagesInMemory) {
-			const keep = allMessages.slice(allMessages.length - maxMessagesInMemory);
-			messagesMapRef.current = new Map(keep.map((m) => [m.id!, m]));
-			return keep;
-		}
-
-		return allMessages;
-	}, [messageState.version, maxMessagesInMemory]);
-
-	const typingUsers = useMemo<FireCachedUser[]>(() => {
-		return Array.from(typingUsersMapRef.current.values()).filter((user) => user.uid !== userUid);
-	}, [typingState.version, userUid]);
-
-	/* <----------- STATE TRIGGERS -----------> */
+	/* <----------- STATE TRIGGERS - OPTIMIZED -----------> */
 
 	const triggerMessagesUpdate = useCallback((): void => {
-		if (isMountedRef.current && !cleanupInProgressRef.current) {
-			setMessageState((prev) => ({
-				...prev,
-				version: prev.version + 1,
-			}));
-		}
+		if (!isMountedRef.current || cleanupInProgressRef.current) return;
+		messagesCacheRef.current = null;
+		setMessageVersion((v) => v + 1);
 	}, []);
 
 	const triggerTypingUpdate = useCallback((): void => {
-		if (isMountedRef.current && !cleanupInProgressRef.current) {
-			setTypingState((prev) => ({
-				...prev,
-				version: prev.version + 1,
-			}));
-		}
+		if (!isMountedRef.current || cleanupInProgressRef.current) return;
+		typingCacheRef.current = null;
+		setTypingVersion((v) => v + 1);
 	}, []);
 
 	const updateInFlightCount = useCallback((delta: number): void => {
-		if (isMountedRef.current && !cleanupInProgressRef.current) {
-			setMessageState((prev) => {
-				const newCount = Math.max(0, prev.inFlightCount + delta);
-				return {
-					...prev,
-					inFlightCount: newCount,
-					sending: newCount > 0,
-				};
-			});
-		}
+		if (!isMountedRef.current || cleanupInProgressRef.current) return;
+		setInFlightCount((prev) => Math.max(0, prev + delta));
 	}, []);
 
-	/* <----------- LOCAL MESSAGE UPDATES -----------> */
+	/* <----------- OPTIMISTIC OPERATIONS MANAGEMENT -----------> */
+
+	const addOptimisticOp = useCallback(
+		(op: OptimisticOperation): void => {
+			optimisticOpsRef.current.set(op.id, op);
+
+			// Auto-cleanup old optimistic operations
+			setTimeout(() => {
+				const existing = optimisticOpsRef.current.get(op.id);
+				if (existing && Date.now() - existing.timestamp > OPTIMISTIC_TIMEOUT_MS) {
+					existing.rollback?.();
+					optimisticOpsRef.current.delete(op.id);
+					triggerMessagesUpdate();
+				}
+			}, OPTIMISTIC_TIMEOUT_MS);
+		},
+		[triggerMessagesUpdate]
+	);
+
+	const resolveOptimisticOp = useCallback((id: string, success: boolean): void => {
+		const op = optimisticOpsRef.current.get(id);
+		if (!op) return;
+
+		if (!success) {
+			op.rollback?.();
+		}
+		optimisticOpsRef.current.delete(id);
+	}, []);
+
+	/* <----------- MESSAGE OPERATIONS - FULLY OPTIMISTIC -----------> */
 
 	const upsertMessageLocal = useCallback(
 		(msg: ChatMessage): void => {
-			if (!msg.id?.trim()) {
-				return;
-			}
+			if (!msg?.id?.trim()) return;
 
 			const existing = messagesMapRef.current.get(msg.id);
 
-			// Skip if identical (deep comparison for efficiency)
-			if (existing && JSON.stringify(existing) === JSON.stringify(msg)) {
+			// Replace optimistic message with real one
+			if (existing && '_optimistic' in existing && !('_optimistic' in msg)) {
+				messagesMapRef.current.set(msg.id, msg);
+				triggerMessagesUpdate();
 				return;
 			}
 
-			// Skip if pending (optimistic update already applied)
-			if (pendingMessagesRef.current.has(msg.id)) {
-				pendingMessagesRef.current.delete(msg.id);
+			// Skip if identical (performance optimization)
+			if (
+				existing &&
+				!('_optimistic' in existing) &&
+				toMillis(existing.createdAt) === toMillis(msg.createdAt) &&
+				JSON.stringify(existing.reactions) === JSON.stringify(msg.reactions)
+			) {
+				return;
 			}
 
 			messagesMapRef.current.set(msg.id, msg);
@@ -186,16 +179,45 @@ export function useFireMessages(params: UseMessagesOptions): UseMessagesReturn {
 
 	const removeMessageLocal = useCallback(
 		(msgId: string): void => {
-			if (!msgId?.trim() || !messagesMapRef.current.has(msgId)) {
-				return;
-			}
-
+			if (!msgId?.trim() || !messagesMapRef.current.has(msgId)) return;
 			messagesMapRef.current.delete(msgId);
-			pendingMessagesRef.current.delete(msgId);
 			triggerMessagesUpdate();
 		},
 		[triggerMessagesUpdate]
 	);
+
+	/* <----------- COMPUTED VALUES - CACHED -----------> */
+
+	const messages = useMemo<ChatMessage[]>(() => {
+		if (messagesCacheRef.current) return messagesCacheRef.current;
+
+		const allMessages = Array.from(messagesMapRef.current.values()) as ChatMessage[];
+		allMessages.sort(compareMsgsAsc);
+
+		// Memory management
+		if (allMessages.length > maxMessagesInMemory) {
+			const keep = allMessages.slice(-maxMessagesInMemory);
+			messagesMapRef.current = new Map(keep.map((m) => [m.id!, m]));
+			messagesCacheRef.current = keep;
+			return keep;
+		}
+
+		messagesCacheRef.current = allMessages;
+		return allMessages;
+	}, [messageVersion, maxMessagesInMemory]);
+
+	const typingUsers = useMemo<FireCachedUser[]>(() => {
+		if (typingCacheRef.current) return typingCacheRef.current;
+
+		const users = Array.from(typingUsersMapRef.current.values()).filter(
+			(user) => user.uid !== userUid
+		);
+
+		typingCacheRef.current = users;
+		return users;
+	}, [typingVersion, userUid]);
+
+	const sending = useMemo(() => inFlightCount > 0, [inFlightCount]);
 
 	/* <----------- RTDB: LIVE MESSAGES LISTENERS -----------> */
 
@@ -212,11 +234,28 @@ export function useFireMessages(params: UseMessagesOptions): UseMessagesReturn {
 
 			try {
 				const incoming = parseMessageFromSnapshot(snap, sessionId);
-				if (incoming?.id) {
-					upsertMessageLocal(incoming);
+				if (!incoming?.id) return;
+
+				// Find and resolve optimistic message
+				const optimisticMsg = Array.from(messagesMapRef.current.values()).find((m) => {
+					if (!('_optimistic' in m)) return false;
+					const opt = m as OptimisticMessage;
+					return (
+						opt.text === incoming.text &&
+						opt.sender === incoming.sender &&
+						Math.abs(toMillis(opt.createdAt) - toMillis(incoming.createdAt)) <
+							OPTIMISTIC_MATCH_THRESHOLD_MS
+					);
+				});
+
+				if (optimisticMsg?.id) {
+					messagesMapRef.current.delete(optimisticMsg.id);
+					resolveOptimisticOp(optimisticMsg.id, true);
 				}
+
+				upsertMessageLocal(incoming);
 			} catch {
-				/**Ignore*/
+				// Silently fail
 			}
 		};
 
@@ -225,12 +264,11 @@ export function useFireMessages(params: UseMessagesOptions): UseMessagesReturn {
 
 			try {
 				const incoming = parseMessageFromSnapshot(snap, sessionId);
-				if (!incoming?.id?.trim()) return;
-
-				messagesMapRef.current.set(incoming.id, incoming);
-				triggerMessagesUpdate();
+				if (incoming?.id) {
+					upsertMessageLocal(incoming);
+				}
 			} catch {
-				/**Ignore */
+				// Silently fail
 			}
 		};
 
@@ -243,7 +281,7 @@ export function useFireMessages(params: UseMessagesOptions): UseMessagesReturn {
 					removeMessageLocal(key);
 				}
 			} catch {
-				/**Ignore */
+				// Silently fail
 			}
 		};
 
@@ -263,11 +301,13 @@ export function useFireMessages(params: UseMessagesOptions): UseMessagesReturn {
 				if (listeners.added) rtdbOff(q, 'child_added', listeners.added);
 				if (listeners.changed) rtdbOff(q, 'child_changed', listeners.changed);
 				if (listeners.removed) rtdbOff(q, 'child_removed', listeners.removed);
-			} catch {}
+			} catch {
+				// Silently fail
+			}
 		};
-	}, [sessionId, liveLimit, upsertMessageLocal, removeMessageLocal, triggerMessagesUpdate]);
+	}, [sessionId, liveLimit, upsertMessageLocal, removeMessageLocal, resolveOptimisticOp]);
 
-	/* <----------- RTDB: TYPING INDICATORS LISTENERS -----------> */
+	/* <----------- RTDB: TYPING INDICATORS -----------> */
 
 	useEffect(() => {
 		if (!sessionId || !rtdb || !userUid) return;
@@ -285,7 +325,9 @@ export function useFireMessages(params: UseMessagesOptions): UseMessagesReturn {
 
 				typingUsersMapRef.current.set(user.uid, user);
 				triggerTypingUpdate();
-			} catch {}
+			} catch {
+				// Silently fail
+			}
 		};
 
 		const onTypingChange: SnapshotCallback = (snap: DataSnapshot): void => {
@@ -297,7 +339,9 @@ export function useFireMessages(params: UseMessagesOptions): UseMessagesReturn {
 
 				typingUsersMapRef.current.set(user.uid, user);
 				triggerTypingUpdate();
-			} catch {}
+			} catch {
+				// Silently fail
+			}
 		};
 
 		const onTypingRemove: SnapshotCallback = (snap: DataSnapshot): void => {
@@ -309,7 +353,9 @@ export function useFireMessages(params: UseMessagesOptions): UseMessagesReturn {
 
 				typingUsersMapRef.current.delete(key);
 				triggerTypingUpdate();
-			} catch {}
+			} catch {
+				// Silently fail
+			}
 		};
 
 		const typingListeners: RTDBListeners = {
@@ -332,12 +378,12 @@ export function useFireMessages(params: UseMessagesOptions): UseMessagesReturn {
 				if (typingListeners.typingRemoved)
 					rtdbOff(tRef, 'child_removed', typingListeners.typingRemoved);
 			} catch {
-				/* empty */
+				// Silently fail
 			}
 		};
 	}, [sessionId, userUid, triggerTypingUpdate]);
 
-	/* <----------- TYPING INDICATOR (Server-Side Write) -----------> */
+	/* <----------- TYPING INDICATOR -----------> */
 
 	const writeTypingIndicator = useCallback(
 		async (isTyping: boolean): Promise<void> => {
@@ -351,53 +397,51 @@ export function useFireMessages(params: UseMessagesOptions): UseMessagesReturn {
 					avatarUrl: typingProfile?.avatarUrl ?? null,
 					isTyping,
 				});
-			} catch {}
+			} catch {
+				// Silently fail
+			}
 		},
 		[sessionId, userUid, typingProfile]
 	);
 
 	const setTyping = useCallback(
 		(isTyping: boolean): void => {
-			// Clear any pending clear timer
 			if (typingClearTimerRef.current) {
 				clearTimeout(typingClearTimerRef.current);
 				typingClearTimerRef.current = null;
 			}
 
 			if (isTyping) {
-				// Only write if not already active
-				if (!typingState.isActive) {
-					setTypingState((prev) => ({ ...prev, isActive: true }));
+				if (!isTypingActiveRef.current) {
+					isTypingActiveRef.current = true;
 					void writeTypingIndicator(true);
 				}
 
-				// Reset debounce timer
 				if (typingDebounceTimerRef.current) {
 					clearTimeout(typingDebounceTimerRef.current);
 				}
 
 				typingDebounceTimerRef.current = setTimeout(() => {
-					setTypingState((prev) => ({ ...prev, isActive: false }));
+					isTypingActiveRef.current = false;
 					void writeTypingIndicator(false);
 					typingDebounceTimerRef.current = null;
 				}, typingDebounceMs);
 			} else {
-				// Clear immediately with slight delay to batch rapid calls
 				typingClearTimerRef.current = setTimeout(() => {
 					if (typingDebounceTimerRef.current) {
 						clearTimeout(typingDebounceTimerRef.current);
 						typingDebounceTimerRef.current = null;
 					}
-					setTypingState((prev) => ({ ...prev, isActive: false }));
+					isTypingActiveRef.current = false;
 					void writeTypingIndicator(false);
 					typingClearTimerRef.current = null;
 				}, TYPING_CLEAR_DELAY_MS);
 			}
 		},
-		[writeTypingIndicator, typingDebounceMs, typingState.isActive]
+		[writeTypingIndicator, typingDebounceMs]
 	);
 
-	/* <----------- SEND MESSAGE -----------> */
+	/* <----------- SEND MESSAGE - TRUE OPTIMISTIC -----------> */
 
 	const sendMessage = useCallback(
 		async (
@@ -405,6 +449,7 @@ export function useFireMessages(params: UseMessagesOptions): UseMessagesReturn {
 			replyTo?: string,
 			extras?: Record<string, unknown>
 		): Promise<ServerResult<ChatMessage>> => {
+			// Validation
 			if (!sessionId?.trim()) {
 				return { ok: false, error: 'INVALID_INPUT', reason: 'missing sessionId' };
 			}
@@ -417,10 +462,38 @@ export function useFireMessages(params: UseMessagesOptions): UseMessagesReturn {
 				return { ok: false, error: 'INVALID_INPUT', reason: 'text required' };
 			}
 
-			// Security: Validate text length
-			if (trimmedText.length > 10000) {
-				return { ok: false, error: 'INVALID_INPUT', reason: 'text too long (max 10000 chars)' };
+			if (trimmedText.length > MAX_TEXT_LENGTH) {
+				return {
+					ok: false,
+					error: 'INVALID_INPUT',
+					reason: `text too long (max ${MAX_TEXT_LENGTH} chars)`,
+				};
 			}
+
+			// Create optimistic message IMMEDIATELY
+			const optimisticMsg = createOptimisticMessage(
+				trimmedText,
+				userUid,
+				sessionId,
+				replyTo?.trim(),
+				extras
+			);
+
+			// Add to UI instantly
+			messagesMapRef.current.set(optimisticMsg?.id, optimisticMsg);
+			triggerMessagesUpdate();
+
+			// Track operation
+			const rollback = () => {
+				messagesMapRef.current.delete(optimisticMsg.id);
+			};
+
+			addOptimisticOp({
+				id: optimisticMsg.id,
+				type: 'send',
+				timestamp: Date.now(),
+				rollback,
+			});
 
 			updateInFlightCount(1);
 
@@ -433,31 +506,33 @@ export function useFireMessages(params: UseMessagesOptions): UseMessagesReturn {
 					extras,
 				});
 
-				if (!res.ok) return res;
-
-				// Optimistic update
-				if (res.data?.id?.trim()) {
-					pendingMessagesRef.current.add(res.data.id);
-					messagesMapRef.current.set(res.data.id, res.data);
+				if (!res.ok) {
+					resolveOptimisticOp(optimisticMsg.id, false);
 					triggerMessagesUpdate();
-
-					// Clear pending flag after RTDB sync
-					setTimeout(() => {
-						if (res.data?.id) {
-							pendingMessagesRef.current.delete(res.data.id);
-						}
-					}, OPTIMISTIC_SYNC_DELAY_MS);
+					return res;
 				}
 
+				resolveOptimisticOp(optimisticMsg.id, true);
 				return res;
 			} catch (err) {
+				resolveOptimisticOp(optimisticMsg.id, false);
+				triggerMessagesUpdate();
+
 				const errorMessage = err instanceof Error ? err.message : 'Unknown error';
 				return { ok: false, error: 'SEND_FAILED', reason: errorMessage };
 			} finally {
 				updateInFlightCount(-1);
 			}
 		},
-		[sessionId, userUid, services, triggerMessagesUpdate, updateInFlightCount]
+		[
+			sessionId,
+			userUid,
+			services,
+			triggerMessagesUpdate,
+			updateInFlightCount,
+			addOptimisticOp,
+			resolveOptimisticOp,
+		]
 	);
 
 	/* <----------- FETCH OLDER MESSAGES -----------> */
@@ -471,8 +546,7 @@ export function useFireMessages(params: UseMessagesOptions): UseMessagesReturn {
 				return { ok: false, error: 'INVALID_INPUT', reason: 'missing sessionId' };
 			}
 
-			// Security: Validate limit
-			const safeLimit = Math.min(Math.max(1, limit), 200);
+			const safeLimit = Math.min(Math.max(1, limit), MAX_LIMIT);
 
 			try {
 				const res = await services.getMessages({
@@ -483,15 +557,21 @@ export function useFireMessages(params: UseMessagesOptions): UseMessagesReturn {
 
 				if (!res.ok) return res;
 
+				// Batch update
 				let hasNewMessages = false;
+				const updates: [string, ChatMessage][] = [];
+
 				for (const m of res.data) {
 					if (m?.id?.trim() && !messagesMapRef.current.has(m.id)) {
-						messagesMapRef.current.set(m.id, m);
+						updates.push([m.id, m]);
 						hasNewMessages = true;
 					}
 				}
 
 				if (hasNewMessages) {
+					for (const [id, msg] of updates) {
+						messagesMapRef.current.set(id, msg);
+					}
 					triggerMessagesUpdate();
 				}
 
@@ -504,7 +584,7 @@ export function useFireMessages(params: UseMessagesOptions): UseMessagesReturn {
 		[sessionId, services, initialLimit, triggerMessagesUpdate]
 	);
 
-	/* <----------- REACTIONS -----------> */
+	/* <----------- REACTIONS - TRUE OPTIMISTIC -----------> */
 
 	const addReaction = useCallback(
 		async (messageId: string, emoji: string): Promise<ServerResult<null>> => {
@@ -517,9 +597,7 @@ export function useFireMessages(params: UseMessagesOptions): UseMessagesReturn {
 			if (!emoji?.trim()) {
 				return { ok: false, error: 'INVALID_INPUT', reason: 'missing emoji' };
 			}
-
-			// Security: Validate emoji (basic check)
-			if (emoji.length > 10) {
+			if (emoji.length > MAX_EMOJI_LENGTH) {
 				return { ok: false, error: 'INVALID_INPUT', reason: 'emoji too long' };
 			}
 
@@ -528,7 +606,7 @@ export function useFireMessages(params: UseMessagesOptions): UseMessagesReturn {
 				return { ok: false, error: 'NOT_FOUND', reason: 'message not found' };
 			}
 
-			const prevReactions = { ...(m.reactions ?? {}) };
+			const prevReactions = m.reactions ?? {};
 			const arr = Array.isArray(prevReactions[emoji]) ? [...prevReactions[emoji]] : [];
 
 			if (arr.includes(userUid)) {
@@ -537,9 +615,16 @@ export function useFireMessages(params: UseMessagesOptions): UseMessagesReturn {
 
 			// Optimistic update
 			arr.push(userUid);
-			const updatedMessage = { ...m, reactions: { ...prevReactions, [emoji]: arr } };
-			messagesMapRef.current.set(messageId, updatedMessage);
+			const optimisticMsg = { ...m, reactions: { ...prevReactions, [emoji]: arr } };
+			messagesMapRef.current.set(messageId, optimisticMsg);
 			triggerMessagesUpdate();
+
+			const rollback = () => {
+				messagesMapRef.current.set(messageId, m);
+			};
+
+			const opId = `react_add_${messageId}_${emoji}_${Date.now()}`;
+			addOptimisticOp({ id: opId, type: 'react_add', timestamp: Date.now(), rollback });
 
 			try {
 				const res = await services.addReaction({
@@ -549,27 +634,22 @@ export function useFireMessages(params: UseMessagesOptions): UseMessagesReturn {
 					emoji,
 				});
 
+				resolveOptimisticOp(opId, res.ok);
+
 				if (!res.ok) {
-					// Rollback on failure
-					const rollback = messagesMapRef.current.get(messageId);
-					if (rollback) {
-						messagesMapRef.current.set(messageId, { ...rollback, reactions: prevReactions });
-						triggerMessagesUpdate();
-					}
-				}
-				return res;
-			} catch (err) {
-				// Rollback on error
-				const rollback = messagesMapRef.current.get(messageId);
-				if (rollback) {
-					messagesMapRef.current.set(messageId, { ...rollback, reactions: prevReactions });
 					triggerMessagesUpdate();
 				}
+
+				return res;
+			} catch (err) {
+				resolveOptimisticOp(opId, false);
+				triggerMessagesUpdate();
+
 				const errorMessage = err instanceof Error ? err.message : 'Unknown error';
 				return { ok: false, error: 'REACT_FAILED', reason: errorMessage };
 			}
 		},
-		[services, userUid, sessionId, triggerMessagesUpdate]
+		[services, userUid, sessionId, triggerMessagesUpdate, addOptimisticOp, resolveOptimisticOp]
 	);
 
 	const removeReaction = useCallback(
@@ -589,7 +669,7 @@ export function useFireMessages(params: UseMessagesOptions): UseMessagesReturn {
 				return { ok: false, error: 'NOT_FOUND', reason: 'message not found' };
 			}
 
-			const prevReactions = { ...(m.reactions ?? {}) };
+			const prevReactions = m.reactions ?? {};
 			const arr = Array.isArray(prevReactions[emoji]) ? [...prevReactions[emoji]] : [];
 			const idx = arr.indexOf(userUid);
 
@@ -606,12 +686,19 @@ export function useFireMessages(params: UseMessagesOptions): UseMessagesReturn {
 				delete nextReactions[emoji];
 			}
 
-			const updatedMessage = {
+			const optimisticMsg = {
 				...m,
 				reactions: Object.keys(nextReactions).length ? nextReactions : {},
 			};
-			messagesMapRef.current.set(messageId, updatedMessage);
+			messagesMapRef.current.set(messageId, optimisticMsg);
 			triggerMessagesUpdate();
+
+			const rollback = () => {
+				messagesMapRef.current.set(messageId, m);
+			};
+
+			const opId = `react_remove_${messageId}_${emoji}_${Date.now()}`;
+			addOptimisticOp({ id: opId, type: 'react_remove', timestamp: Date.now(), rollback });
 
 			try {
 				const res = await services.removeReaction({
@@ -621,30 +708,25 @@ export function useFireMessages(params: UseMessagesOptions): UseMessagesReturn {
 					emoji,
 				});
 
+				resolveOptimisticOp(opId, res.ok);
+
 				if (!res.ok) {
-					// Rollback on failure
-					const rollback = messagesMapRef.current.get(messageId);
-					if (rollback) {
-						messagesMapRef.current.set(messageId, { ...rollback, reactions: prevReactions });
-						triggerMessagesUpdate();
-					}
-				}
-				return res;
-			} catch (err) {
-				// Rollback on error
-				const rollback = messagesMapRef.current.get(messageId);
-				if (rollback) {
-					messagesMapRef.current.set(messageId, { ...rollback, reactions: prevReactions });
 					triggerMessagesUpdate();
 				}
+
+				return res;
+			} catch (err) {
+				resolveOptimisticOp(opId, false);
+				triggerMessagesUpdate();
+
 				const errorMessage = err instanceof Error ? err.message : 'Unknown error';
 				return { ok: false, error: 'REACT_REMOVE_FAILED', reason: errorMessage };
 			}
 		},
-		[services, userUid, sessionId, triggerMessagesUpdate]
+		[services, userUid, sessionId, triggerMessagesUpdate, addOptimisticOp, resolveOptimisticOp]
 	);
 
-	/* <----------- DELETE MESSAGE -----------> */
+	/* <----------- DELETE MESSAGE - TRUE OPTIMISTIC -----------> */
 
 	const deleteMessage = useCallback(
 		async (messageId: string): Promise<ServerResult<null>> => {
@@ -662,7 +744,15 @@ export function useFireMessages(params: UseMessagesOptions): UseMessagesReturn {
 
 			// Optimistic removal
 			const backup = { ...m };
-			removeMessageLocal(messageId);
+			messagesMapRef.current.delete(messageId);
+			triggerMessagesUpdate();
+
+			const rollback = () => {
+				messagesMapRef.current.set(messageId, backup);
+			};
+
+			const opId = `delete_${messageId}_${Date.now()}`;
+			addOptimisticOp({ id: opId, type: 'delete', timestamp: Date.now(), rollback });
 
 			try {
 				const res = await services.deleteMessage({
@@ -671,23 +761,24 @@ export function useFireMessages(params: UseMessagesOptions): UseMessagesReturn {
 					callerUid: userUid,
 				});
 
+				resolveOptimisticOp(opId, res.ok);
+
 				if (!res.ok) {
-					// Rollback on failure
-					messagesMapRef.current.set(messageId, backup);
 					triggerMessagesUpdate();
 				}
 
 				return res;
 			} catch (err) {
-				// Rollback on error
-				messagesMapRef.current.set(messageId, backup);
+				resolveOptimisticOp(opId, false);
 				triggerMessagesUpdate();
+
 				const errorMessage = err instanceof Error ? err.message : 'Unknown error';
 				return { ok: false, error: 'DELETE_FAILED', reason: errorMessage };
 			}
 		},
-		[services, userUid, sessionId, removeMessageLocal, triggerMessagesUpdate]
+		[services, userUid, sessionId, triggerMessagesUpdate, addOptimisticOp, resolveOptimisticOp]
 	);
+
 
 	/* <----------- CLEANUP -----------> */
 
@@ -696,13 +787,16 @@ export function useFireMessages(params: UseMessagesOptions): UseMessagesReturn {
 
 		// Clear data structures
 		messagesMapRef.current.clear();
-		pendingMessagesRef.current.clear();
+		optimisticOpsRef.current.clear();
 		typingUsersMapRef.current.clear();
+		messagesCacheRef.current = null;
+		typingCacheRef.current = null;
 
 		// Clear state
 		if (isMountedRef.current) {
-			setMessageState({ version: 0, sending: false, inFlightCount: 0 });
-			setTypingState({ version: 0, isActive: false });
+			setMessageVersion(0);
+			setInFlightCount(0);
+			setTypingVersion(0);
 		}
 
 		// Clear timers
@@ -724,7 +818,9 @@ export function useFireMessages(params: UseMessagesOptions): UseMessagesReturn {
 				if (listeners.added) rtdbOff(q, 'child_added', listeners.added);
 				if (listeners.changed) rtdbOff(q, 'child_changed', listeners.changed);
 				if (listeners.removed) rtdbOff(q, 'child_removed', listeners.removed);
-			} catch {}
+			} catch {
+				// Silently fail
+			}
 		}
 
 		// Cleanup RTDB typing listeners
@@ -736,7 +832,9 @@ export function useFireMessages(params: UseMessagesOptions): UseMessagesReturn {
 				if (listeners.typingAdded) rtdbOff(tRef, 'child_added', listeners.typingAdded);
 				if (listeners.typingChanged) rtdbOff(tRef, 'child_changed', listeners.typingChanged);
 				if (listeners.typingRemoved) rtdbOff(tRef, 'child_removed', listeners.typingRemoved);
-			} catch {}
+			} catch {
+				// Silently fail
+			}
 		}
 
 		// Clear typing indicator on server
@@ -761,8 +859,8 @@ export function useFireMessages(params: UseMessagesOptions): UseMessagesReturn {
 
 	return {
 		messages,
-		sending: messageState.sending,
-		inFlightCount: messageState.inFlightCount,
+		sending,
+		inFlightCount,
 		typingUsers,
 		setTyping,
 		sendMessage,

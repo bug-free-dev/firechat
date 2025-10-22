@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState, useTransition } from 'react';
 import { FaPaperPlane } from 'react-icons/fa';
 
 import { ChatMessage, FireCachedUser } from '@/app/lib/types';
@@ -22,49 +22,47 @@ const TYPING_TIMEOUT = 2000;
 const MessageComposer: React.FC<MessageComposerProps> = React.memo(
 	({ onSend, onTyping, disabled = false, replyingTo, replyToSender, onCancelReply }) => {
 		const [text, setText] = useState('');
-		const textRef = useRef('');
-		const [isTyping, setIsTyping] = useState(false);
+		const [hasContent, setHasContent] = useState(false);
 		const textareaRef = useRef<HTMLTextAreaElement | null>(null);
-		const typingTimeoutRef = useRef<number | null>(null);
-		const isSubmittingRef = useRef(false);
+		const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+		const isTypingRef = useRef(false);
+		const [isPending, startTransition] = useTransition();
 
-		useEffect(() => {
-			textRef.current = text;
-		}, [text]);
-
-		// inside MessageComposer component
-
+		// Optimized send handler - no refs needed for text
 		const handleSend = useCallback(() => {
-			const value = textRef.current ?? '';
+			const textarea = textareaRef.current;
+			if (!textarea) return;
 
-			if (!value || !value.trim() || disabled || isSubmittingRef.current) return;
+			const value = textarea.value.trim();
+			if (!value || disabled) return;
 
-			isSubmittingRef.current = true;
 			const replyToId = replyingTo?.id;
 
-			// Clear immediately
+			// Clear state immediately for instant UI feedback
 			setText('');
-			textRef.current = '';
+			setHasContent(false);
+			textarea.value = '';
+			textarea.style.height = 'auto';
 
-			// Try to keep textarea focused synchronously (better chance of keeping keyboard open)
-			if (textareaRef.current) {
-				textareaRef.current.focus();
-				textareaRef.current.style.height = 'auto';
+			// Stop typing indicator
+			if (isTypingRef.current) {
+				isTypingRef.current = false;
+				onTyping?.(false);
 			}
 
-			setIsTyping(false);
-			onTyping?.(false);
+			// Clear typing timeout
+			if (typingTimeoutRef.current) {
+				clearTimeout(typingTimeoutRef.current);
+				typingTimeoutRef.current = null;
+			}
 
-			onSend(value, replyToId);
-
-			// keep your RAF fallback (optional)
-			requestAnimationFrame(() => {
-				if (textareaRef.current) {
-					textareaRef.current.style.height = 'auto';
-					textareaRef.current.focus();
-				}
-				isSubmittingRef.current = false;
+			// Send in transition to avoid blocking UI
+			startTransition(() => {
+				onSend(value, replyToId);
 			});
+
+			// Keep focus
+			textarea.focus();
 		}, [onSend, onTyping, replyingTo, disabled]);
 
 		const handleKeyDown = useCallback(
@@ -77,58 +75,67 @@ const MessageComposer: React.FC<MessageComposerProps> = React.memo(
 			[handleSend]
 		);
 
+		// Optimized change handler - direct DOM manipulation for height
 		const handleChange = useCallback(
 			(e: React.ChangeEvent<HTMLTextAreaElement>) => {
 				const newValue = e.target.value;
-				setText(newValue);
-				textRef.current = newValue;
+				const hasValue = newValue.trim().length > 0;
 
-				if (!isTyping && newValue.trim()) {
-					setIsTyping(true);
+				// Update state only when necessary
+				if (text !== newValue) {
+					setText(newValue);
+				}
+				if (hasContent !== hasValue) {
+					setHasContent(hasValue);
+				}
+
+				// Direct height update without state
+				const ta = e.target;
+				ta.style.height = 'auto';
+				const scrollHeight = ta.scrollHeight;
+				if (scrollHeight > MAX_HEIGHT) {
+					ta.style.height = `${MAX_HEIGHT}px`;
+					ta.style.overflowY = 'auto';
+				} else {
+					ta.style.height = `${scrollHeight}px`;
+					ta.style.overflowY = 'hidden';
+				}
+
+				// Typing indicator logic
+				if (hasValue && !isTypingRef.current) {
+					isTypingRef.current = true;
 					onTyping?.(true);
 				}
 
+				// Debounce typing indicator off
 				if (typingTimeoutRef.current) {
-					window.clearTimeout(typingTimeoutRef.current);
+					clearTimeout(typingTimeoutRef.current);
 				}
-				typingTimeoutRef.current = window.setTimeout(() => {
-					setIsTyping(false);
+				typingTimeoutRef.current = setTimeout(() => {
+					isTypingRef.current = false;
 					onTyping?.(false);
 					typingTimeoutRef.current = null;
 				}, TYPING_TIMEOUT);
 			},
-			[isTyping, onTyping]
+			[text, hasContent, onTyping]
 		);
-
-		// Auto-resize
-		useEffect(() => {
-			if (!textareaRef.current) return;
-			const ta = textareaRef.current;
-			ta.style.height = 'auto';
-			const scrollHeight = ta.scrollHeight;
-			if (scrollHeight > MAX_HEIGHT) {
-				ta.style.height = `${MAX_HEIGHT}px`;
-				ta.style.overflowY = 'auto';
-			} else {
-				ta.style.height = `${scrollHeight}px`;
-				ta.style.overflowY = 'hidden';
-			}
-		}, [text]);
 
 		// Cleanup
 		useEffect(() => {
 			return () => {
 				if (typingTimeoutRef.current) {
-					window.clearTimeout(typingTimeoutRef.current);
-					typingTimeoutRef.current = null;
+					clearTimeout(typingTimeoutRef.current);
 				}
 			};
 		}, []);
 
-		const handleSendClick = (e: React.MouseEvent) => {
-			e.preventDefault();
-			handleSend();
-		};
+		const handleSendClick = useCallback(
+			(e: React.MouseEvent) => {
+				e.preventDefault();
+				handleSend();
+			},
+			[handleSend]
+		);
 
 		return (
 			<div className="sticky bottom-0 z-50 bg-white border-t border-neutral-200">
@@ -154,17 +161,16 @@ const MessageComposer: React.FC<MessageComposerProps> = React.memo(
 							rows={1}
 							autoFocus
 							disabled={disabled}
-							className="flex-1 resize-none border border-neutral-200 bg-white focus:bg-white focus:ring-2 focus:ring-neutral-900/10 px-4 py-3 text-sm placeholder:text-neutral-400 rounded-lg transition-all outline-none disabled:opacity-50 disabled:cursor-not-allowed"
+							className="flex-1 resize-none border border-neutral-200 bg-white focus:bg-white focus:ring-2 focus:ring-neutral-900/10 px-4 py-3 text-sm placeholder:text-neutral-400 rounded-lg transition-colors outline-none disabled:opacity-50 disabled:cursor-not-allowed will-change-contents"
+							style={{ height: 'auto' }}
 						/>
 
 						<button
 							onClick={handleSendClick}
-							onMouseDown={(e) => e.preventDefault()}
-							onTouchStart={(e) => e.preventDefault()}
 							type="button"
-							disabled={!textRef.current.trim() || disabled}
+							disabled={!hasContent || disabled || isPending}
 							aria-label="Send message"
-							className="h-[44px] w-[44px] flex items-center justify-center bg-neutral-900 hover:bg-neutral-800 active:scale-95 disabled:bg-neutral-200 disabled:cursor-not-allowed text-white rounded-lg transition-all duration-150"
+							className="h-[44px] w-[44px] shrink-0 flex items-center justify-center bg-neutral-900 hover:bg-neutral-800 active:scale-95 disabled:bg-neutral-200 disabled:cursor-not-allowed text-white rounded-lg transition-transform duration-100"
 						>
 							<FaPaperPlane className="w-4 h-4" />
 						</button>
@@ -178,7 +184,5 @@ const MessageComposer: React.FC<MessageComposerProps> = React.memo(
 		);
 	}
 );
-
-MessageComposer.displayName = 'MessageComposer';
 
 export default MessageComposer;

@@ -4,6 +4,8 @@ import type { ChatMessage, FireCachedUser, RTDBMessage } from '@/app/lib/types';
 import { EMOJI_SHORTCUTS } from '@/app/lib/types';
 import { compare, create } from '@/app/lib/utils/time';
 
+import { OptimisticMessage } from './typeDefs';
+
 /* <------- TYPE GUARDS -------> */
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -166,11 +168,37 @@ export function compareMsgsAsc(a: ChatMessage, b: ChatMessage): number {
 	return compare.asc(a.createdAt, b.createdAt);
 }
 
-/** Generate a stable-enough client temporary id for optimistic messages */
-export const genTempId = (): string =>
-	`tmp_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 9)}`;
+const OPTIMISTIC_ID_PREFIX = 'opt_';
 
-// app/components/RoomUI/uti ls/emojify.ts
+export function generateOptimisticId(): string {
+   return `${OPTIMISTIC_ID_PREFIX}${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+}
+
+export function createOptimisticMessage(
+   text: string,
+   userUid: string,
+   sessionId: string,
+   replyTo?: string,
+   extras?: Record<string, unknown>
+): OptimisticMessage {
+   const now = new Date().toISOString();
+   const optimisticId = generateOptimisticId();
+
+   return {
+      id: optimisticId,
+      roomId: sessionId,
+      sessionId,
+      sender: userUid,
+      type: 'markdown',
+      text,
+      createdAt: now,
+      replyTo: replyTo || null,
+      reactions: {},
+      _optimistic: true,
+      _timestamp: Date.now(),
+      ...(extras || {}),
+   } as OptimisticMessage;
+}
 
 /**
  * Replaces emoji shortcuts like ":smile:" with actual emoji characters.
