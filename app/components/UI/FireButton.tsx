@@ -41,7 +41,7 @@ export const FireButton: React.FC<FireButtonProps> = ({
 			bg-neutral-900 text-neutral-50
 			hover:bg-neutral-800
 			focus:ring-neutral-900
-			focus:ring-offset-neutral-900/
+			focus:ring-offset-neutral-900/90
 		`,
 		secondary: `
 			bg-neutral-100 text-neutral-900

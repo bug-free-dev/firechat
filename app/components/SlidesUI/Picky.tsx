@@ -40,7 +40,7 @@ export function Picky({ value, onChange, step = 1, total = 1 }: PickyProps) {
 				<RiSparklingLine className="absolute bottom-[28%] right-[15%] w-6 h-6 text-violet-400/35 animate-pulse-soft" />
 			</div>
 
-			<div className="w-full max-w-2xl space-y-10 relative z-10 animate-slide-up">
+			<div className="w-full max-w-2xl space-y-10 relative z-10 animate-fade-in-up">
 				{/* Heading */}
 				<div className="text-center">
 					<h1 className="font-comic mb-7 text-4xl font-semibold text-slate-900 flex items-center justify-center gap-3">
@@ -54,7 +54,7 @@ export function Picky({ value, onChange, step = 1, total = 1 }: PickyProps) {
 				</div>
 
 				{/* Status */}
-				<div className="space-y-3 animate-slide-up" style={{ animationDelay: '0.1s' }}>
+				<div className="space-y-3 " style={{ animationDelay: '0.1s' }}>
 					<label className="flex items-center gap-2 text-sm font-medium text-slate-700">
 						<RiHashtag className="text-blue-500" />
 						Current Status
@@ -69,7 +69,7 @@ export function Picky({ value, onChange, step = 1, total = 1 }: PickyProps) {
 				</div>
 
 				{/* About */}
-				<div className="space-y-3 animate-slide-up" style={{ animationDelay: '0.2s' }}>
+				<div className="space-y-3 " style={{ animationDelay: '0.2s' }}>
 					<label className="flex items-center gap-2 text-sm font-medium text-slate-700">
 						<RiInformationLine className="text-emerald-500" />
 						About You
@@ -89,7 +89,7 @@ export function Picky({ value, onChange, step = 1, total = 1 }: PickyProps) {
 
 				{/* Step Indicator */}
 				<div
-					className="flex items-center justify-center gap-3 pt-6 animate-fade-in"
+					className="flex items-center justify-center gap-3 pt-6 "
 					style={{ animationDelay: '0.3s' }}
 				>
 					<div className="w-2.5 h-2.5 rounded-full bg-rose-500 animate-pulse-soft" />

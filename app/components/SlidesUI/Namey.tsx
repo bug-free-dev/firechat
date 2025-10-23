@@ -63,7 +63,7 @@ export function Namey({ value, onChange, step = 1, total = 7 }: NameyProps) {
 			</div>
 
 			{/* Main Content */}
-			<div className="relative z-10 max-w-2xl w-full mx-auto px-6 text-center animate-slide-up">
+			<div className="relative z-10 max-w-2xl w-full mx-auto px-6 text-center animate-fade-in-up">
 				{/* Brand Heading */}
 				<div className="mb-12">
 					<h1 className="font-comic text-5xl lg:text-6xl text-slate-900 inline-flex items-center justify-center gap-3 mb-4">
@@ -86,7 +86,7 @@ export function Namey({ value, onChange, step = 1, total = 7 }: NameyProps) {
 				</div>
 
 				{/* Input Field */}
-				<div className="mb-10 animate-slide-up" style={{ animationDelay: '0.1s' }}>
+				<div className="mb-10 " style={{ animationDelay: '0.1s' }}>
 					<FireInput
 						variant="custom"
 						value={value}
@@ -97,7 +97,7 @@ export function Namey({ value, onChange, step = 1, total = 7 }: NameyProps) {
 
 				{/* Pro Tip */}
 				<div
-					className="flex items-center justify-center gap-2 text-base text-slate-500 mb-10 animate-fade-in"
+					className="flex items-center justify-center gap-2 text-base text-slate-500 mb-10 "
 					style={{ animationDelay: '0.2s' }}
 				>
 					<RiLightbulbLine className="text-amber-500 w-6 h-6 animate-pulse-soft" />
@@ -106,7 +106,7 @@ export function Namey({ value, onChange, step = 1, total = 7 }: NameyProps) {
 
 				{/* Step Counter */}
 				<div
-					className="flex items-center justify-center gap-3 animate-fade-in"
+					className="flex items-center justify-center gap-3 "
 					style={{ animationDelay: '0.3s' }}
 				>
 					<div className="w-2.5 h-2.5 rounded-full bg-blue-500 animate-pulse-soft" />

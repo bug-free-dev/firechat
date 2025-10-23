@@ -54,8 +54,8 @@ const FEATURES = [
 		icon: <HiOutlineEmojiHappy />,
 		label: 'Fun',
 		tagline: 'Pure Vibes',
-		bg: 'bg-cyan-50/70',
-		txt: 'text-cyan-600/70',
+		bg: 'bg-indigo-50/70',
+		txt: 'text-indigo-600/70',
 	},
 ];
 
@@ -75,24 +75,18 @@ export default function Home() {
 	}, []);
 
 	useEffect(() => {
-		if (isLoading || redirecting) return;
-		const timer = setTimeout(() => {
-			setRedirecting(true);
-			switch (authState) {
-				case 'AUTHENTICATED':
-					router.push('/desk');
-					break;
-				case 'NOT_ONBOARDED':
-				case 'NEW_USER':
-					router.push('/onboard');
-					break;
-				default:
-					router.push('/fireup');
-					break;
-			}
-		}, 5000);
-		return () => clearTimeout(timer);
-	}, [authState, isLoading, router, redirecting]);
+  if (isLoading || redirecting) return;
+  const timer = setTimeout(() => {
+    setRedirecting(true);
+    switch (authState) {
+      case 'AUTHENTICATED': router.push('/desk'); break;
+      case 'NOT_ONBOARDED':
+      case 'NEW_USER': router.push('/onboard'); break;
+      default: router.push('/fireup'); break;
+    }
+  }, 5000); 
+      return () => clearTimeout(timer);
+}, [authState, isLoading, router, redirecting]);
 
 	const handleWelcome = () => {
 		toast.success('Welcome to Firechat!');
@@ -133,9 +127,9 @@ export default function Home() {
 				onClick={handleWelcome}
 				className="
 					mt-8 inline-flex items-center gap-3 px-6 py-2 rounded-full
-					bg-indigo-500/70 text-white font-medium text-sm
-					hover:bg-indigo-500/80 hover:scale-105
-					focus:outline-none focus:ring-2 focus:ring-indigo-400/50 focus:ring-offset-2
+					bg-orange-500/90 text-white font-medium text-sm
+					hover:bg-orange-500/80 hover:scale-105
+					focus:outline-none focus:ring-2 focus:ring-orange-400/50 focus:ring-offset-2
 					transition-all duration-200 ease-in-out shadow-md
 				"
 				aria-label="Grab your desk"

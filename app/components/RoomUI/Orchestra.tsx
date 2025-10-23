@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { toast } from 'react-hot-toast';
 import { FiMessageCircle, FiUsers } from 'react-icons/fi';
 
@@ -21,17 +21,12 @@ export interface OrchestraProps {
 	session: SessionDoc;
 	currentUser: FireCachedUser;
 	profiles?: Record<string, FireCachedUser>;
-
-	// Message services (injected)
 	messageServices: MessagesServices;
-
-	// Session actions
 	onLeaveSession?: (sessionId: string, userId: string) => Promise<void>;
 	onEndSession?: (sessionId: string) => Promise<void>;
 	onAddParticipant?: (sessionId: string, userId: string) => Promise<void>;
 	onToggleLock?: (sessionId: string, locked: boolean) => Promise<void>;
 	onUpdateMetadata?: (sessionId: string, updates: { title?: string }) => Promise<void>;
-
 	fetchFrequentUsers?: (forUid: string) => Promise<FireCachedUser[]>;
 	searchUsers?: (query: string) => Promise<FireCachedUser[]>;
 }
@@ -55,16 +50,35 @@ const Orchestra: React.FC<OrchestraProps> = React.memo(({
 	const [inviteOpen, setInviteOpen] = useState(false);
 	const [frequentUsers, setFrequentUsers] = useState<FireCachedUser[]>([]);
 
-	useEffect(() => {
-		let mounted = true;
-		if (!fetchFrequentUsers) return void setFrequentUsers([]);
+	// Refs for stable values
+	const sessionIdRef = useRef(session.id);
+	const currentUserUidRef = useRef(currentUser.uid);
+	const profilesRef = useRef(profiles);
+	const routerRef = useRef(router);
 
-		void (async () => {
+	// Update refs when props change
+	useEffect(() => {
+		sessionIdRef.current = session.id;
+		currentUserUidRef.current = currentUser.uid;
+		profilesRef.current = profiles;
+		routerRef.current = router;
+	}, [session.id, currentUser.uid, profiles, router]);
+
+	// Fetch frequent users ONCE
+	useEffect(() => {
+		if (!fetchFrequentUsers) return;
+
+		let mounted = true;
+		const loadFrequent = async () => {
 			try {
-				const out = await fetchFrequentUsers(currentUser.uid);
-				if (mounted) setFrequentUsers(out.slice(0, 10));
-			} catch {}
-		})();
+				const users = await fetchFrequentUsers(currentUser.uid);
+				if (mounted) setFrequentUsers(users.slice(0, 10));
+			} catch {
+				// Silent fail
+			}
+		};
+
+		void loadFrequent();
 
 		return () => {
 			mounted = false;
@@ -80,14 +94,15 @@ const Orchestra: React.FC<OrchestraProps> = React.memo(({
 		sendMessage: sendMsg,
 		addReaction: addReact,
 		removeReaction: removeReact,
-		deleteMessage,
+      deleteMessage,
+      isSorted
 	} = useFireMessages({
 		sessionId: session.id!,
 		userUid: currentUser.uid,
 		services: messageServices,
 		options: {
 			initialLimit: 50,
-			liveLimit: 100,
+			liveLimit: 150,
 			maxMessagesInMemory: 500,
 			typingProfile: {
 				uid: currentUser.uid,
@@ -99,18 +114,29 @@ const Orchestra: React.FC<OrchestraProps> = React.memo(({
 	});
 
 	const safeMessages = useMemo(() => {
-		if (!Array.isArray(messages)) return [];
-		return [...messages].sort((a, b) => toMillis(a.createdAt) - toMillis(b.createdAt));
-	}, [messages]);
+  if (!Array.isArray(messages) || messages.length === 0) return [];
+  if (isSorted) return messages;
+  
+  return [...messages].sort((a, b) => toMillis(a.createdAt) - toMillis(b.createdAt));
+}, [messages, isSorted]);
 
-	/* <----------- HANDLERS -----------> */
+	// Create message lookup Map for O(1) access - memoized
+	const messagesMap = useMemo(() => {
+		const map = new Map<string, ChatMessage>();
+		safeMessages.forEach(m => {
+			if (m.id) map.set(m.id, m);
+		});
+		return map;
+	}, [safeMessages]);
+
+	/* <----------- STABLE HANDLERS WITH REFS -----------> */
 
 	const handleSend = useCallback(
 		async (text: string, replyToId?: string) => {
 			try {
 				const res = await sendMsg(text, replyToId);
 				if (!res.ok) {
-					toast.error(`Failed to send`);
+					toast.error('Failed to send');
 					return;
 				}
 				setReplyingTo(undefined);
@@ -121,7 +147,7 @@ const Orchestra: React.FC<OrchestraProps> = React.memo(({
 		[sendMsg]
 	);
 
-	const copyMessage = async (text: string) => {
+	const copyMessage = useCallback(async (text: string) => {
 		if (!text) return toast.error('Nothing to copy');
 		try {
 			await navigator.clipboard.writeText(text);
@@ -129,7 +155,7 @@ const Orchestra: React.FC<OrchestraProps> = React.memo(({
 		} catch {
 			toast.error('Failed to copy message');
 		}
-	};
+	}, []);
 
 	const handleDelete = useCallback(
 		async (messageId?: string) => {
@@ -140,22 +166,23 @@ const Orchestra: React.FC<OrchestraProps> = React.memo(({
 			try {
 				const res = await deleteMessage(messageId);
 				if (!res.ok) {
-					toast.error(`Failed to send: ${res.error}`);
+					toast.error(`Failed to delete: ${res.error}`);
 					return;
 				}
 			} catch {
-				toast.error('Failed to send message');
+				toast.error('Failed to delete message');
 			}
 		},
 		[deleteMessage]
 	);
 
+	// CRITICAL: Use Map for O(1) lookup instead of array.find()
 	const handleToggleReaction = useCallback(
 		async (messageId: string, emoji: string) => {
-			const message = safeMessages.find((m) => m.id === messageId);
+			const message = messagesMap.get(messageId);
 			if (!message) return toast.error('Message not found');
 
-			const hasReacted = !!message.reactions?.[emoji]?.includes(currentUser.uid);
+			const hasReacted = !!message.reactions?.[emoji]?.includes(currentUserUidRef.current);
 
 			try {
 				const res = hasReacted
@@ -169,11 +196,11 @@ const Orchestra: React.FC<OrchestraProps> = React.memo(({
 				toast.error('Failed to update reaction');
 			}
 		},
-		[safeMessages, currentUser.uid, addReact, removeReact]
+		[messagesMap, addReact, removeReact]
 	);
 
 	const handleEndSession = useCallback(async () => {
-		if (!onEndSession || !session.id) {
+		if (!onEndSession || !sessionIdRef.current) {
 			return toast.error('End session not configured');
 		}
 
@@ -191,19 +218,19 @@ const Orchestra: React.FC<OrchestraProps> = React.memo(({
 					variant: 'danger',
 					onClick: async () => {
 						try {
-							await onEndSession(session.id!);
-							router.push('/desk');
+							await onEndSession(sessionIdRef.current!);
+							routerRef.current.push('/desk');
 						} catch {
-							/** Ignore, parent manages */
+							// Parent handles errors
 						}
 					},
 				},
 			],
 		});
-	}, [onEndSession, session.id, router]);
+	}, [onEndSession]);
 
 	const handleLeaveSession = useCallback(async () => {
-		if (!onLeaveSession || !session.id) {
+		if (!onLeaveSession || !sessionIdRef.current) {
 			return toast.error('Leave session not configured');
 		}
 
@@ -221,8 +248,8 @@ const Orchestra: React.FC<OrchestraProps> = React.memo(({
 					variant: 'secondary',
 					onClick: async () => {
 						try {
-							await onLeaveSession(session.id!, currentUser.uid);
-							router.push('/desk');
+							await onLeaveSession(sessionIdRef.current!, currentUserUidRef.current);
+							routerRef.current.push('/desk');
 						} catch {
 							toast.error('Failed to leave session');
 						}
@@ -230,51 +257,51 @@ const Orchestra: React.FC<OrchestraProps> = React.memo(({
 				},
 			],
 		});
-	}, [onLeaveSession, session.id, currentUser.uid, router]);
+	}, [onLeaveSession]);
 
 	const handleAddParticipant = useCallback(
 		async (uid: string) => {
-			if (!onAddParticipant || !session.id) {
+			if (!onAddParticipant || !sessionIdRef.current) {
 				return toast.error('Add participant not configured');
 			}
 
 			try {
-				await onAddParticipant(session.id, uid);
+				await onAddParticipant(sessionIdRef.current, uid);
 			} catch {
 				toast.error('Failed to add participant');
 			}
 		},
-		[onAddParticipant, session.id]
+		[onAddParticipant]
 	);
 
 	const handleToggleLock = useCallback(
 		async (locked: boolean) => {
-			if (!onToggleLock || !session.id) {
+			if (!onToggleLock || !sessionIdRef.current) {
 				return toast.error('Toggle lock not configured');
 			}
 
 			try {
-				await onToggleLock(session.id, locked);
+				await onToggleLock(sessionIdRef.current, locked);
 			} catch {
 				toast.error('Failed to update lock');
 			}
 		},
-		[onToggleLock, session.id]
+		[onToggleLock]
 	);
 
 	const handleUpdateMetadata = useCallback(
 		async (updates: { title?: string }) => {
-			if (!onUpdateMetadata || !session.id) {
+			if (!onUpdateMetadata || !sessionIdRef.current) {
 				return;
 			}
 
 			try {
-				await onUpdateMetadata(session.id, updates);
+				await onUpdateMetadata(sessionIdRef.current, updates);
 			} catch {
 				toast.error('Failed to update session');
 			}
 		},
-		[onUpdateMetadata, session.id]
+		[onUpdateMetadata]
 	);
 
 	const onPickerConfirm = useCallback(
@@ -287,12 +314,21 @@ const Orchestra: React.FC<OrchestraProps> = React.memo(({
 		[handleAddParticipant]
 	);
 
+	// Memoize participant count to prevent recalculation
+	const participantCount = useMemo(
+		() => session.participants?.length ?? 0,
+		[session.participants?.length]
+	);
+
+	// Memoize session active state
+	const isSessionActive = useMemo(() => session.isActive, [session.isActive]);
+
 	return (
 		<div className="flex flex-col h-screen bg-neutral-50">
 			{/* Session header */}
 			<SessionHeader
 				session={session}
-				participantCount={session.participants?.length ?? 0}
+				participantCount={participantCount}
 				onEndSession={handleEndSession}
 				onOpenInvite={() => setInviteOpen(true)}
 				onToggleLock={handleToggleLock}
@@ -304,7 +340,7 @@ const Orchestra: React.FC<OrchestraProps> = React.memo(({
 			{/* Tabs */}
 			<div className="border-b border-neutral-300 bg-white">
 				<div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-12">
-					<div className="flex gap-6">
+					<div className="flex gap-6 animate-slide-up">
 						<button
 							onClick={() => setActiveTab('chats')}
 							className={`py-3 sm:py-4 text-sm font-medium relative flex items-center gap-2 transition-all duration-300 ${
@@ -354,13 +390,12 @@ const Orchestra: React.FC<OrchestraProps> = React.memo(({
 							messages={safeMessages}
 							currentUserUid={currentUser.uid}
 							profiles={profiles}
-							onReply={(m) => setReplyingTo(m)}
-							onToggleReaction={(id, emoji) => void handleToggleReaction(id, emoji)}
-							onCopyMessage={(content) => copyMessage(content ?? '')}
-							onDeleteMessage={(id) => handleDelete(id)}
+							onReply={setReplyingTo}
+                     onToggleReaction={handleToggleReaction}
+                     onCopyMessage={copyMessage}
+							onDeleteMessage={handleDelete}
 						/>
 
-						{/* Super Funky Cartoonistic Typing Indicator */}
 						<TypingIndicator typingUsers={typingUsers} />
 					</div>
 				) : (
@@ -381,7 +416,7 @@ const Orchestra: React.FC<OrchestraProps> = React.memo(({
 					<div className="mx-auto px-0 lg:px-80 pb-safe">
 						<MessageComposer
 							onSend={handleSend}
-							disabled={!session.isActive || sending}
+							disabled={!isSessionActive || sending}
 							replyingTo={replyingTo}
 							replyToSender={replyingTo ? profiles[replyingTo.sender] : undefined}
 							onCancelReply={() => setReplyingTo(undefined)}
@@ -404,5 +439,6 @@ const Orchestra: React.FC<OrchestraProps> = React.memo(({
 		</div>
 	);
 });
+
 
 export default Orchestra;

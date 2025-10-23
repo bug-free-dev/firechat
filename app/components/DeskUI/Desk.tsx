@@ -23,10 +23,8 @@ type TabType = (typeof TAB_ORDER)[number];
 export default function Desk() {
 	const router = useRouter();
 
-	// Get auth state from context (single source of truth)
 	const { profile, updateProfile, verifyIdentifier } = useAuthState();
 
-	// Active tab state
 	const [activeTab, setActiveTab] = useState<TabType>('profile');
 
 	// Swipe tracking
@@ -358,7 +356,7 @@ export default function Desk() {
 
 	// Kudos handler
 	const handleSendKudos = async (
-		fromUid: string,
+		_fromUid: string,
 		toUid: string,
 		amount: number,
 		note?: string

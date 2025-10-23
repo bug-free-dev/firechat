@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from 'react';
 import Confetti from 'react-confetti';
-import { FaRocket } from 'react-icons/fa';
 import {
 	RiEmotionHappyLine,
 	RiInformationLine,
@@ -12,6 +11,7 @@ import {
 	RiSparklingLine,
 	RiStarLine,
 } from 'react-icons/ri';
+import { TbRocket } from 'react-icons/tb';
 
 import { FireAvatar, FireButton } from '@/app/components/UI';
 
@@ -91,14 +91,14 @@ export function Launchy({
 			</div>
 
 			{/* Main Content */}
-			<div className="mt-1 relative z-10 max-w-4xl w-full mx-auto px-6 text-center animate-slide-up">
+			<div className="mt-1 relative z-10 max-w-4xl w-full mx-auto px-6 text-center animate-fade-in-up">
 				<h1 className="font-comic text-5xl lg:text-4xl text-rose-500 mb-5 flex items-center justify-center gap-4 drop-shadow-sm">
-					<FaRocket className="animate-float-elegant w-16 h-16" />
+					<TbRocket className="animate-float-elegant w-16 h-16" />
 					Launch!
 				</h1>
 
 				<p
-					className="font-righteous text-lg text-slate-700 mb-10 animate-fade-in"
+					className="font-righteous text-lg text-slate-700 mb-10"
 					style={{ animationDelay: '0.1s' }}
 				>
 					Your profile is ready for takeoff. Fire up the chat!
@@ -107,7 +107,7 @@ export function Launchy({
 				{/* Enhanced Preview Card */}
 				{preview && (
 					<div
-						className="mb-10 text-left mx-auto max-w-lg bg-white/90 backdrop-blur-sm p-7 rounded-2xl shadow-md border border-slate-200/80 animate-slide-up"
+						className="mb-10 text-left mx-auto max-w-lg bg-white/90 backdrop-blur-sm p-7 rounded-2xl shadow-md border border-slate-200/80 "
 						style={{ animationDelay: '0.2s' }}
 					>
 						<div className="flex items-start gap-5">
@@ -229,7 +229,7 @@ export function Launchy({
 					</div>
 				)}
 
-				<div className="animate-slide-up" style={{ animationDelay: '0.3s' }}>
+				<div className="animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
 					<FireButton
 						onClick={handleClick}
 						disabled={isLoading}
@@ -244,7 +244,7 @@ export function Launchy({
 
 				{/* Step Indicator */}
 				<div
-					className="flex items-center justify-center gap-3 mt-10 animate-fade-in"
+					className="flex items-center justify-center gap-3 mt-10 "
 					style={{ animationDelay: '0.4s' }}
 				>
 					<div className="w-2.5 h-2.5 rounded-full bg-rose-500 animate-pulse-soft" />

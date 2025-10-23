@@ -64,7 +64,7 @@ export function Moody({ value, onChange, step = 3, total = 7 }: MoodyProps) {
 				</div>
 			</div>
 
-			<div className="mt-3 relative z-10 max-w-2xl w-full mx-auto px-6 text-center animate-slide-up">
+			<div className="mt-3 relative z-10 max-w-2xl w-full mx-auto px-6 text-center animate-fade-in-up">
 				<div className="mb-10">
 					<h1 className="font-comic text-5xl lg:text-6xl text-slate-900 inline-flex items-center justify-center gap-3 mb-4">
 						<RiEmotionHappyLine className="text-amber-500 w-12 h-12 animate-pulse-soft" />
@@ -84,7 +84,7 @@ export function Moody({ value, onChange, step = 3, total = 7 }: MoodyProps) {
 					</p>
 				</div>
 
-				<div className="mb-10 animate-slide-up" style={{ animationDelay: '0.1s' }}>
+				<div className="mb-10" style={{ animationDelay: '0.1s' }}>
 					<div className="grid grid-cols-2 md:grid-cols-3 gap-4 max-w-lg mx-auto">
 						{moods.map((mood) => (
 							<button
@@ -112,7 +112,7 @@ export function Moody({ value, onChange, step = 3, total = 7 }: MoodyProps) {
 				</div>
 
 				<div
-					className="flex items-center justify-center gap-3 text-base text-slate-500 mb-10 animate-fade-in"
+					className="flex items-center justify-center gap-3 text-base text-slate-500 mb-10 "
 					style={{ animationDelay: '0.2s' }}
 				>
 					<RiHeart3Line className="text-pink-500 w-5 h-5 animate-pulse-soft" />
@@ -120,7 +120,7 @@ export function Moody({ value, onChange, step = 3, total = 7 }: MoodyProps) {
 				</div>
 
 				<div
-					className="mb-5 flex items-center justify-center gap-3 animate-fade-in"
+					className="mb-5 flex items-center justify-center gap-3 "
 					style={{ animationDelay: '0.3s' }}
 				>
 					<div className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse-soft" />

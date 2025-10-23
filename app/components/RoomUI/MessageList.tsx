@@ -14,7 +14,7 @@ export interface MessageListProps {
 	onReply: (message: ChatMessage) => void;
 	onToggleReaction: (messageId: string, emoji: string) => void;
 	onDeleteMessage: (messageId?: string) => void;
-	onCopyMessage: (messageId?: string) => void;
+	onCopyMessage: (text: string) => void;
 }
 
 const MessageList: React.FC<MessageListProps> = React.memo(
@@ -79,7 +79,7 @@ const MessageList: React.FC<MessageListProps> = React.memo(
 
 		return (
 			<div
-				className="flex-1 overflow-y-auto px-3 sm:px-4 lg:px-6 py-4 scroll"
+				className="flex-1 overflow-y-auto px-3 sm:px-3 lg:px-5 py-2 scroll"
 				role="log"
 				aria-live="polite"
 			>

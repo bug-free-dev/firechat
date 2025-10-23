@@ -36,15 +36,15 @@ export const KudosSendSlide: React.FC<KudosSlideProps> = ({
 			}
 			footer={
 				<div className="flex gap-2">
-					<button
+					<FireButton
 						onClick={onClose}
-						className="flex-1 py-2 rounded-lg border border-neutral-200 text-sm text-neutral-700 hover:bg-neutral-50"
+						variant="outline"
 						disabled={loading}
 					>
 						Cancel
-					</button>
-					<FireButton onClick={onSubmit} className="flex-1" disabled={loading}>
-						{loading ? 'Sending...' : 'Send'}
+					</FireButton>
+					<FireButton onClick={onSubmit} className="flex-1" disabled={loading} loading={loading}>
+						Send
 					</FireButton>
 				</div>
 			}

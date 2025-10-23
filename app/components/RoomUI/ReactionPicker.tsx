@@ -38,7 +38,7 @@ const ReactionPicker: React.FC<ReactionPickerProps> = ({
 		position: 'absolute',
 		zIndex: 100000,
 		bottom: '1.5rem',
-		left: 8,
+		left: 5,
 		width: DEFAULT_WIDTH,
 		maxWidth: DEFAULT_WIDTH,
 		background: 'white',
@@ -62,7 +62,7 @@ const ReactionPicker: React.FC<ReactionPickerProps> = ({
 
 		style.left = left;
 		style.width = width;
-		style.maxWidth = width;
+		style.maxWidth = width-15;
 		style.visibility = 'visible';
 	}
 
@@ -86,7 +86,7 @@ const ReactionPicker: React.FC<ReactionPickerProps> = ({
 						onSelect(emoji);
 						onClose();
 					}}
-					className="rounded-md p-1.5 text-lg leading-none select-none"
+					className="rounded-md p-1.5 text-md leading-none select-none"
 					aria-label={`React ${emoji}`}
 					style={{
 						background: 'transparent',

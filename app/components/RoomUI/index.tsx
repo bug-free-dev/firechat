@@ -5,7 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
 
-import RoomUI from '@/app/components/RoomUI/Orchestra';
+import Orchestra from '@/app/components/RoomUI/Orchestra';
 import { FireLoader, FirePrompt } from '@/app/components/UI';
 import * as messageAPI from '@/app/lib/api/messageAPI';
 import * as sessionAPI from '@/app/lib/api/sessionAPI';
@@ -23,7 +23,7 @@ interface RTDBSessionValue {
 
 type AccessState = 'checking' | 'needs_identifier' | 'joining' | 'granted' | 'denied';
 
-export default function Room() {
+const Room:React.FC = React.memo(()=> {
 	const params = useParams();
 	const router = useRouter();
 	const sessionId = params?.sessionId as string | undefined;
@@ -354,7 +354,7 @@ export default function Room() {
 		try {
 			const res = await sessionAPI.addParticipant(sid, uid);
 			if (!res.ok) {
-				toast('Could not add participant');
+				toast('Person already invited');
 			}
 		} catch {
 			toast.error('Failed to add participant');
@@ -496,7 +496,7 @@ export default function Room() {
 	}
 
 	return (
-		<RoomUI
+		<Orchestra
 			session={session}
 			currentUser={profile as FireCachedUser}
 			profiles={profiles}
@@ -510,4 +510,6 @@ export default function Room() {
 			searchUsers={searchUsersHandler}
 		/>
 	);
-}
+});
+
+export default Room;

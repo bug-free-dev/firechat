@@ -24,15 +24,13 @@ const sizeMap: Record<FireInputSize, string> = {
 /**
  * Variants:
  * - default: rounded box
- * - outline: transparent with border
- * - filled: subtle filled background
- * - custom: Vercel-like login style (rounded-top, thick bottom border, neutral idle bg -> transparent/white on focus)
+ * - custom: border b-3
  */
 const variantClasses: Record<FireInputVariant, string> = {
 	default:
 		'bg-white border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-neutral-400/20 focus:border-neutral-300/70 hover:border-neutral-300/60',
 	custom:
-		'rounded-t-lg border-b-3 border-neutral-200/50 dark:border-neutral-700 bg-neutral-100/30 dark:bg-neutral-800/70 focus:bg-white dark:focus:bg-transparent focus:border-indigo-400/60 transition-colors duration-200',
+		'rounded-t-lg border-b-3 border-neutral-200/50 dark:border-neutral-700 bg-neutral-100/30 dark:bg-neutral-800/70 focus:bg-white dark:focus:bg-transparent focus:border-violet-500/80 transition-colors duration-200',
 };
 
 const labelBase = 'text-sm font-medium text-neutral-700 dark:text-neutral-200';

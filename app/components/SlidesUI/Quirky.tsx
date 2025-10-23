@@ -69,7 +69,7 @@ export function Quirky({ value, onChange, step = 3, total = 7 }: QuirkyProps) {
 				</div>
 			</div>
 
-			<div className="mt-3 relative z-10 max-w-3xl w-full mx-auto px-6 text-center animate-slide-up">
+			<div className="mt-3 relative z-10 max-w-3xl w-full mx-auto px-6 text-center animate-fade-in-up">
 				<div className="mb-14">
 					<h1 className="font-comic text-5xl lg:text-6xl text-slate-900 inline-flex items-center justify-center gap-3 mb-4">
 						<RiSparklingLine className="text-indigo-500 w-12 h-12 animate-pulse-soft" />
@@ -89,7 +89,7 @@ export function Quirky({ value, onChange, step = 3, total = 7 }: QuirkyProps) {
 					</p>
 				</div>
 
-				<div className="mb-10 animate-slide-up" style={{ animationDelay: '0.1s' }}>
+				<div className="mb-10 " style={{ animationDelay: '0.1s' }}>
 					<div className="grid grid-cols-2 md:grid-cols-4 gap-4">
 						{quirks.map((quirk) => {
 							const IconComponent = quirk.icon;
@@ -126,14 +126,14 @@ export function Quirky({ value, onChange, step = 3, total = 7 }: QuirkyProps) {
 				</div>
 
 				<div
-					className="flex items-center justify-center gap-3 text-base text-slate-500 mb-10 animate-fade-in"
+					className="flex items-center justify-center gap-3 text-base text-slate-500 mb-10 "
 					style={{ animationDelay: '0.2s' }}
 				>
 					<span>Pro tip: be yourself — quirky is cool! ({value.length}/3 selected)</span>
 				</div>
 
 				<div
-					className="flex items-center justify-center mb-5 gap-3 animate-fade-in"
+					className="flex items-center justify-center mb-5 gap-3 "
 					style={{ animationDelay: '0.3s' }}
 				>
 					<div className="w-2.5 h-2.5 rounded-full bg-indigo-500 animate-pulse-soft" />

@@ -78,7 +78,7 @@ const SessionHeader: React.FC<SessionHeaderProps> = ({
 
 	return (
 		<header className="relative w-full bg-white backdrop-blur-sm overflow-hidden border-b-neutral-200 border-b">
-			<div className="relative max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 py-4 animate-fade-in-up">
+			<div className="relative max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 py-4 animate-slide-up">
 				<div className="flex items-center justify-between gap-4">
 					<div className="min-w-0 flex-1">
 						{isEditing ? (

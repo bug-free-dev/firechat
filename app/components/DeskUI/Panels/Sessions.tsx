@@ -292,7 +292,6 @@ export const SessionsPanel: React.FC<SessionsPanelProps> = ({
 					onClose={() => {
 						setPromptForSession(null);
 						setPromptValue('');
-						// Clear attempts when closing
 						setAttemptsMap((m) => {
 							const copy = { ...m };
 							delete copy[promptForSession.id || ''];

@@ -24,23 +24,22 @@ const MAX_LENGTH = 500;
 const THEMES = [
 	{ id: 'github-dark', name: 'GitHub Dark' },
 	{ id: 'atom-one-dark', name: 'One Dark' },
-	{ id: 'monokai', name: 'Monokai' },
 	{ id: 'vs2015', name: 'VS 2015' },
 ] as const;
 
 const createMarkdownComponents = (): Components => ({
 	h1: ({ children, ...props }: React.HTMLAttributes<HTMLHeadingElement>) => (
-		<h1 className="text-3xl font-bold mt-6 mb-4 text-neutral-100" {...props}>
+		<h1 className="text-3xl font-bold mt-6 mb-4 " {...props}>
 			{children}
 		</h1>
 	),
 	h2: ({ children, ...props }: React.HTMLAttributes<HTMLHeadingElement>) => (
-		<h2 className="text-2xl font-bold mt-5 mb-3 text-neutral-100" {...props}>
+		<h2 className="text-2xl font-bold mt-5 mb-3 " {...props}>
 			{children}
 		</h2>
 	),
 	h3: ({ children, ...props }: React.HTMLAttributes<HTMLHeadingElement>) => (
-		<h3 className="text-xl font-bold mt-4 mb-2 text-neutral-100" {...props}>
+		<h3 className="text-xl font-bold mt-4 mb-2 " {...props}>
 			{children}
 		</h3>
 	),
@@ -50,12 +49,12 @@ const createMarkdownComponents = (): Components => ({
 		</p>
 	),
 	ul: ({ children, ...props }: React.HTMLAttributes<HTMLUListElement>) => (
-		<ul className="list-disc list-inside mb-4 text-neutral-300 space-y-1" {...props}>
+		<ul className="list-disc list-inside mb-4  space-y-1" {...props}>
 			{children}
 		</ul>
 	),
 	ol: ({ children, ...props }: React.HTMLAttributes<HTMLOListElement>) => (
-		<ol className="list-decimal list-inside mb-4 text-neutral-300 space-y-1" {...props}>
+		<ol className="list-decimal list-inside mb-4  space-y-1" {...props}>
 			{children}
 		</ol>
 	),
@@ -136,7 +135,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
 
 	const remarkPlugins = useMemo(() => [remarkGfm, remarkMath], []);
 
-	// ✅ FIXED: Correct plugin order - rehypeRaw and rehypeSanitize BEFORE rehypeHighlight and rehypeKatex
+	// Correct plugin order - rehypeRaw and rehypeSanitize BEFORE rehypeHighlight and rehypeKatex
 	const rehypePlugins = useMemo(
 		() => [rehypeRaw, rehypeSanitize, rehypeHighlight, rehypeKatex],
 		[]
@@ -168,13 +167,13 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
 			/>
 
 			{showThemeSelector && (
-				<div className="absolute -bottom-14 left-2 transform z-[150] animate-slide-up  duration-200">
+				<div className="absolute -bottom-14 -left-7 transform z-[150] animate-slide-up  duration-200">
 					<div className="w-25 overflow-y-auto bg-white rounded-lg shadow-md border border-neutral-200">
 						{THEMES.map((t) => (
 							<button
 								key={t.id}
 								onClick={() => handleThemeChange(t.id)}
-								className={`w-full px-2 py-0.75 text-left text-sm transition-colors ${
+								className={`w-full px-2 py-1 text-left text-sm transition-colors ${
 									theme === t.id
 										? 'bg-blue-50 text-blue-700 font-medium'
 										: 'hover:bg-neutral-50 text-neutral-900'

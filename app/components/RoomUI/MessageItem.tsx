@@ -235,7 +235,7 @@ const MessageItem: React.FC<MessageItemProps> = ({
 
 	return (
 		<div
-			className={`flex gap-3 items-end ${isMine ? 'flex-row-reverse' : 'flex-row'} mb-4 transition-transform duration-200 ease-out relative z-0`}
+			className={`flex gap-3 items-end ${isMine ? 'flex-row-reverse' : 'flex-row'} mb-1 transition-transform duration-200 ease-out relative z-0`}
 			style={{ transform: `translateX(${swipeOffset}px)` }}
 			onTouchStart={handleTouchStart}
 			onTouchMove={handleTouchMove}
@@ -335,7 +335,7 @@ const MessageItem: React.FC<MessageItemProps> = ({
 
 					{/* Message bubble */}
 					<div
-						className={`rounded-2xl max-w-65 py-2 px-3 break-words transition-all duration-150 z-0 ${isMine ? 'bg-neutral-900 text-white' : 'bg-white border border-neutral-200 text-neutral-800'}`}
+						className={`rounded-2xl max-w-65 py-1 px-3 break-words transition-all duration-150 z-0 ${isMine ? 'bg-neutral-900 text-white' : 'bg-white border border-neutral-200 text-neutral-800'}`}
 					>
 						{message.replyTo && replyToMessage && (
 							<ReplyPreview replyToMessage={replyToMessage} sender={replyToSender} compact />

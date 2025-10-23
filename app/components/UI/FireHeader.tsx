@@ -65,7 +65,7 @@ export const FireHeader: React.FC<FireHeaderProps> = ({
             ${currentSize.title}
             ${
 					variant === 'default' || variant === 'bold'
-						? `${variantClasses[variant]} bg-clip-text text-transparent animate-gradient bg-300% bg-gradient-to-r from-orange-500 via-yellow-400 to-orange-600`
+						? `${variantClasses[variant]} bg-clip-text text-transparent animate-gradient bg-gradient-to-r from-orange-500 via-yellow-400 to-orange-600`
 						: variantClasses[variant]
 				}
           `}

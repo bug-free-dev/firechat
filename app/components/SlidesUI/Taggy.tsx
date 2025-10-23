@@ -80,7 +80,7 @@ export function Taggy({ value, onChange, step = 5, total = 7 }: TaggyProps) {
 			</div>
 
 			{/* Main Content */}
-			<div className="mt-3 relative z-10 max-w-3xl w-full mx-auto px-6 text-center animate-slide-up">
+			<div className="mt-3 relative z-10 max-w-3xl w-full mx-auto px-6 text-center animate-fade-in-up">
 				<div className="mb-14">
 					<h1 className="font-comic text-5xl lg:text-6xl text-slate-900 inline-flex items-center justify-center gap-3 mb-4">
 						<RiPriceTag3Line className="text-lime-500 w-12 h-12 animate-pulse-soft" />
@@ -100,7 +100,7 @@ export function Taggy({ value, onChange, step = 5, total = 7 }: TaggyProps) {
 					</p>
 
 					{/* Input Field */}
-					<div className="animate-slide-up" style={{ animationDelay: '0.1s' }}>
+					<div className="" style={{ animationDelay: '0.1s' }}>
 						<FireInput
 							variant="custom"
 							placeholder="Type a tag and hit enter"
@@ -113,7 +113,7 @@ export function Taggy({ value, onChange, step = 5, total = 7 }: TaggyProps) {
 
 					{/* Display Selected Tags */}
 					<div
-						className="flex flex-wrap justify-center gap-3 mb-6 animate-fade-in"
+						className="flex flex-wrap justify-center gap-3 mb-6 "
 						style={{ animationDelay: '0.2s' }}
 					>
 						{value.map((tag) => (
@@ -129,7 +129,7 @@ export function Taggy({ value, onChange, step = 5, total = 7 }: TaggyProps) {
 
 					{/* Suggested Tags */}
 					<div
-						className="flex flex-wrap justify-center gap-3 animate-fade-in"
+						className="flex flex-wrap justify-center gap-3 "
 						style={{ animationDelay: '0.3s' }}
 					>
 						{suggestedTags.map((tag) => (
@@ -151,7 +151,7 @@ export function Taggy({ value, onChange, step = 5, total = 7 }: TaggyProps) {
 
 				{/* Footer */}
 				<div
-					className="flex items-center justify-center gap-3 text-base text-slate-500 mb-10 animate-fade-in"
+					className="flex items-center justify-center gap-3 text-base text-slate-500 mb-10 "
 					style={{ animationDelay: '0.4s' }}
 				>
 					<RiPriceTag3Line className="text-lime-500 w-5 h-5 animate-pulse-soft" />
@@ -159,7 +159,7 @@ export function Taggy({ value, onChange, step = 5, total = 7 }: TaggyProps) {
 				</div>
 
 				<div
-					className="flex items-center justify-center gap-3 animate-fade-in"
+					className="flex items-center justify-center gap-3 "
 					style={{ animationDelay: '0.5s' }}
 				>
 					<div className="w-2.5 h-2.5 rounded-full bg-lime-500 animate-pulse-soft" />
