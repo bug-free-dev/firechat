@@ -17,8 +17,8 @@ export const metadata: Metadata = {
 	},
 };
 const toastConfig: ToastOptions = {
-	position: 'bottom-right',
-	duration: 1000,
+	position: 'bottom-left',
+	duration: 800,
 	style: {
 		background: '#ffffff',
 		color: '#111827',
