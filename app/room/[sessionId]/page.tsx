@@ -1,5 +1,3 @@
-'use client';
-
 import Room from '@/app/components/RoomUI';
 import { ProtectedRoute } from '@/app/lib/routing/component/ProtectedRoute';
 
