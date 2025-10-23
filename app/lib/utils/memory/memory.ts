@@ -243,7 +243,7 @@ export async function isIdentifierAvailable(identifierKey: string): Promise<Vali
 		return { available: false, reason: 'Identifier cannot be empty' };
 	}
 
-	if (trimmed.length < 8) {
+	if (trimmed.length < 6) {
 		return { available: false, reason: 'Identifier must be at least 8 characters' };
 	}
 

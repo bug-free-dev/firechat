@@ -3,7 +3,7 @@
 import { FireLoader } from '@/app/components/UI/FireLoader';
 import { useAuthState } from '@/app/lib/routing/context/AuthStateContext';
 
-import { AuthState } from '../util/helper';
+import { AuthState } from '../helpers/compute';
 
 interface ProtectedRouteProps {
 	children: React.ReactNode;

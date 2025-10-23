@@ -33,6 +33,7 @@ import type {
 import { toMillis } from '@/app/lib/utils/time';
 
 /* <----------- CONSTANTS -----------> */
+
 const DEFAULT_INITIAL_LIMIT = 50;
 const DEFAULT_LIVE_LIMIT = 100;
 const DEFAULT_MAX_MESSAGES = 500;
@@ -860,6 +861,7 @@ export function useFireMessages(params: UseMessagesOptions): UseMessagesReturn {
 	return {
 		messages,
 		sending,
+      isSorted:true as const,
 		inFlightCount,
 		typingUsers,
 		setTyping,

@@ -78,7 +78,8 @@ export interface UseMessagesOptions {
 export interface UseMessagesReturn {
 	readonly messages: ChatMessage[];
 	readonly sending: boolean;
-	readonly inFlightCount: number;
+   readonly inFlightCount: number;
+   readonly isSorted: boolean;
 	readonly typingUsers: FireCachedUser[];
 	readonly setTyping: (isTyping: boolean) => void;
 	readonly sendMessage: (text: string, replyTo?: string) => Promise<ServerResult<ChatMessage>>;

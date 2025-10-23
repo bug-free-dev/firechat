@@ -30,9 +30,9 @@ import {
 } from '@/app/lib/utils/auth';
 import { verifyIdentifierKeyAsync } from '@/app/lib/utils/hashy';
 import { Memory } from '@/app/lib/utils/localStorage';
-import { normalizeProfile } from '@/app/lib/utils/sanitizer';
 
-import { AuthState, computeAuthState, isAuthFlowPath, isPublicPath } from '../util/helper';
+import { AuthState, computeAuthState, isAuthFlowPath } from '../helpers/compute';
+import { batchMemorySet, normalizeProfileMemoized, profileCache, setProfileCache } from '../helpers/ctxHelpers';
 
 interface AuthContextValue {
 	authState: AuthState;
@@ -57,33 +57,16 @@ interface AuthContextValue {
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
-const MEMORY_KEYS = {
+export const MEMORY_KEYS = {
 	DISPLAY_NAME: 'firechat:user:displayName',
 	AVATAR_URL: 'firechat:user:avatarUrl',
 	EMAIL: 'firechat:user:email',
 } as const;
 
-const PROFILE_CACHE_TTL = 5 * 60 * 1000;
-const MIN_FETCH_INTERVAL = 500;
-const REDIRECT_DEBOUNCE = 100;
-
-interface ProfileCache {
-	profile: FireProfile;
-	timestamp: number;
-}
-
-const profileCache = new Map<string, ProfileCache>();
-
-const normalizeProfileMemoized = (() => {
-	const cache = new WeakMap<Partial<FireProfile>, FireProfile>();
-	return (data: Partial<FireProfile>): FireProfile => {
-		const cached = cache.get(data);
-		if (cached) return cached;
-		const normalized = normalizeProfile(data);
-		cache.set(data, normalized);
-		return normalized;
-	};
-})();
+export const PROFILE_CACHE_TTL = 5 * 60 * 1000;
+export const MIN_FETCH_INTERVAL = 500;
+export const RETRY_ATTEMPTS = 2;
+export const RETRY_DELAY = 1000;
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
 	const router = useRouter();
@@ -96,17 +79,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
 	const mountedRef = useRef(true);
 	const fetchControllerRef = useRef<AbortController | null>(null);
-	const redirectInProgressRef = useRef(false);
 	const lastProfileFetchRef = useRef(0);
 	const lastAuthStateRef = useRef<AuthState>(AuthState.LOADING);
-	const redirectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+	const profileRef = useRef<FireProfile | null>(null);
+	const firebaseUserRef = useRef<FirebaseUser | null>(null);
 
 	const cacheUserData = useCallback((fbUser: FirebaseUser): void => {
 		const batch: Array<[string, string]> = [];
 		if (fbUser.displayName) batch.push([MEMORY_KEYS.DISPLAY_NAME, fbUser.displayName]);
 		if (fbUser.photoURL) batch.push([MEMORY_KEYS.AVATAR_URL, fbUser.photoURL]);
 		if (fbUser.email) batch.push([MEMORY_KEYS.EMAIL, fbUser.email]);
-		batch.forEach(([key, value]) => Memory.set(key, value));
+		if (batch.length > 0) batchMemorySet(batch);
 	}, []);
 
 	const clearUserCache = useCallback((): void => {
@@ -115,21 +98,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 	}, []);
 
 	const fetchProfile = useCallback(
-		async (fbUser: FirebaseUser, forceRefresh = false): Promise<FireProfile | null> => {
+		async (
+			fbUser: FirebaseUser,
+			forceRefresh = false,
+			retries = RETRY_ATTEMPTS
+		): Promise<FireProfile | null> => {
 			if (!mountedRef.current) return null;
 
 			const now = Date.now();
 			const uid = fbUser.uid;
 
+			// Fast path: return cached profile if valid
 			if (!forceRefresh) {
 				const cached = profileCache.get(uid);
 				if (cached && now - cached.timestamp < PROFILE_CACHE_TTL) {
 					return cached.profile;
 				}
 
+				// Debounce rapid fetches
 				const timeSinceLastFetch = now - lastProfileFetchRef.current;
 				if (timeSinceLastFetch < MIN_FETCH_INTERVAL) {
-					return profile;
+					return profileRef.current;
 				}
 			}
 
@@ -144,13 +133,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 			try {
 				const idToken = await fbUser.getIdToken(forceRefresh);
 
+				// Early exit if aborted or unmounted
 				if (controller.signal.aborted || !mountedRef.current) {
 					return null;
 				}
 
 				const data = await getMinimalProfileFromIdToken(idToken);
 
-				if (controller.signal.aborted || !mountedRef.current) {
+				// Race condition check: ensure user hasn't changed
+				if (
+					controller.signal.aborted ||
+					!mountedRef.current ||
+					firebaseUserRef.current?.uid !== fbUser.uid
+				) {
 					return null;
 				}
 
@@ -160,16 +155,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
 				const normalized = normalizeProfileMemoized(data);
 
-				profileCache.set(uid, {
+				// Update cache
+				setProfileCache(uid, {
 					profile: normalized,
 					timestamp: now,
 				});
 
 				return normalized;
 			} catch (err) {
+				// Don't retry aborted requests
 				if (err instanceof Error && err.name === 'AbortError') {
 					return null;
 				}
+
+				// Retry logic with exponential backoff
+				if (retries > 0 && mountedRef.current) {
+					await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY));
+					return fetchProfile(fbUser, forceRefresh, retries - 1);
+				}
+
 				if (mountedRef.current) {
 					setError('Failed to load profile');
 				}
@@ -180,9 +184,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 				}
 			}
 		},
-		[profile]
+		[]
 	);
 
+	// Sync refs immediately for fast access
+	useEffect(() => {
+		profileRef.current = profile;
+	}, [profile]);
+
+	useEffect(() => {
+		firebaseUserRef.current = firebaseUser;
+	}, [firebaseUser]);
+
+	// Main auth state listener
 	useEffect(() => {
 		mountedRef.current = true;
 
@@ -203,7 +217,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 			try {
 				const fetchedProfile = await fetchProfile(fbUser);
 
-				if (!mountedRef.current) return;
+				// Double-check user hasn't changed during fetch
+				if (!mountedRef.current || firebaseUserRef.current?.uid !== fbUser.uid) {
+					return;
+				}
 
 				setProfile(fetchedProfile);
 				setError(null);
@@ -223,47 +240,42 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 			if (fetchControllerRef.current) {
 				fetchControllerRef.current.abort();
 			}
-			if (redirectTimeoutRef.current) {
-				clearTimeout(redirectTimeoutRef.current);
-			}
 			unsubscribe();
 		};
 	}, [fetchProfile]);
 
+	// Compute auth state
 	useEffect(() => {
 		if (isLoading) return;
 
 		const newState = computeAuthState(firebaseUser, profile, false, false);
 
+		// Only update if changed (prevents unnecessary re-renders)
 		if (newState !== lastAuthStateRef.current) {
 			lastAuthStateRef.current = newState;
 			setAuthState(newState);
 		}
 	}, [firebaseUser, profile, isLoading]);
 
+	// Handle navigation
 	useEffect(() => {
-		if (authState === AuthState.LOADING || redirectInProgressRef.current) return;
+		if (authState === AuthState.LOADING) return;
 
 		const pathname = typeof window !== 'undefined' ? window.location.pathname : '/';
+
+		// Home page handles its own redirect
+		if (pathname === '/') return;
+
 		let targetPath: string | null = null;
 
 		switch (authState) {
 			case AuthState.UNAUTHENTICATED:
-				if (!isPublicPath(pathname)) {
-					targetPath = '/fireup';
-				}
-				break;
-
 			case AuthState.UNVERIFIED:
-				if (pathname !== '/fireup') {
-					targetPath = '/fireup';
-				}
+				targetPath = '/fireup';
 				break;
 
 			case AuthState.BANNED:
-				if (pathname !== '/') {
-					targetPath = '/';
-				}
+				targetPath = '/';
 				break;
 
 			case AuthState.NEW_USER:
@@ -278,23 +290,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 					targetPath = '/desk';
 				}
 				break;
-
-			default:
-				break;
 		}
 
 		if (targetPath) {
-			redirectInProgressRef.current = true;
 			router.push(targetPath);
-
-			if (redirectTimeoutRef.current) {
-				clearTimeout(redirectTimeoutRef.current);
-			}
-
-			redirectTimeoutRef.current = setTimeout(() => {
-				redirectInProgressRef.current = false;
-				redirectTimeoutRef.current = null;
-			}, REDIRECT_DEBOUNCE);
 		}
 	}, [authState, router]);
 
@@ -304,13 +303,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 			email: string,
 			password: string
 		): Promise<{ ok: boolean; error?: string }> => {
+			if (!mountedRef.current) return { ok: false, error: 'Component unmounted' };
+
 			setIsLoading(true);
 
 			try {
 				const result = await registerWithEmail(email.trim(), password);
 
+				if (!mountedRef.current) return { ok: false, error: 'Component unmounted' };
+
 				if (!result.ok) {
-					setIsLoading(false);
+					if (mountedRef.current) setIsLoading(false);
 					return { ok: false, error: result.error?.message ?? 'Sign-up failed' };
 				}
 
@@ -320,23 +323,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 					await updateAuthProfile(user, { displayName: displayName.trim() });
 				}
 
+				if (!mountedRef.current) return { ok: false, error: 'Component unmounted' };
+
 				const verificationResult = await sendVerificationToUser(user).catch(() => ({
 					ok: false,
 				}));
 
+				if (!mountedRef.current) return { ok: false, error: 'Component unmounted' };
+
 				if (!verificationResult?.ok) {
 					await signOutUser().catch(() => {});
-					setIsLoading(false);
+					if (mountedRef.current) setIsLoading(false);
 					return { ok: false, error: 'Failed to send verification email' };
 				}
 
 				cacheUserData(user);
 				await signOutUser().catch(() => {});
 
-				setIsLoading(false);
+				if (mountedRef.current) setIsLoading(false);
 				return { ok: true };
 			} catch (err) {
-				setIsLoading(false);
+				if (mountedRef.current) setIsLoading(false);
 				return {
 					ok: false,
 					error: err instanceof Error ? err.message : 'Sign-up failed',
@@ -348,13 +355,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
 	const signIn = useCallback(
 		async (email: string, password: string): Promise<{ ok: boolean; error?: string }> => {
+			if (!mountedRef.current) return { ok: false, error: 'Component unmounted' };
+
 			setIsLoading(true);
 
 			try {
 				const result = await signInWithEmail(email.trim(), password);
 
+				if (!mountedRef.current) return { ok: false, error: 'Component unmounted' };
+
 				if (!result.ok) {
-					setIsLoading(false);
+					if (mountedRef.current) setIsLoading(false);
 					return { ok: false, error: result.error?.message ?? 'Sign-in failed' };
 				}
 
@@ -363,7 +374,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 				if (!fbUser.emailVerified) {
 					await sendVerificationToUser(fbUser).catch(() => {});
 					await signOutUser().catch(() => {});
-					setIsLoading(false);
+					if (mountedRef.current) setIsLoading(false);
 					return {
 						ok: false,
 						error: 'Email not verified. Check your inbox.',
@@ -372,7 +383,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
 				return { ok: true };
 			} catch (err) {
-				setIsLoading(false);
+				if (mountedRef.current) setIsLoading(false);
 				return {
 					ok: false,
 					error: err instanceof Error ? err.message : 'Sign-in failed',
@@ -386,19 +397,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 		ok: boolean;
 		error?: string;
 	}> => {
+		if (!mountedRef.current) return { ok: false, error: 'Component unmounted' };
+
 		setIsLoading(true);
 
 		try {
 			const result = await signInWithGoogle();
 
+			if (!mountedRef.current) return { ok: false, error: 'Component unmounted' };
+
 			if (!result.ok) {
-				setIsLoading(false);
+				if (mountedRef.current) setIsLoading(false);
 				return { ok: false, error: result.error?.message ?? 'Google sign-in failed' };
 			}
 
 			return { ok: true };
 		} catch (err) {
-			setIsLoading(false);
+			if (mountedRef.current) setIsLoading(false);
 			return {
 				ok: false,
 				error: err instanceof Error ? err.message : 'Google sign-in failed',
@@ -410,19 +425,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 		ok: boolean;
 		error?: string;
 	}> => {
+		if (!mountedRef.current) return { ok: false, error: 'Component unmounted' };
+
 		setIsLoading(true);
 
 		try {
 			const result = await signInWithGithub();
 
+			if (!mountedRef.current) return { ok: false, error: 'Component unmounted' };
+
 			if (!result.ok) {
-				setIsLoading(false);
+				if (mountedRef.current) setIsLoading(false);
 				return { ok: false, error: result.error?.message ?? 'GitHub sign-in failed' };
 			}
 
 			return { ok: true };
 		} catch (err) {
-			setIsLoading(false);
+			if (mountedRef.current) setIsLoading(false);
 			return {
 				ok: false,
 				error: err instanceof Error ? err.message : 'GitHub sign-in failed',
@@ -444,42 +463,44 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 	}, [clearUserCache]);
 
 	const deleteAndLogout = useCallback(async (): Promise<void> => {
-		if (!profile?.uid) {
+		if (!profileRef.current?.uid) {
 			throw new Error('No profile to delete');
 		}
 
-		const success = await deleteAccountAPI(profile.uid);
+		const success = await deleteAccountAPI(profileRef.current.uid);
 		if (!success) {
 			throw new Error('Account deletion failed');
 		}
 
 		await logout();
-	}, [profile, logout]);
+	}, [logout]);
 
 	const refreshProfile = useCallback(async (): Promise<void> => {
-		if (!firebaseUser || !mountedRef.current) return;
+		const currentUser = firebaseUserRef.current;
+		if (!currentUser || !mountedRef.current) return;
 
 		setIsLoading(true);
-		const fetchedProfile = await fetchProfile(firebaseUser, true);
+		const fetchedProfile = await fetchProfile(currentUser, true);
 
-		if (mountedRef.current) {
+		if (mountedRef.current && firebaseUserRef.current?.uid === currentUser.uid) {
 			setProfile(fetchedProfile);
 			setIsLoading(false);
 		}
-	}, [firebaseUser, fetchProfile]);
+	}, [fetchProfile]);
 
 	const updateProfile = useCallback(
 		async (updates: Partial<FireProfile>): Promise<boolean> => {
-			if (!profile?.uid) return false;
+			const currentProfile = profileRef.current;
+			if (!currentProfile?.uid) return false;
 
 			try {
-				const success = await updateUserProfileAPI(profile.uid, updates);
+				const success = await updateUserProfileAPI(currentProfile.uid, updates);
 
 				if (success && mountedRef.current) {
-					const updated = normalizeProfileMemoized({ ...profile, ...updates });
+					const updated = normalizeProfileMemoized({ ...currentProfile, ...updates });
 					setProfile(updated);
 
-					profileCache.set(profile.uid, {
+					setProfileCache(currentProfile.uid, {
 						profile: updated,
 						timestamp: Date.now(),
 					});
@@ -490,29 +511,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 				return false;
 			}
 		},
-		[profile]
+		[]
 	);
 
 	const verifyIdentifier = useCallback(
 		async (input: string): Promise<boolean> => {
-			if (!profile?.identifierKey) return false;
+			const currentProfile = profileRef.current;
+			if (!currentProfile?.identifierKey) return false;
 
 			try {
-				return await verifyIdentifierKeyAsync(input, profile.identifierKey);
+				return await verifyIdentifierKeyAsync(input, currentProfile.identifierKey);
 			} catch {
 				return false;
 			}
 		},
-		[profile]
+		[]
 	);
 
-	const value = useMemo<AuthContextValue>(
+	// Memoize methods separately to prevent context re-creation
+	const staticMethods = useMemo(
 		() => ({
-			authState,
-			firebaseUser,
-			profile,
-			isLoading,
-			error,
 			signUp,
 			signIn,
 			signInWithGoogle: signInWithGoogleProvider,
@@ -524,11 +542,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 			verifyIdentifier,
 		}),
 		[
-			authState,
-			firebaseUser,
-			profile,
-			isLoading,
-			error,
 			signUp,
 			signIn,
 			signInWithGoogleProvider,
@@ -539,6 +552,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 			updateProfile,
 			verifyIdentifier,
 		]
+	);
+
+	const value = useMemo<AuthContextValue>(
+		() => ({
+			...staticMethods,
+			authState,
+			firebaseUser,
+			profile,
+			isLoading,
+			error,
+		}),
+		[staticMethods, authState, firebaseUser, profile, isLoading, error]
 	);
 
 	return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

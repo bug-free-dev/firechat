@@ -1,6 +1,6 @@
 import type { User as FirebaseUser } from 'firebase/auth';
 
-import { FireProfile } from '../../types';
+import { FireProfile } from '@/app/lib/types';
 
 /**
  * Unified auth state machine.
