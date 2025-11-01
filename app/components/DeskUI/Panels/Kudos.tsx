@@ -28,7 +28,7 @@ export const KudosPanel: React.FC<KudosPanelProps> = ({
 	const [amountStr, setAmountStr] = useState('');
 	const [loading, setLoading] = useState(false);
 
-	const quickAmounts = [5, 10, 25];
+	const quickAmounts = [5, 10, 25, 50];
 
 	const getUsername = (uid: string) => {
 		const user = allUsers.find((u) => u.uid === uid);

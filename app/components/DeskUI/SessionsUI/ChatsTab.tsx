@@ -8,7 +8,7 @@ import { FireButton, WaveLoader } from '@/app/components/UI';
 import { FireCachedUser, FireProfile, SessionDoc } from '@/app/lib/types';
 import { compare } from '@/app/lib/utils/time';
 
-import { FrequentUsers } from './FrequentUsers';
+import { FrequentUsers } from './FreqUsers';
 import { SessionCard } from './SessionCard';
 
 interface ChatsTabProps {

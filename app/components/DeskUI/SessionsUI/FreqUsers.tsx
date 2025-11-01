@@ -37,7 +37,7 @@ export const FrequentUsers: React.FC<FrequentUsersProps> = ({ users, currentUser
 
 	return (
 		<>
-			<div className="mb-4 bg-white rounded-xl p-3 ring-neutral-200/30 ring-2 hover:shadow-sm transition-shadow">
+			<div className="mb-4 bg-white rounded-xl p-3 ring-neutral-200/30 ring-2">
 				{/* Header */}
 				<div className="flex items-center justify-between mb-3">
 					<div className="flex items-center gap-2">

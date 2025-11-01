@@ -57,7 +57,7 @@ export const TagInput: React.FC<TagInputProps> = ({
                 transition-all duration-200 hover:scale-105
               `}
 						>
-							<span>#{tag}</span>
+							<span>{tag}</span>
 							{editable && (
 								<button
 									onClick={() => handleRemove(index)}

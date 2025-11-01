@@ -1,6 +1,6 @@
 export * from './ActionButton';
 export * from './ChatsTab';
-export * from './FrequentUsers';
+export * from './FreqUsers';
 export * from './InboxTab';
 export * from './ProfileSlide';
 export * from './SessionCard';

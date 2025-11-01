@@ -30,6 +30,8 @@ interface ProfilePanelProps {
 	onUpdate: (updates: Partial<FireProfile>) => void;
 }
 
+const MAX_IMAGE_SIZE = 100 * 1024; // 100KB for base64 strings
+
 export const ProfilePanel: React.FC<ProfilePanelProps> = ({ profile, onUpdate }) => {
 	const { logout, deleteAndLogout } = useAuthState();
 	const [isEditing, setIsEditing] = useState(false);
@@ -88,24 +90,87 @@ export const ProfilePanel: React.FC<ProfilePanelProps> = ({ profile, onUpdate })
 			if (success) {
 				onUpdate(editData);
 				setIsEditing(false);
-				toast.success('Profile updated');
 			}
 		} catch {
-			toast.error('Failed to update profile');
 		} finally {
 			setSaving(false);
 		}
 	};
 
+	const compressImage = (img: HTMLImageElement, callback: (compressedData: string) => void) => {
+		const canvas = document.createElement('canvas');
+		let width = img.width;
+		let height = img.height;
+
+		const maxDimension = 400;
+		if (width > height && width > maxDimension) {
+			height = (height * maxDimension) / width;
+			width = maxDimension;
+		} else if (height > maxDimension) {
+			width = (width * maxDimension) / height;
+			height = maxDimension;
+		}
+
+		canvas.width = width;
+		canvas.height = height;
+
+		const ctx = canvas.getContext('2d');
+		if (ctx) {
+			ctx.drawImage(img, 0, 0, width, height);
+			const compressedData = canvas.toDataURL('image/jpeg', 0.8);
+			callback(compressedData);
+		}
+	};
+
 	const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
 		const file = event.target.files?.[0];
-		if (file) {
-			const reader = new FileReader();
-			reader.onload = () => {
-				setEditData((prev) => ({ ...prev, avatarUrl: reader.result as string }));
-			};
-			reader.readAsDataURL(file);
+		if (!file) return;
+
+		if (!file.type.startsWith('image/')) {
+			toast.error('Please select a valid image file');
+			return;
 		}
+
+		// Validate file size (5MB max)
+		if (file.size > 5 * 1024 * 1024) {
+			toast.error('Image size should be less than 5MB');
+			return;
+		}
+
+		const reader = new FileReader();
+
+		reader.onerror = () => {
+			toast.error('Failed to read image file');
+		};
+
+		reader.onload = () => {
+			const result = reader.result as string;
+
+			// Check if the base64 string is too large
+			if (result.length > MAX_IMAGE_SIZE) {
+				const img = new Image();
+				img.onload = () => {
+					compressImage(img, (compressedData) => {
+						setEditData((prev) => ({ ...prev, avatarUrl: compressedData }));
+						toast.success('Image compressed and uploaded');
+					});
+				};
+				img.onerror = () => {
+					toast.error('Failed to process image');
+				};
+				img.src = result;
+			} else {
+				setEditData((prev) => ({ ...prev, avatarUrl: result }));
+				toast.success('Image uploaded successfully');
+			}
+		};
+
+		reader.readAsDataURL(file);
+	};
+
+	const handleDicebearSelect = (url: string) => {
+		setEditData((prev) => ({ ...prev, avatarUrl: url }));
+		toast.success('Avatar style selected! 🎨');
 	};
 
 	const handleLogout = () => {
@@ -169,6 +234,7 @@ export const ProfilePanel: React.FC<ProfilePanelProps> = ({ profile, onUpdate })
 							onCancel={handleCancelEdit}
 							onSave={handleSave}
 							onImageUpload={handleImageUpload}
+							onDicebearSelect={handleDicebearSelect}
 							saving={saving}
 						/>
 
@@ -182,7 +248,7 @@ export const ProfilePanel: React.FC<ProfilePanelProps> = ({ profile, onUpdate })
 									}
 									placeholder="Display name"
 									className="
-                    w-70 p-1 text-md font-semibold text-gray-900 text-center lg:text-left
+                    w-50 p-1 text-md font-semibold text-gray-900 text-center lg:text-left
                     px-2 py-1 rounded-md bg-gray-50/50
                     ring-2 ring-gray-200/30 focus:ring-gray-300/50
                     outline-none transition-all

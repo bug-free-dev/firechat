@@ -3,8 +3,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { BiImageAdd } from 'react-icons/bi';
 import { HiOutlinePencil, HiOutlinePhotograph, HiOutlineSave, HiOutlineX } from 'react-icons/hi';
+import { RiRobot2Line } from 'react-icons/ri';
 
-import { FireAvatar } from '@/app/components/UI';
+import { DicebearSelector, FireAvatar } from '@/app/components/UI';
 
 type ProfileAvatarSectionProps = {
 	displayName: string;
@@ -14,6 +15,7 @@ type ProfileAvatarSectionProps = {
 	onCancel: () => void;
 	onSave: () => void;
 	onImageUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
+	onDicebearSelect: (url: string) => void;
 	saving: boolean;
 };
 
@@ -25,109 +27,134 @@ export const ProfileAvatarSection: React.FC<ProfileAvatarSectionProps> = ({
 	onCancel,
 	onSave,
 	onImageUpload,
+	onDicebearSelect,
 	saving,
 }) => {
 	const fileInputRef = useRef<HTMLInputElement>(null);
 	const [renderButtons, setRenderButtons] = useState(isEditing);
 	const [exiting, setExiting] = useState(false);
+	const [showDicebearModal, setShowDicebearModal] = useState(false);
 
-	// Handle enter/exit animations
 	useEffect(() => {
 		if (isEditing) {
 			setRenderButtons(true);
 			setExiting(false);
 		} else if (renderButtons) {
 			setExiting(true);
-			const timeout = setTimeout(() => setRenderButtons(false), 280 + 70 * 2); // animation duration + max stagger
+			const timeout = setTimeout(() => setRenderButtons(false), 280 + 70 * 3);
 			return () => clearTimeout(timeout);
 		}
 	}, [isEditing, renderButtons]);
 
 	const handleCancel = () => {
-		onCancel(); // triggers parent cancel logic
+		onCancel();
+	};
+
+	const handleDicebearSelect = (url: string) => {
+		onDicebearSelect(url);
+		setShowDicebearModal(false);
 	};
 
 	return (
-		<div className="relative group">
-			<div className="relative inline-block">
-				<div className="rounded-full overflow-hidden ring-4 ring-gray-100/50">
-					<FireAvatar seed={displayName} src={avatarUrl} size={200} background="#fafafa" />
+		<>
+			<div className="relative group">
+				<div className="relative inline-block">
+					<div className="rounded-full overflow-hidden ring-4 ring-gray-100/50">
+						<FireAvatar seed={displayName} src={avatarUrl} size={200} background="#fafafa" />
+					</div>
+
+					{isEditing && (
+						<button
+							onClick={() => fileInputRef.current?.click()}
+							className="absolute inset-0 flex items-center justify-center bg-black/30 rounded-full opacity-0 hover:opacity-100 transition-opacity duration-200"
+							title="Upload image"
+						>
+							<HiOutlinePhotograph className="w-8 h-8 text-white" />
+						</button>
+					)}
+
+					<input
+						ref={fileInputRef}
+						type="file"
+						accept="image/*"
+						onChange={onImageUpload}
+						className="hidden"
+					/>
 				</div>
 
-				{isEditing && (
-					<button
-						onClick={() => fileInputRef.current?.click()}
-						className="absolute inset-0 flex items-center justify-center bg-black/30 rounded-full opacity-0 hover:opacity-100 transition-opacity duration-200"
-						title="Upload image"
-					>
-						<HiOutlinePhotograph className="w-8 h-8 text-white" />
-					</button>
-				)}
-
-				<input
-					ref={fileInputRef}
-					type="file"
-					accept="image/*"
-					onChange={onImageUpload}
-					className="hidden"
-				/>
-			</div>
-
-			<div className="absolute -bottom-2 -right-2">
-				{/* Edit state buttons */}
-				{renderButtons ? (
-					<div
-						className={`fc-btn-group ${exiting ? 'fc-slide-out-right' : 'fc-slide-in-left'}`}
-					>
-						<button
-							onClick={handleCancel}
-							className="fc-btn fc-btn--outline"
-							title="Cancel edits"
-							aria-label="Cancel edits"
-							data-i={0}
+				<div className="absolute -bottom-2 -right-2">
+					{renderButtons ? (
+						<div
+							className={`fc-btn-group ${exiting ? 'fc-slide-out-right' : 'fc-slide-in-left'}`}
 						>
-							<HiOutlineX />
-						</button>
+							<button
+								onClick={handleCancel}
+								className="fc-btn fc-btn--outline"
+								title="Cancel edits"
+								aria-label="Cancel edits"
+								data-i={0}
+							>
+								<HiOutlineX />
+							</button>
 
-						<button
-							onClick={onSave}
-							disabled={saving}
-							className="fc-btn fc-btn--primary"
-							title="Save profile"
-							aria-label="Save profile"
-							data-i={1}
-						>
-							<HiOutlineSave />
-						</button>
+							<button
+								onClick={onSave}
+								disabled={saving}
+								className="fc-btn fc-btn--primary"
+								title="Save profile"
+								aria-label="Save profile"
+								data-i={1}
+							>
+								<HiOutlineSave />
+							</button>
 
-						<label title="Upload avatar" className="m-0">
 							<button
 								type="button"
-								className="fc-btn"
-								title="Upload avatar"
-								aria-label="Upload avatar"
+								className="fc-btn bg-gradient-to-r from-purple-500 to-blue-500 text-white hover:from-purple-600 hover:to-blue-600 shadow-md"
+								title="Choose AI Avatar"
+								aria-label="Choose AI Avatar"
 								data-i={2}
-								onClick={() => fileInputRef.current?.click()}
+								onClick={() => setShowDicebearModal(true)}
 							>
-								<BiImageAdd />
+								<RiRobot2Line className="w-5 h-5" />
 							</button>
-						</label>
-					</div>
-				) : (
-					// Non-editing state → Pencil button
-					<div className="fc-btn-group">
-						<button
-							onClick={onEdit}
-							className="fc-btn fc-btn--muted fc-slide-in-left"
-							title="Edit profile"
-							aria-label="Edit profile"
-							data-i={0}
-						>
-							<HiOutlinePencil />
-						</button>
-					</div>
-				)}
+
+							<label title="Upload avatar" className="m-0">
+								<button
+									type="button"
+									className="fc-btn"
+									title="Upload avatar"
+									aria-label="Upload avatar"
+									data-i={3}
+									onClick={() => fileInputRef.current?.click()}
+								>
+									<BiImageAdd />
+								</button>
+							</label>
+						</div>
+					) : (
+						<div className="fc-btn-group">
+							<button
+								onClick={onEdit}
+								className="fc-btn fc-btn--muted fc-slide-in-left"
+								title="Edit profile"
+								aria-label="Edit profile"
+								data-i={0}
+							>
+								<HiOutlinePencil />
+							</button>
+						</div>
+					)}
+				</div>
 			</div>
-		</div>
+
+			{showDicebearModal && (
+				<DicebearSelector
+					displayName={displayName}
+					onSelect={handleDicebearSelect}
+					onClose={() => setShowDicebearModal(false)}
+				/>
+			)}
+		</>
 	);
 };
