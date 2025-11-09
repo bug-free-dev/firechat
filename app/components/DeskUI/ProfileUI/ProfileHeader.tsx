@@ -53,11 +53,11 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({ onLogout, onDelete
 			<div className="flex flex-col items-center text-center">
 				<div className="flex items-center gap-2 mb-2">
 					<HiOutlineUser className="w-7 h-7 text-red-500" />
-					<h1 className="text-3xl text-neutral-800 font-semibold font-comic">Profile</h1>
+					<h1 className="text-3xl text-neutral-800 font-semibold font-bubblegum">Profile</h1>
 				</div>
 				<p className="text-sm text-neutral-500 flex items-center gap-2">
 					<RiUserSmileLine className="w-5 h-5 text-rose-400" />
-					Customize your profile and share your vibe
+					Customize and share your vibes
 				</p>
 			</div>
 

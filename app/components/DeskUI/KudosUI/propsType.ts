@@ -1,11 +1,11 @@
 import React from 'react';
 
-import type { FireCachedUser, FireProfile, KudosTxn } from '@/app/lib/types';
+import type { CachedUser, FireProfile, KudosTxn } from '@/app/lib/types';
 
 export interface KudosPanelProps {
 	currentUser: FireProfile;
 	transactions: KudosTxn[];
-	allUsers: FireCachedUser[];
+	allUsers: CachedUser[];
 	onSendKudos: (
 		fromUid: string,
 		toUid: string,
@@ -17,12 +17,12 @@ export interface KudosPanelProps {
 }
 
 export interface KudosCardProps {
-	user: FireCachedUser;
+	user: CachedUser;
 	quickAmounts: number[];
 	currentUserKudos: number;
 	loading: boolean;
-	onQuickSend: (user: FireCachedUser, amount: number) => void;
-	onOpenDetailed: (user: FireCachedUser) => void;
+	onQuickSend: (user: CachedUser, amount: number) => void;
+	onOpenDetailed: (user: CachedUser) => void;
 }
 
 export interface KudosTransactionItemProps {
@@ -34,7 +34,7 @@ export interface KudosTransactionItemProps {
 
 export interface KudosSlideProps {
 	open: boolean;
-	selected: FireCachedUser | null;
+	selected: CachedUser | null;
 	currentUser: FireProfile;
 	amountStr: string;
 	note: string;

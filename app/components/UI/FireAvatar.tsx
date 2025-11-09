@@ -1,13 +1,17 @@
+'use client';
+
 import React from 'react';
 
-interface FireAvatarProps {
-	seed: string; // Dicebear seed (username, email, etc.)
-	size?: number; // width & height
-	theme?: string; // Dicebear style: "initials", "bottts", "adventurer", etc.
-	background?: string; // hex background, default transparent
-	radius?: number; // corner radius percentage, default 50
-	className?: string; // additional Tailwind classes
-	altText?: string; // customizable alt text
+import { getSvgUrl } from '@/app/components/UI/avatarHelpers';
+
+export interface FireAvatarProps {
+	seed: string;
+	size?: number;
+	theme?: string;
+	background?: string;
+	radius?: number;
+	className?: string;
+	altText?: string;
 	src?: string | null;
 }
 
@@ -21,9 +25,14 @@ export const FireAvatar: React.FC<FireAvatarProps> = ({
 	className,
 	altText = `FireAvatar of ${seed}`,
 }: FireAvatarProps) => {
-	const url = `https://api.dicebear.com/6.x/${theme}/svg?seed=${encodeURIComponent(
-		seed
-	)}&background=${encodeURIComponent(background)}&radius=${radius}`;
+	const url = getSvgUrl({
+		seed,
+		theme,
+		background,
+		radius,
+		size,
+	});
+
 	return (
 		<img
 			src={src || url}
@@ -31,7 +40,7 @@ export const FireAvatar: React.FC<FireAvatarProps> = ({
 			height={size}
 			alt={altText}
 			referrerPolicy="no-referrer"
-			className={`rounded-full border border-gray-200 ${className || ''}`}
+			className={`rounded-full ring-neutral-300/60 ring-2 ${className ?? ''}`}
 		/>
 	);
 };

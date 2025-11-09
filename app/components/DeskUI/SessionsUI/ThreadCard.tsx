@@ -104,7 +104,17 @@ export function InboxThreadCard({ thread, currentUser, onOpenInbox }: InboxThrea
 							</p>
 							<div className="flex items-center gap-2 text-xs text-neutral-400">
 								<FaClock className="w-3 h-3" />
-								<span>{formatTime(thread.lastMessage.timestamp)}</span>
+								<span>
+									{formatTime(thread.lastMessage.timestamp, 'en-US', {
+										weekday: 'short',
+										month: 'short',
+										day: 'numeric',
+										year: '2-digit',
+										hour: '2-digit',
+										minute: '2-digit',
+										hour12: true,
+									})}
+								</span>
 							</div>
 						</>
 					)}

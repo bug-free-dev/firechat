@@ -169,6 +169,7 @@ export const create = {
  * @param fallback - Fallback string for invalid times
  * @returns Formatted string
  */
+
 export function formatTime(
 	time: FireTime,
 	locale = 'en-US',
@@ -176,9 +177,16 @@ export function formatTime(
 	fallback = ''
 ): string {
 	const date = toDate(time);
-	return date ? date.toLocaleString(locale, options) : fallback;
-}
+	if (!date) return fallback;
 
+	const finalOptions = options || {
+		hour: 'numeric',
+		minute: '2-digit',
+		hour12: true,
+	};
+
+	return date.toLocaleString(locale, finalOptions);
+}
 /* <------- COMPARISON UTILITIES -------> */
 
 export const compare = {

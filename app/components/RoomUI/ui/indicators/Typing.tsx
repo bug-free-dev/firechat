@@ -1,15 +1,15 @@
 'use client';
 
-import React from 'react';
+import React, { memo } from 'react';
 
 import { WaveLoader } from '@/app/components/UI';
-import type { FireCachedUser } from '@/app/lib/types';
+import type { CachedUser } from '@/app/lib/types';
 
 interface TypingIndicatorProps {
-	typingUsers: FireCachedUser[];
+	typingUsers: CachedUser[];
 }
 
-export default function TypingIndicator({ typingUsers }: TypingIndicatorProps) {
+const TypingIndicator: React.FC<TypingIndicatorProps> = memo(({ typingUsers }) => {
 	if (!typingUsers || typingUsers.length === 0) return null;
 
 	const names = typingUsers.map((u) => u.displayName || 'Someone');
@@ -24,15 +24,16 @@ export default function TypingIndicator({ typingUsers }: TypingIndicatorProps) {
 		<div
 			role="status"
 			aria-live="polite"
-			className="ml-2 relative inline-flex items-center gap-2 px-4 rounded-3xl justify-center
-				bg-white/80 backdrop-blur-md border border-neutral-200/40
-				text-neutral-800 text-sm select-none z-50"
+			className="ml-2 relative inline-flex items-center gap-2 px-4 rounded-3xl 
+        bg-white/80 backdrop-blur-md border border-neutral-200/40
+        text-neutral-800 text-sm select-none z-50"
 		>
-			<WaveLoader
-				size={2}
-            gap={1}
-			/>
+			<div className="flex items-center justify-center">
+				<WaveLoader size={2} gap={1} />
+			</div>
 			<span className="truncate max-w-[14rem] font-medium">{label}</span>
 		</div>
 	);
-}
+});
+
+export default TypingIndicator;

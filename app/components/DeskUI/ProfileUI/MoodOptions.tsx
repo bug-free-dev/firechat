@@ -54,8 +54,14 @@ export const MoodOptions: React.FC<MoodOptionProps> = ({ value, onChange }) => {
 					onKeyDown={(e) => e.key === 'Enter' && handleSetCustom()}
 					placeholder="Custom mood..."
 					className="flex-1"
+					size="sm"
 				/>
-				<FireButton variant="secondary" onClick={handleSetCustom} disabled={!custom.trim()}>
+				<FireButton
+					variant="secondary"
+					onClick={handleSetCustom}
+					disabled={!custom.trim()}
+					size="sm"
+				>
 					Set
 				</FireButton>
 			</div>

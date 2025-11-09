@@ -2,11 +2,12 @@
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { toast } from 'react-hot-toast';
+import { FaCheckDouble } from 'react-icons/fa';
 import { FiSearch } from 'react-icons/fi';
 import { IoCloseCircleOutline } from 'react-icons/io5';
 import { MdOutlinePersonAdd } from 'react-icons/md';
 
-import type { FireCachedUser, SessionDoc } from '@/app/lib/types';
+import type { CachedUser, SessionDoc } from '@/app/lib/types';
 import { searchUsersByUsername } from '@/app/lib/utils/memory';
 
 import { FireAvatar, FireButton, FireInput, FireSlide } from '.';
@@ -14,14 +15,14 @@ import { FireAvatar, FireButton, FireInput, FireSlide } from '.';
 interface PickerProps {
 	open: boolean;
 	onClose: () => void;
-	frequentUsers?: FireCachedUser[];
+	frequentUsers?: CachedUser[];
 	session?: SessionDoc;
 	currentParticipants?: string[];
-	onConfirm: (users: FireCachedUser[]) => void;
+	onConfirm: (users: CachedUser[]) => void;
 	title?: string;
 	description?: string;
 	maxSelection?: number;
-	searchUsers?: (query: string) => Promise<FireCachedUser[]>;
+	searchUsers?: (query: string) => Promise<CachedUser[]>;
 }
 
 export const FirePicker: React.FC<PickerProps> = ({
@@ -36,9 +37,9 @@ export const FirePicker: React.FC<PickerProps> = ({
 	maxSelection = 50,
 	searchUsers,
 }) => {
-	const [selected, setSelected] = useState<Map<string, FireCachedUser>>(new Map());
+	const [selected, setSelected] = useState<Map<string, CachedUser>>(new Map());
 	const [query, setQuery] = useState('');
-	const [results, setResults] = useState<FireCachedUser[]>([]);
+	const [results, setResults] = useState<CachedUser[]>([]);
 	const [loading, setLoading] = useState(false);
 
 	// Use refs to avoid re-creating the effect
@@ -98,7 +99,7 @@ export const FirePicker: React.FC<PickerProps> = ({
 
 	// Memoized toggle function
 	const toggle = useCallback(
-		(u: FireCachedUser) => {
+		(u: CachedUser) => {
 			setSelected((prev) => {
 				const m = new Map(prev);
 				if (m.has(u.uid)) {
@@ -162,16 +163,17 @@ export const FirePicker: React.FC<PickerProps> = ({
 									<button
 										key={u.uid}
 										onClick={() => toggle(u)}
-										className={`flex flex-col items-center gap-1 min-w-[60px] p-1 rounded-lg transition-all duration-200 ${
-											picked
-												? 'ring-2 ring-yellow-500 ml-2'
-												: 'ring-1 ring-transparent hover:ring-neutral-300'
-										}`}
+										className={`flex flex-col items-center gap-1 min-w-[60px]  transition-all duration-200`}
 										aria-pressed={picked}
 									>
-										<FireAvatar seed={u.uid} src={u.avatarUrl ?? null} size={36} />
+										<FireAvatar
+											seed={u.uid}
+											src={u.avatarUrl ?? null}
+											size={36}
+											className={`${picked ? 'ring-offset-4 ring-2 ring-yellow-600/80' : null}`}
+										/>
 										<span
-											className={`text-xs truncate max-w-[56px] font-medium ${picked ? 'text-yellow-600' : 'text-neutral-700'}`}
+											className={`text-xs truncate max-w-[56px] font-medium mt-1 ${picked ? 'text-yellow-600/80' : 'text-neutral-700'}`}
 										>
 											@{u.usernamey}
 										</span>
@@ -195,8 +197,7 @@ export const FirePicker: React.FC<PickerProps> = ({
 						<FireInput
 							value={query}
 							onChange={(e) => setQuery(e.target.value)}
-							placeholder="Search by username or display name"
-							className="pl-5"
+							placeholder="Search by username or display name..."
 						/>
 					</div>
 
@@ -209,14 +210,14 @@ export const FirePicker: React.FC<PickerProps> = ({
 
 					{/* Search results */}
 					{!loading && results.length > 0 && (
-						<div className="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-[280px] overflow-y-auto scroll">
+						<div className="mt-2 grid grid-cols-2 gap-2 max-h-[300px] overflow-y-auto scroll">
 							{results.map((u) => {
 								const active = selected.has(u.uid);
 								return (
 									<button
 										key={u.uid}
 										onClick={() => toggle(u)}
-										className={`truncate w-85 p-2 flex items-center gap-2 text-left rounded-lg ring-1 mt-1 ml-2 transition-all duration-200 ${
+										className={`truncate p-2 flex items-center gap-2 text-left rounded-lg ring-2 m-2 transition-all duration-200 ${
 											active
 												? 'ring-yellow-500 bg-yellow-50'
 												: 'ring-neutral-200 hover:ring-neutral-300'
@@ -232,7 +233,11 @@ export const FirePicker: React.FC<PickerProps> = ({
 											</div>
 										</div>
 										<div className="text-yellow-500 text-lg">
-											{active ? '✓' : <MdOutlinePersonAdd />}
+											{active ? (
+												<FaCheckDouble className="w-3 h-3 fc-slide-in-left" />
+											) : (
+												<MdOutlinePersonAdd className="fc-slide-in-left" />
+											)}
 										</div>
 									</button>
 								);
@@ -282,7 +287,7 @@ export const FirePicker: React.FC<PickerProps> = ({
 
 				{/* Actions */}
 				<div className="flex justify-end gap-2 pt-2">
-					<FireButton variant="secondary" onClick={onClose}>
+					<FireButton variant="outline" onClick={onClose}>
 						Cancel
 					</FireButton>
 					<FireButton onClick={confirm} disabled={selected.size === 0}>

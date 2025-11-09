@@ -157,14 +157,91 @@ export const MOODS = [
 ];
 
 export const TAG_COLORS = [
-	{ bg: 'bg-rose-50/70', text: 'text-rose-600', ring: 'ring-rose-200/30' },
-	{ bg: 'bg-amber-50/70', text: 'text-amber-600', ring: 'ring-amber-200/30' },
-	{ bg: 'bg-emerald-50/70', text: 'text-emerald-600', ring: 'ring-emerald-200/30' },
-	{ bg: 'bg-sky-50/70', text: 'text-sky-600', ring: 'ring-sky-200/30' },
-	{ bg: 'bg-violet-50/70', text: 'text-violet-600', ring: 'ring-violet-200/30' },
-	{ bg: 'bg-pink-50/70', text: 'text-pink-600', ring: 'ring-pink-200/30' },
-	{ bg: 'bg-indigo-50/70', text: 'text-indigo-600', ring: 'ring-indigo-200/30' },
-	{ bg: 'bg-teal-50/70', text: 'text-teal-600', ring: 'ring-teal-200/30' },
-	{ bg: 'bg-orange-50/70', text: 'text-orange-600', ring: 'ring-orange-200/30' },
-	{ bg: 'bg-lime-50/70', text: 'text-lime-600', ring: 'ring-lime-200/30' },
+	{
+		bg: 'bg-gradient-to-r from-violet-50 to-purple-50',
+		text: 'text-violet-700',
+		ring: 'ring-2 ring-violet-200/60',
+		hover: 'hover:ring-violet-300',
+	},
+	{
+		bg: 'bg-gradient-to-r from-blue-50 to-cyan-50',
+		text: 'text-blue-700',
+		ring: 'ring-2 ring-blue-200/60',
+		hover: 'hover:ring-blue-300',
+	},
+	{
+		bg: 'bg-gradient-to-r from-emerald-50 to-teal-50',
+		text: 'text-emerald-700',
+		ring: 'ring-2 ring-emerald-200/60',
+		hover: 'hover:ring-emerald-300',
+	},
+	{
+		bg: 'bg-gradient-to-r from-amber-50 to-yellow-50',
+		text: 'text-amber-700',
+		ring: 'ring-2 ring-amber-200/60',
+		hover: 'hover:ring-amber-300',
+	},
+	{
+		bg: 'bg-gradient-to-r from-rose-50 to-pink-50',
+		text: 'text-rose-700',
+		ring: 'ring-2 ring-rose-200/60',
+		hover: 'hover:ring-rose-300',
+	},
+	{
+		bg: 'bg-gradient-to-r from-indigo-50 to-blue-50',
+		text: 'text-indigo-700',
+		ring: 'ring-2 ring-indigo-200/60',
+		hover: 'hover:ring-indigo-300',
+	},
+	{
+		bg: 'bg-gradient-to-r from-teal-50 to-cyan-50',
+		text: 'text-teal-700',
+		ring: 'ring-2 ring-teal-200/60',
+		hover: 'hover:ring-teal-300',
+	},
+	{
+		bg: 'bg-gradient-to-r from-orange-50 to-red-50',
+		text: 'text-orange-700',
+		ring: 'ring-2 ring-orange-200/60',
+		hover: 'hover:ring-orange-300',
+	},
+	{
+		bg: 'bg-gradient-to-r from-fuchsia-50 to-pink-50',
+		text: 'text-fuchsia-700',
+		ring: 'ring-2 ring-fuchsia-200/60',
+		hover: 'hover:ring-fuchsia-300',
+	},
 ];
+
+export const DICEBEAR_THEMES = [
+	{ id: 'adventurer', name: 'Adventurer' },
+	{ id: 'adventurer-neutral', name: 'Adventurer Neutral' },
+	{ id: 'avataaars', name: 'Avataaars' },
+	{ id: 'avataaars-neutral', name: 'Avataaars Neutral' },
+	{ id: 'big-ears', name: 'Big Ears' },
+	{ id: 'big-ears-neutral', name: 'Big Ears Neutral' },
+	{ id: 'big-smile', name: 'Big Smile' },
+	{ id: 'bottts', name: 'Bottts' },
+	{ id: 'bottts-neutral', name: 'Bottts Neutral' },
+	{ id: 'croodles', name: 'Croodles' },
+	{ id: 'croodles-neutral', name: 'Croodles Neutral' },
+	{ id: 'dylan', name: 'Dylan' },
+	{ id: 'fun-emoji', name: 'Fun Emoji' },
+	{ id: 'identicon', name: 'Identicon' },
+	{ id: 'initials', name: 'Initials' },
+	{ id: 'lorelei', name: 'Lorelei' },
+	{ id: 'lorelei-neutral', name: 'Lorelei Neutral' },
+	{ id: 'micah', name: 'Micah' },
+	{ id: 'miniavs', name: 'Miniavs' },
+	{ id: 'notionists', name: 'Notionists' },
+	{ id: 'notionists-neutral', name: 'Notionists Neutral' },
+	{ id: 'open-peeps', name: 'Open Peeps' },
+	{ id: 'personas', name: 'Personas' },
+	{ id: 'pixel-art', name: 'Pixel Art' },
+	{ id: 'pixel-art-neutral', name: 'Pixel Art Neutral' },
+	{ id: 'shapes', name: 'Shapes' },
+	{ id: 'thumbs', name: 'Thumbs' },
+];
+export const DEFAULT_THEME = 'adventurer-neutral';
+export const DEFAULT_API_VERSION = '9.x';
+export const DEFAULT_RADIUS = 50;

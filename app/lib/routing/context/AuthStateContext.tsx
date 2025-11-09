@@ -32,7 +32,12 @@ import { verifyIdentifierKeyAsync } from '@/app/lib/utils/hashy';
 import { Memory } from '@/app/lib/utils/localStorage';
 
 import { AuthState, computeAuthState, isAuthFlowPath } from '../helpers/compute';
-import { batchMemorySet, normalizeProfileMemoized, profileCache, setProfileCache } from '../helpers/ctxHelpers';
+import {
+	batchMemorySet,
+	normalizeProfileMemoized,
+	profileCache,
+	setProfileCache,
+} from '../helpers/ctxHelpers';
 
 interface AuthContextValue {
 	authState: AuthState;
@@ -488,45 +493,39 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 		}
 	}, [fetchProfile]);
 
-	const updateProfile = useCallback(
-		async (updates: Partial<FireProfile>): Promise<boolean> => {
-			const currentProfile = profileRef.current;
-			if (!currentProfile?.uid) return false;
+	const updateProfile = useCallback(async (updates: Partial<FireProfile>): Promise<boolean> => {
+		const currentProfile = profileRef.current;
+		if (!currentProfile?.uid) return false;
 
-			try {
-				const success = await updateUserProfileAPI(currentProfile.uid, updates);
+		try {
+			const success = await updateUserProfileAPI(currentProfile.uid, updates);
 
-				if (success && mountedRef.current) {
-					const updated = normalizeProfileMemoized({ ...currentProfile, ...updates });
-					setProfile(updated);
+			if (success && mountedRef.current) {
+				const updated = normalizeProfileMemoized({ ...currentProfile, ...updates });
+				setProfile(updated);
 
-					setProfileCache(currentProfile.uid, {
-						profile: updated,
-						timestamp: Date.now(),
-					});
-				}
-
-				return success;
-			} catch {
-				return false;
+				setProfileCache(currentProfile.uid, {
+					profile: updated,
+					timestamp: Date.now(),
+				});
 			}
-		},
-		[]
-	);
 
-	const verifyIdentifier = useCallback(
-		async (input: string): Promise<boolean> => {
-			const currentProfile = profileRef.current;
-			if (!currentProfile?.identifierKey) return false;
+			return success;
+		} catch {
+			return false;
+		}
+	}, []);
 
-			try {
-				return await verifyIdentifierKeyAsync(input, currentProfile.identifierKey);
-			} catch {
-				return false;
-			}
-		},
-		[]
-	);
+	const verifyIdentifier = useCallback(async (input: string): Promise<boolean> => {
+		const currentProfile = profileRef.current;
+		if (!currentProfile?.identifierKey) return false;
+
+		try {
+			return await verifyIdentifierKeyAsync(input, currentProfile.identifierKey);
+		} catch {
+			return false;
+		}
+	}, []);
 
 	// Memoize methods separately to prevent context re-creation
 	const staticMethods = useMemo(

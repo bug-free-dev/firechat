@@ -1,4 +1,6 @@
+export * from './avatarHelpers';
 export * from './constants';
+export * from './DiceAvatarPicker';
 export * from './FireArea';
 export * from './FireAvatar';
 export * from './FireButton';

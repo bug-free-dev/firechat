@@ -10,7 +10,7 @@ export type MessageContentType = 'markdown';
 /**
  * Message status
  */
-export type MessageStatus = 'sent' | 'delivered' | 'read';
+export type MessageStatus = 'sent' | 'delivered';
 
 /**
  * Client-side chat message structure
@@ -28,7 +28,6 @@ export interface ChatMessage {
 	readonly status?: MessageStatus;
 	readonly createdAt?: FireTime;
 }
-
 /**
  * RTDB message structure (matches Firebase schema)
  */

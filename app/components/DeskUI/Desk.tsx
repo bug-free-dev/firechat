@@ -11,7 +11,7 @@ import { useFireInbox } from '@/app/lib/hooks/useFireInbox';
 import { useKudos } from '@/app/lib/hooks/useFireKudos';
 import { useFireSession } from '@/app/lib/hooks/useFireSession';
 import { useAuthState } from '@/app/lib/routing/context/AuthStateContext';
-import type { FireCachedUser, FireProfile, SessionDoc } from '@/app/lib/types';
+import type { CachedUser, FireProfile, SessionDoc } from '@/app/lib/types';
 import { getAllCachedUsers, getFrequentUsers } from '@/app/lib/utils/memory';
 
 import { NavTabs } from './NavTab';
@@ -64,8 +64,8 @@ export default function Desk() {
 	const inbox = useFireInbox(profile?.uid ?? null);
 
 	// Users for InvitePicker
-	const [allUsers, setAllUsers] = useState<FireCachedUser[]>([]);
-	const [frequentUsers, setFrequentUsers] = useState<FireCachedUser[]>([]);
+	const [allUsers, setAllUsers] = useState<CachedUser[]>([]);
+	const [frequentUsers, setFrequentUsers] = useState<CachedUser[]>([]);
 	const loadedForUidRef = useRef<string | null>(null);
 
 	useEffect(() => {
@@ -100,7 +100,7 @@ export default function Desk() {
 	const [title, setTitle] = useState('');
 	const [identifierRequired, setIdentifierRequired] = useState(false);
 	const [createInviteOpen, setCreateInviteOpen] = useState(false);
-	const [createInvited, setCreateInvited] = useState<FireCachedUser[]>([]);
+	const [createInvited, setCreateInvited] = useState<CachedUser[]>([]);
 
 	/* ---------------------- SWIPE HANDLERS ---------------------- */
 	const handleTouchStart = (e: React.TouchEvent) => {
@@ -265,10 +265,7 @@ export default function Desk() {
 		}
 	};
 
-	const handleInviteToUsers = async (
-		sessionId: string,
-		users: FireCachedUser[]
-	): Promise<void> => {
+	const handleInviteToUsers = async (sessionId: string, users: CachedUser[]): Promise<void> => {
 		if (!profile?.uid) {
 			toast.error('Not authenticated');
 			return;
@@ -427,7 +424,7 @@ export default function Desk() {
 				header="Spark a chat"
 				footer={
 					<div className="flex gap-3 justify-end">
-						<FireButton variant="secondary" onClick={() => setCreateOpen(false)}>
+						<FireButton variant="outline" onClick={() => setCreateOpen(false)}>
 							Cancel
 						</FireButton>
 						<FireButton

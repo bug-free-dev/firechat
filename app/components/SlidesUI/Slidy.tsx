@@ -296,7 +296,7 @@ export default function Slidy() {
 					<button
 						onClick={goNext}
 						disabled={isNextDisabled}
-						className="flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-full bg-[#ff9b58] shadow-lg hover:scale-105 transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
+						className="flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-full bg-slate-600 shadow-lg hover:scale-105 transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
 						aria-label="Next step"
 					>
 						<FaArrowRight className="w-4 h-4 md:w-5 md:h-5 text-white" />

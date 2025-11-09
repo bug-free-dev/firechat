@@ -12,7 +12,7 @@ import {
 	FirePrompt,
 	FireTabSwitcher,
 } from '@/app/components/UI';
-import { FireCachedUser, FireProfile, InboxThread, SessionDoc } from '@/app/lib/types';
+import { CachedUser, FireProfile, InboxThread, SessionDoc } from '@/app/lib/types';
 import { compare } from '@/app/lib/utils/time';
 
 import { ChatsTab, FloatingActionButton, InboxTab } from '../SessionsUI';
@@ -22,7 +22,7 @@ export interface SessionsPanelProps {
 	sessions: SessionDoc[];
 	invitedSessions?: SessionDoc[];
 	inboxThreads: InboxThread[];
-	frequentUsers?: FireCachedUser[];
+	frequentUsers?: CachedUser[];
 	onCreateSession?: () => void;
 	onJoinSession?: (sessionId: string, identifierInput?: string) => void;
 	onLeaveSession?: (sessionId: string) => void;
@@ -30,7 +30,7 @@ export interface SessionsPanelProps {
 	onLockSession?: (sessionId: string) => void;
 	onOpenInbox?: (threadId: string) => void;
 	loading?: boolean;
-	onInviteToUsers?: (sessionId: string, users: FireCachedUser[]) => Promise<void>;
+	onInviteToUsers?: (sessionId: string, users: CachedUser[]) => Promise<void>;
 	verifyIdentifier?: (input: string) => Promise<boolean>;
 }
 
@@ -96,7 +96,7 @@ export const SessionsPanel: React.FC<SessionsPanelProps> = ({
 		setInviteForSession(session);
 	};
 
-	const handleInviteConfirm = async (users: FireCachedUser[]) => {
+	const handleInviteConfirm = async (users: CachedUser[]) => {
 		if (!inviteForSession) return;
 		const sid = inviteForSession.id || '';
 		const link = `${typeof window !== 'undefined' ? window.location.origin : ''}/room/${sid}`;
@@ -192,7 +192,7 @@ export const SessionsPanel: React.FC<SessionsPanelProps> = ({
 				{/* Header with Kudos Balance */}
 				<div className="flex flex-col items-center justify-between gap-4 mb-6 text-center">
 					<div>
-						<h1 className="font-comic text-3xl font-semibold text-neutral-800 flex items-center gap-3 justify-center ">
+						<h1 className="font-bubblegum text-3xl font-semibold text-neutral-800 flex items-center gap-3 justify-center ">
 							<IoChatbubblesOutline className="text-lime-500" />
 							Sessions
 						</h1>

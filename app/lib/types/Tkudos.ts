@@ -15,3 +15,19 @@ export interface KudosTxn {
 	note?: string | null;
 	createdAt: FireTime;
 }
+export type KudosError =
+	| 'INVALID_INPUT'
+	| 'USER_NOT_FOUND'
+	| 'RECIPIENT_BANNED'
+	| 'USER_BANNED'
+	| 'INSUFFICIENT_FUNDS'
+	| 'CANNOT_SEND_TO_SELF'
+	| 'FIRESTORE_ERROR'
+	| 'UNKNOWN_ERROR';
+
+export interface KudosResult<T = void> {
+	success: boolean;
+	data?: T;
+	error?: KudosError;
+	reason?: string;
+}

@@ -32,10 +32,10 @@ export function InboxTab({ threads, currentUser, onOpenInbox, loading }: InboxTa
 		return (
 			<div className="flex flex-col items-center justify-center py-20 text-center">
 				<FaInbox className="w-20 h-20 mb-6 text-orange-300 opacity-50" />
-				<h3 className="text-2xl font-knewave text-neutral-700 mb-2">
+				<h3 className="text-4xl font-knewave text-neutral-700 mb-2">
 					No whispers in your inbox
 				</h3>
-				<p className="text-neutral-500 max-w-sm">
+				<p className="text-neutral-500 max-w-sm font-comic">
 					Start a private conversation from someones profile to see messages here.
 				</p>
 			</div>

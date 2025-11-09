@@ -72,7 +72,7 @@ export async function sendMessage(payload: SendMessagePayload): Promise<ServerRe
 			replyTo: replyTo?.trim() || undefined,
 			reactions: {},
 			extras,
-			status: 'sent',
+			status: 'delivered',
 			createdAt: now,
 		};
 

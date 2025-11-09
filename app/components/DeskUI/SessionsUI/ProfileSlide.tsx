@@ -4,9 +4,9 @@ import { IoFlameOutline } from 'react-icons/io5';
 import {
 	RiCoinsLine,
 	RiFlashlightLine,
+	RiInformationLine,
 	RiLightbulbFlashLine,
 	RiPriceTag3Line,
-	RiQuoteText,
 	RiSparklingLine,
 	RiStarLine,
 	RiUserSmileLine,
@@ -19,11 +19,11 @@ import {
 	relativeTimeFromMs,
 } from '@/app/components/DeskUI/util';
 import { FireAvatar, FireSlide } from '@/app/components/UI';
-import type { FireCachedUser } from '@/app/lib/types';
+import type { CachedUser } from '@/app/lib/types';
 import { formatTime, toMillis } from '@/app/lib/utils/time';
 
 interface UserProfileSlideProps {
-	user: FireCachedUser | null;
+	user: CachedUser | null;
 	isOpen: boolean;
 	onClose: () => void;
 }
@@ -37,10 +37,16 @@ export default function ProfileSlide({ user, isOpen, onClose }: UserProfileSlide
 	const lastSeenLabel = lastSeenMs ? relativeTimeFromMs(lastSeenMs) : 'unknown';
 
 	return (
-		<FireSlide open={isOpen} onClose={onClose} size="md" header="" backdropStatic={false}>
-			<div className="h-full overflow-y-auto px-6 pt-8 pb-6 animate-slide-up">
+		<FireSlide
+			open={isOpen}
+			onClose={onClose}
+			backdropStatic={false}
+			size="md"
+			header={`@${user.usernamey}`}
+		>
+			<div className="h-full overflow-y-auto px-5 animate-slide-up">
 				{/* Header Section */}
-				<div className="flex items-start gap-6 mb-8">
+				<div className="flex items-start gap-6 pt-5 pb-6">
 					{/* Avatar */}
 					<div className="relative flex-shrink-0">
 						<FireAvatar
@@ -51,7 +57,7 @@ export default function ProfileSlide({ user, isOpen, onClose }: UserProfileSlide
 						/>
 						<div
 							className={`absolute -bottom-0.5 -right-0.5 w-7 h-7 rounded-full border-[3px] border-white flex items-center justify-center ${
-								online ? 'bg-lime-600' : 'bg-neutral-300'
+								online ? 'bg-lime-500' : 'bg-neutral-300'
 							}`}
 						>
 							{online ? (
@@ -100,7 +106,7 @@ export default function ProfileSlide({ user, isOpen, onClose }: UserProfileSlide
 								<div className="p-3 rounded-lg bg-indigo-50/40">
 									<div className="flex items-center gap-2 mb-1.5">
 										<RiUserSmileLine className="w-4 h-4 text-indigo-600" />
-										<span className="text-[10px] font-bold text-indigo-600 uppercase tracking-widest">
+										<span className="text-[12px] font-bold text-indigo-600 uppercase ">
 											Mood
 										</span>
 									</div>
@@ -112,7 +118,7 @@ export default function ProfileSlide({ user, isOpen, onClose }: UserProfileSlide
 								<div className="p-3 rounded-lg bg-blue-50/40">
 									<div className="flex items-center gap-2 mb-1.5">
 										<RiFlashlightLine className="w-4 h-4 text-blue-600" />
-										<span className="text-[10px] font-bold text-blue-600 uppercase tracking-widest">
+										<span className="text-[12px] font-bold text-blue-600 uppercase ">
 											Status
 										</span>
 									</div>
@@ -125,10 +131,8 @@ export default function ProfileSlide({ user, isOpen, onClose }: UserProfileSlide
 					{metadata.about && (
 						<div>
 							<div className="flex items-center gap-2 mb-2">
-								<RiQuoteText className="w-3.5 h-3.5 text-neutral-400" />
-								<h3 className="text-[10px] font-bold text-neutral-600 uppercase tracking-widest">
-									About
-								</h3>
+								<RiInformationLine className="w-3.5 h-3.5 text-blue-500" />
+								<h3 className="text-[12px] font-bold text-blue-500 uppercase ">About</h3>
 							</div>
 							<p className="text-sm leading-relaxed text-neutral-700 p-3 rounded-lg bg-neutral-50/50">
 								{metadata.about}
@@ -139,16 +143,14 @@ export default function ProfileSlide({ user, isOpen, onClose }: UserProfileSlide
 					{metadata.tags && metadata.tags.length > 0 && (
 						<div>
 							<div className="flex items-center gap-2 mb-2">
-								<RiPriceTag3Line className="w-3.5 h-3.5 text-neutral-400" />
-								<h3 className="text-[10px] font-bold text-neutral-600 uppercase tracking-widest">
-									Tags
-								</h3>
+								<RiPriceTag3Line className="w-3.5 h-3.5 text-rose-500" />
+								<h3 className="text-[12px] font-bold text-rose-500 uppercase ">Tags</h3>
 							</div>
 							<div className="flex flex-wrap gap-2">
 								{metadata.tags.map((tag, idx) => (
 									<span
 										key={idx}
-										className={`px-3 py-1.5 rounded-lg text-xs font-semibold border ${getTagColor(idx)}`}
+										className={`px-3 py-1.5 rounded-xl text-xs font-semibold ring-2 ${getTagColor(idx)}`}
 									>
 										{tag}
 									</span>
@@ -159,20 +161,18 @@ export default function ProfileSlide({ user, isOpen, onClose }: UserProfileSlide
 
 					{metadata.quirks && metadata.quirks.length > 0 && (
 						<div>
-							<div className="flex items-center gap-2 mb-2">
-								<RiLightbulbFlashLine className="w-3.5 h-3.5 text-neutral-400" />
-								<h3 className="text-[10px] font-bold text-neutral-600 uppercase tracking-widest">
-									Quirks
-								</h3>
+							<div className="text-violet-400 flex items-center gap-2 mb-2">
+								<RiLightbulbFlashLine className="w-3.5 h-3.5" />
+								<h3 className="text-[12px] font-bold text-neutral-600 uppercase">Quirks</h3>
 							</div>
 							<div className="space-y-2">
 								{metadata.quirks.map((quirk, idx) => (
 									<div
 										key={idx}
-										className="flex items-start gap-2.5 p-3 rounded-lg bg-white/50"
+										className="flex items-start gap-2.5 p-2 rounded-lg bg-white/50"
 									>
 										<div className="w-5 h-5 rounded-md bg-neutral-100 flex items-center justify-center flex-shrink-0">
-											<span className="text-[10px] text-neutral-600">✦</span>
+											<span className="text-[12px] text-neutral-600">✦</span>
 										</div>
 										<span className="text-sm text-neutral-700 leading-relaxed flex-1">
 											{quirk}
@@ -184,15 +184,23 @@ export default function ProfileSlide({ user, isOpen, onClose }: UserProfileSlide
 					)}
 
 					{user.createdAt && (
-						<div className="pt-4 border-t border-neutral-200/30">
-							<div className="flex items-center gap-2.5 p-3">
+						<div className="pt-2 border-t border-neutral-200/30">
+							<div className="flex items-center gap-2 p-2">
 								<BiTime className="w-4 h-4 text-lime-600" />
 								<div className="flex flex-col">
-									<span className="text-[10px] text-slate-500 font-medium">
+									<span className="text-[12px] text-slate-500 font-medium">
 										Member since
 									</span>
 									<span className="text-sm font-semibold text-lime-700">
-										{formatTime(user.createdAt)}
+										{formatTime(user.createdAt, 'en-US', {
+											weekday: 'short',
+											month: 'short',
+											day: 'numeric',
+											year: '2-digit',
+											hour: '2-digit',
+											minute: '2-digit',
+											hour12: true,
+										})}
 									</span>
 								</div>
 							</div>

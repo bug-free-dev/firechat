@@ -41,14 +41,14 @@ export function relativeTimeFromMs(ms: number): string {
 }
 
 export const TAG_COLORS = [
-	'bg-blue-50 text-blue-700 border-blue-200',
-	'bg-indigo-50 text-indigo-700 border-indigo-200',
-	'bg-pink-50 text-pink-700 border-pink-200',
-	'bg-neutral-50 text-neutral-700 border-neutral-200',
-	'bg-lime-50 text-lime-700 border-lime-200',
-	'bg-rose-50 text-rose-700 border-rose-200',
-	'bg-cyan-50 text-cyan-700 border-cyan-200',
-	'bg-purple-50 text-purple-700 border-purple-200',
+	'bg-blue-50 text-blue-700 ring-blue-200',
+	'bg-indigo-50 text-indigo-700 ring-indigo-200',
+	'bg-pink-50 text-pink-700 ring-pink-200',
+	'bg-neutral-50 text-neutral-700 ring-neutral-200',
+	'bg-lime-50 text-lime-700 ring-lime-200',
+	'bg-rose-50 text-rose-700 ring-rose-200',
+	'bg-cyan-50 text-cyan-700 ring-cyan-200',
+	'bg-purple-50 text-purple-700 ring-purple-200',
 ];
 
 export const getTagColor = (index: number): string => TAG_COLORS[index % TAG_COLORS.length];

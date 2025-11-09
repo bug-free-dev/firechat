@@ -4,7 +4,9 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { getKudosBalance, getKudosHistoryAll, transferKudos } from '@/app/lib/api/kudosAPI';
 import type { FireProfile, KudosTxn } from '@/app/lib/types';
+import { create } from '@/app/lib/utils/time';
 
+/* <----- TYPES -----> */
 interface UseKudosOptions {
 	currentUser: FireProfile | null;
 	autoRefreshInterval?: number;
@@ -15,6 +17,7 @@ interface UseKudosReturn {
 	transactions: KudosTxn[];
 	loading: boolean;
 	sending: boolean;
+	error: string | null;
 	sendKudos: (
 		toUid: string,
 		amount: number,
@@ -25,82 +28,111 @@ interface UseKudosReturn {
 	refresh: () => Promise<void>;
 }
 
+/* <----- HOOK -----> */
 export function useKudos({
 	currentUser,
 	autoRefreshInterval = 30000,
 }: UseKudosOptions): UseKudosReturn {
-	const [balance, setBalance] = useState(currentUser?.kudos || 0);
+	/* -------- STATE -------- */
+	const [balance, setBalance] = useState(currentUser?.kudos ?? 0);
 	const [transactions, setTransactions] = useState<KudosTxn[]>([]);
 	const [loading, setLoading] = useState(false);
 	const [sending, setSending] = useState(false);
+	const [error, setError] = useState<string | null>(null);
 
+	/* -------- REFS -------- */
 	const previousBalanceRef = useRef(balance);
 	const mountedRef = useRef(true);
 	const inFlightRefreshRef = useRef<Promise<void> | null>(null);
 	const currentUserRef = useRef(currentUser);
 	const loadedForUidRef = useRef<string | null>(null);
+	const lastSuccessfulFetchRef = useRef<number>(0);
 
-	// Update ref when currentUser changes
+	/* -------- SYNC CURRENT USER -------- */
 	useEffect(() => {
 		currentUserRef.current = currentUser;
 	}, [currentUser]);
 
-	// Sync balance with currentUser prop
 	useEffect(() => {
 		if (currentUser?.kudos !== undefined) {
 			setBalance(currentUser.kudos);
 		}
 	}, [currentUser?.kudos]);
 
-	// Fetch balance from server (stable)
+	/* -------- REFRESH BALANCE -------- */
 	const refreshBalance = useCallback(async (): Promise<void> => {
 		const user = currentUserRef.current;
 		if (!user?.uid || !mountedRef.current) return;
+
 		try {
 			const serverBalance = await getKudosBalance(user.uid);
 			if (mountedRef.current) {
 				setBalance(serverBalance);
+				setError(null);
 			}
 		} catch {
-			/** Ignore errors silently for balance refresh */
+			if (mountedRef.current) {
+				setError('Failed to fetch balance');
+			}
 		}
 	}, []);
 
-	// Fetch transaction history (stable)
+	/* -------- REFRESH TRANSACTIONS -------- */
 	const refreshTransactions = useCallback(async (): Promise<void> => {
 		const user = currentUserRef.current;
 		if (!user?.uid || !mountedRef.current) return;
+
 		try {
-			const history = await getKudosHistoryAll(user.uid, 10);
+			const history = await getKudosHistoryAll(user.uid, 20);
+
 			if (mountedRef.current) {
-				setTransactions(history);
+				// Only update if we got data OR it's the first fetch
+				if (history.length > 0 || lastSuccessfulFetchRef.current === 0) {
+					setTransactions(history);
+					lastSuccessfulFetchRef.current = create.nowMs();
+					setError(null);
+				}
 			}
 		} catch {
-			/** Ignore errors silently for history refresh */
+			if (mountedRef.current) {
+				setError('Failed to fetch transactions');
+			}
 		}
 	}, []);
 
-	// Refresh both balance and transactions (stable)
+	/* -------- REFRESH BOTH -------- */
 	const refresh = useCallback(async (): Promise<void> => {
-		// ensure function always returns a Promise<void> on every code path
 		if (!mountedRef.current) return Promise.resolve();
-		if (inFlightRefreshRef.current) return inFlightRefreshRef.current;
 
-		const p = (async () => {
+		// Prevent concurrent refreshes
+		if (inFlightRefreshRef.current) {
+			return inFlightRefreshRef.current;
+		}
+
+		const refreshPromise = (async () => {
 			setLoading(true);
+			setError(null);
+
 			try {
 				await Promise.all([refreshBalance(), refreshTransactions()]);
+			} catch (err) {
+				if (mountedRef.current) {
+					const message = err instanceof Error ? err.message : 'Refresh failed';
+					setError(message);
+				}
 			} finally {
-				if (mountedRef.current) setLoading(false);
+				if (mountedRef.current) {
+					setLoading(false);
+				}
 				inFlightRefreshRef.current = null;
 			}
 		})();
 
-		inFlightRefreshRef.current = p;
-		return p;
+		inFlightRefreshRef.current = refreshPromise;
+		return refreshPromise;
 	}, [refreshBalance, refreshTransactions]);
 
-	// Send kudos (stable)
+	/* -------- SEND KUDOS -------- */
 	const sendKudos = useCallback(
 		async (
 			toUid: string,
@@ -108,92 +140,145 @@ export function useKudos({
 			note?: string
 		): Promise<{ success: boolean; reason?: string }> => {
 			const user = currentUserRef.current;
-			if (!user?.uid) return { success: false, reason: 'Not authenticated' };
-			if (amount <= 0) return { success: false, reason: 'Invalid amount' };
-			if (amount > balance) return { success: false, reason: 'Insufficient balance' };
-			if (sending) return { success: false, reason: 'Already sending' };
 
+			/* Validation */
+			if (!user?.uid) {
+				return { success: false, reason: 'Not authenticated' };
+			}
+			if (!toUid?.trim()) {
+				return { success: false, reason: 'Invalid recipient' };
+			}
+			if (amount <= 0 || !isFinite(amount)) {
+				return { success: false, reason: 'Invalid amount' };
+			}
+			if (amount > balance) {
+				return { success: false, reason: 'Insufficient balance' };
+			}
+			if (sending) {
+				return { success: false, reason: 'Please wait...' };
+			}
+
+			/* Optimistic Update Setup */
 			previousBalanceRef.current = balance;
-			setBalance((b) => b - amount);
+			const tempId = `temp-${create.nowMs()}-${Math.random().toString(36).slice(2, 9)}`;
 
-			const tempId = `temp-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 			const tempTxn: KudosTxn = {
 				id: tempId,
 				from: user.uid,
 				to: toUid,
 				amount,
 				type: 'gift',
-				note: note ?? '',
-				createdAt: new Date().toISOString(),
+				note: note?.trim() ?? '',
+				createdAt: create.nowISO(),
 			};
-			setTransactions((prev) => [tempTxn, ...prev]);
 
+			// Apply optimistic update
+			setBalance((prev) => prev - amount);
+			setTransactions((prev) => [tempTxn, ...prev]);
 			setSending(true);
+			setError(null);
+
 			try {
+				/* Server Transaction */
 				const result = await transferKudos(user.uid, toUid, amount, note);
 
 				if (result.success) {
+					// SUCCESS: Remove temp, fetch real data
+					if (mountedRef.current) {
+						setTransactions((prev) => prev.filter((t) => t.id !== tempId));
+					}
+
+					// Fetch latest data from server
 					await refresh();
+
 					return { success: true };
 				}
 
-				// if not success -> rollback
+				// SERVER REJECTION: Rollback
 				if (mountedRef.current) {
 					setBalance(previousBalanceRef.current);
 					setTransactions((prev) => prev.filter((t) => t.id !== tempId));
+					setError(result.reason ?? 'Transaction failed');
 				}
-				return { success: false, reason: result.reason ?? 'Server rejected' };
+
+				return {
+					success: false,
+					reason: result.reason ?? 'Server rejected transaction',
+				};
 			} catch (err) {
+				// NETWORK ERROR: Rollback
 				if (mountedRef.current) {
 					setBalance(previousBalanceRef.current);
 					setTransactions((prev) => prev.filter((t) => t.id !== tempId));
+
+					const errorMsg = err instanceof Error ? err.message : 'Network error';
+					setError(errorMsg);
 				}
-				return { success: false, reason: (err as Error)?.message ?? 'Network error' };
+
+				return {
+					success: false,
+					reason: err instanceof Error ? err.message : 'Network error',
+				};
 			} finally {
-				if (mountedRef.current) setSending(false);
+				if (mountedRef.current) {
+					setSending(false);
+				}
 			}
 		},
 		[balance, refresh, sending]
 	);
 
-	// Initial load - only once per UID
+	/* -------- INITIAL LOAD -------- */
 	useEffect(() => {
 		const currentUid = currentUser?.uid;
 
+		// Only load once per user
 		if (!currentUid || loadedForUidRef.current === currentUid) {
 			return;
 		}
 
 		loadedForUidRef.current = currentUid;
-		void refresh(); // explicitly mark fire-and-forget to satisfy no-floating-promises
+
+		// Reset state for new user
+		setTransactions([]);
+		setError(null);
+		lastSuccessfulFetchRef.current = 0;
+
+		// Initial fetch
+		void refresh();
 	}, [currentUser?.uid, refresh]);
 
-	// Auto-refresh interval - only set up once
+	/* -------- AUTO-REFRESH INTERVAL -------- */
 	useEffect(() => {
 		if (!currentUser?.uid || autoRefreshInterval <= 0) return;
 
-		const id = setInterval(() => {
-			void refresh();
+		const intervalId = setInterval(() => {
+			// Only refresh if not currently loading and user is authenticated
+			if (!loading && mountedRef.current && currentUserRef.current?.uid) {
+				void refresh();
+			}
 		}, autoRefreshInterval);
 
-		return () => {
-			clearInterval(id);
-		};
-	}, [currentUser?.uid, autoRefreshInterval, refresh]);
+		return () => clearInterval(intervalId);
+	}, [currentUser?.uid, autoRefreshInterval, loading, refresh]);
 
-	// Cleanup on unmount
+	/* -------- CLEANUP -------- */
 	useEffect(() => {
 		mountedRef.current = true;
 		return () => {
 			mountedRef.current = false;
+			// Cancel in-flight requests
+			inFlightRefreshRef.current = null;
 		};
 	}, []);
 
+	/* -------- RETURN -------- */
 	return {
 		balance,
 		transactions,
 		loading,
 		sending,
+		error,
 		sendKudos,
 		refreshBalance,
 		refreshTransactions,

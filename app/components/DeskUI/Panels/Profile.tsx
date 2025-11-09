@@ -9,13 +9,15 @@ import {
 	HiOutlineStar,
 	HiOutlineTag,
 } from 'react-icons/hi';
+import { IoSparkles } from 'react-icons/io5';
+import { RiPriceTag3Line } from 'react-icons/ri';
 
 import { TAG_COLORS } from '@/app/components/UI';
-import { FireButton, FireInput } from '@/app/components/UI';
+import { FireArea, FireButton, FireInput } from '@/app/components/UI';
 import { FireToast } from '@/app/components/UI';
 import { updateUserProfile } from '@/app/lib/api/userAPI';
 import { useAuthState } from '@/app/lib/routing/context/AuthStateContext';
-import { FireProfile } from '@/app/lib/types';
+import type { FireProfile } from '@/app/lib/types';
 
 import {
 	MoodOptions,
@@ -271,19 +273,22 @@ export const ProfilePanel: React.FC<ProfilePanelProps> = ({ profile, onUpdate })
 									<span
 										key={i}
 										className={`
-                      inline-flex items-center gap-1 px-3 py-1.5 rounded-full 
-                      text-xs font-medium ring-2
-                      ${colorSet.bg} ${colorSet.text} ${colorSet.ring}
-                      transition-all duration-200 hover:scale-105
-                    `}
+          inline-flex items-center gap-2 pl-3 pr-3 py-1
+          rounded-xl ${colorSet.bg} ${colorSet.text} ${colorSet.ring}
+          text-sm font-medium tracking-tight
+          transition-all duration-200 ease-out ${colorSet.hover}
+        `}
 									>
-										<span className="text-xs">★</span>
+										<RiPriceTag3Line className="w-3.5 h-3.5 opacity-60" />
 										{tag}
 									</span>
 								);
 							})}
 							{(profile.tags ?? []).length === 0 && (
-								<span className="text-sm text-gray-400 italic">No tags yet</span>
+								<div className="flex items-center gap-1.5 text-neutral-400">
+									<IoSparkles className="w-4 h-4 opacity-30" />
+									<span className="text-sm">No tags yet</span>
+								</div>
 							)}
 						</div>
 					</div>
@@ -297,16 +302,11 @@ export const ProfilePanel: React.FC<ProfilePanelProps> = ({ profile, onUpdate })
 								About
 							</label>
 							{isEditing ? (
-								<textarea
+								<FireArea
 									value={String(editData.about ?? '')}
 									onChange={(e) => setEditData({ ...editData, about: e.target.value })}
 									placeholder="Tell people about yourself..."
-									rows={5}
-									className="
-                    w-full px-4 py-3 rounded-lg 
-                    bg-white ring-2 ring-gray-200/40
-                    focus:ring-gray-300/60 outline-none resize-none text-sm transition-all
-                  "
+									rows={4}
 								/>
 							) : (
 								<div className="px-4 py-3 rounded-lg bg-gray-50/50 ring-2 ring-gray-100/50 text-sm text-gray-700">
@@ -398,11 +398,12 @@ export const ProfilePanel: React.FC<ProfilePanelProps> = ({ profile, onUpdate })
 										onClick={handleSave}
 										variant="default"
 										disabled={saving}
+										loading={saving}
 										className="min-w-[120px]"
 									>
-										{saving ? 'Saving...' : 'Save changes'}
+										Save changes
 									</FireButton>
-									<FireButton onClick={handleCancelEdit} variant="secondary">
+									<FireButton onClick={handleCancelEdit} variant="outline">
 										Cancel
 									</FireButton>
 								</>

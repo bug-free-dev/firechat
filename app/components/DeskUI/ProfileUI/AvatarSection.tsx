@@ -5,7 +5,7 @@ import { BiImageAdd } from 'react-icons/bi';
 import { HiOutlinePencil, HiOutlinePhotograph, HiOutlineSave, HiOutlineX } from 'react-icons/hi';
 import { RiRobot2Line } from 'react-icons/ri';
 
-import { DicebearSelector, FireAvatar } from '@/app/components/UI';
+import { DiceAvatarPicker, FireAvatar } from '@/app/components/UI';
 
 type ProfileAvatarSectionProps = {
 	displayName: string;
@@ -149,7 +149,7 @@ export const ProfileAvatarSection: React.FC<ProfileAvatarSectionProps> = ({
 			</div>
 
 			{showDicebearModal && (
-				<DicebearSelector
+				<DiceAvatarPicker
 					displayName={displayName}
 					onSelect={handleDicebearSelect}
 					onClose={() => setShowDicebearModal(false)}

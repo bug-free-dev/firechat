@@ -5,7 +5,7 @@ import { IoAddOutline, IoChatbubblesOutline } from 'react-icons/io5';
 import { MdOutlineWhatshot } from 'react-icons/md';
 
 import { FireButton, WaveLoader } from '@/app/components/UI';
-import { FireCachedUser, FireProfile, SessionDoc } from '@/app/lib/types';
+import { CachedUser, FireProfile, SessionDoc } from '@/app/lib/types';
 import { compare } from '@/app/lib/utils/time';
 
 import { FrequentUsers } from './FreqUsers';
@@ -15,7 +15,7 @@ interface ChatsTabProps {
 	sessions: SessionDoc[];
 	invitedSessions?: SessionDoc[];
 	currentUser: FireProfile;
-	frequentUsers: FireCachedUser[];
+	frequentUsers: CachedUser[];
 	isCreator: (session: SessionDoc) => boolean;
 	isParticipant: (session: SessionDoc) => boolean;
 	onCreateSession?: () => void;
@@ -85,9 +85,9 @@ export const ChatsTab: React.FC<ChatsTabProps> = ({
 			{mergedSessions.length === 0 ? (
 				<div className="flex flex-col items-center justify-center py-20 text-center">
 					<MdOutlineWhatshot className="w-20 h-20 mb-6 text-orange-300 opacity-50" />
-					<h3 className="text-2xl font-knewave text-neutral-700 mb-2">No sparks yet</h3>
-					<p className="text-neutral-500 mb-6 max-w-sm">
-						Fire up your first session and start chatting with your classmates!
+					<h3 className="text-4xl font-knewave text-neutral-700 mb-3">No sparks yet</h3>
+					<p className="font-comic text-neutral-400 mb-6 max-w-sm">
+						Fire up your first session and start a conversation!
 					</p>
 					{onCreateSession && (
 						<FireButton onClick={onCreateSession} className="flex items-center gap-2">

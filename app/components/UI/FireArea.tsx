@@ -36,7 +36,7 @@ export const FireArea: React.FC<FireAreaProps> = ({
       bg-neutral-100/30 
       border border-neutral-200/40
       rounded-md
-      focus:ring-2 focus:ring-neutral-200/80
+      focus:ring-2 focus:ring-neutral-200/70
       focus:border-neutral-300 outline-none
     `,
 		custom: `
@@ -44,7 +44,7 @@ export const FireArea: React.FC<FireAreaProps> = ({
       rounded-t-lg
       border-b-[3px] border-neutral-200/40
       focus:bg-white dark:focus:bg-neutral-900
-      focus:border-indigo-400/50
+      focus:border-indigo-500/60
       transition-colors duration-200
     `,
 	};

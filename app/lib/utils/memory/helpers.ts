@@ -1,4 +1,4 @@
-import type { FireCachedUser, FireProfile } from '@/app/lib/types';
+import type { CachedUser, FireProfile } from '@/app/lib/types';
 
 import { type FireTime, toISO } from '../time';
 
@@ -21,7 +21,7 @@ export function extractUserMeta(data: Partial<FireProfile>): Record<string, unkn
 	return Object.keys(meta).length > 0 ? meta : undefined;
 }
 
-export function createCachedUser(data: Partial<FireProfile>, docId: string): FireCachedUser | null {
+export function createCachedUser(data: Partial<FireProfile>, docId: string): CachedUser | null {
 	const uid = String(data.uid ?? docId);
 
 	const usernamey =
@@ -44,7 +44,7 @@ export function createCachedUser(data: Partial<FireProfile>, docId: string): Fir
 	};
 }
 
-export const cloneSerializableUser = (user: FireCachedUser): FireCachedUser => ({
+export const cloneSerializableUser = (user: CachedUser): CachedUser => ({
 	uid: user.uid,
 	usernamey: user.usernamey,
 	displayName: user.displayName,
@@ -56,5 +56,5 @@ export const cloneSerializableUser = (user: FireCachedUser): FireCachedUser => (
 	meta: user.meta ? { ...user.meta } : undefined,
 });
 
-export const isValidUser = (user: FireCachedUser | undefined): user is FireCachedUser =>
+export const isValidUser = (user: CachedUser | undefined): user is CachedUser =>
 	!!user && !user.isBanned;

@@ -1,7 +1,7 @@
 'use server';
 
 import { adminDb } from '@/app/lib/firebase/FireAdmin';
-import type { FireCachedUser, FireProfile } from '@/app/lib/types';
+import type { CachedUser, FireProfile } from '@/app/lib/types';
 
 import { create } from '../time';
 import { CONFIG, FrequentUserCache, UserCache, ValidationResult } from './config';
@@ -17,7 +17,7 @@ let cache: UserCache = {
 let loadAllUsersInFlight: Promise<void> | null = null;
 
 const perUserFreqCache = new Map<string, FrequentUserCache>();
-const perUserFreqInFlight = new Map<string, Promise<FireCachedUser[]>>();
+const perUserFreqInFlight = new Map<string, Promise<CachedUser[]>>();
 
 /* <------- Core Loader -------> */
 
@@ -32,8 +32,8 @@ async function loadAllUsers(): Promise<void> {
 				.limit(CONFIG.MAX_USERS_QUERY)
 				.get();
 
-			const newUsers = new Map<string, FireCachedUser>();
-			const newByUid = new Map<string, FireCachedUser>();
+			const newUsers = new Map<string, CachedUser>();
+			const newByUid = new Map<string, CachedUser>();
 			const newIdentifiers = new Set<string>();
 
 			snapshot.forEach((doc) => {
@@ -105,7 +105,7 @@ function removeUserFromCache(uid: string): void {
 /**
  * Update user in cache
  */
-function updateUserInCache(updated: FireCachedUser): void {
+function updateUserInCache(updated: CachedUser): void {
 	const oldUser = cache.byUid.get(updated.uid);
 
 	const newUsers = new Map(cache.users);
@@ -258,12 +258,12 @@ export async function isIdentifierAvailable(identifierKey: string): Promise<Vali
 
 /* <------- Public API -------> */
 
-export async function getAllCachedUsers(): Promise<FireCachedUser[]> {
+export async function getAllCachedUsers(): Promise<CachedUser[]> {
 	await ensureFresh();
 	return Array.from(cache.users.values(), cloneSerializableUser);
 }
 
-export async function searchUsersByUsername(query: string): Promise<FireCachedUser[]> {
+export async function searchUsersByUsername(query: string): Promise<CachedUser[]> {
 	await ensureFresh();
 
 	const normalizedQuery = (query ?? '').trim().toLowerCase();
@@ -272,7 +272,7 @@ export async function searchUsersByUsername(query: string): Promise<FireCachedUs
 		return Array.from(cache.users.values(), cloneSerializableUser);
 	}
 
-	const results: FireCachedUser[] = [];
+	const results: CachedUser[] = [];
 
 	for (const user of cache.users.values()) {
 		if (!isValidUser(user)) continue;
@@ -288,7 +288,7 @@ export async function searchUsersByUsername(query: string): Promise<FireCachedUs
 	return results;
 }
 
-export async function getUserByUsername(usernamey: string): Promise<FireCachedUser | null> {
+export async function getUserByUsername(usernamey: string): Promise<CachedUser | null> {
 	if (!usernamey) return null;
 
 	await ensureFresh();
@@ -296,7 +296,7 @@ export async function getUserByUsername(usernamey: string): Promise<FireCachedUs
 	return user ? cloneSerializableUser(user) : null;
 }
 
-export async function getUserByUid(uid: string): Promise<FireCachedUser | null> {
+export async function getUserByUid(uid: string): Promise<CachedUser | null> {
 	if (!uid) return null;
 
 	await ensureFresh();
@@ -349,12 +349,8 @@ async function aggregateInteractionsFallback(forUid: string, limit: number): Pro
 		.map(([uid]) => uid);
 }
 
-function buildFrequentUsersList(
-	topUids: string[],
-	forUid: string,
-	limit: number
-): FireCachedUser[] {
-	const results: FireCachedUser[] = [];
+function buildFrequentUsersList(topUids: string[], forUid: string, limit: number): CachedUser[] {
+	const results: CachedUser[] = [];
 	const usedUids = new Set<string>([forUid]);
 
 	for (const uid of topUids) {
@@ -378,7 +374,7 @@ function buildFrequentUsersList(
 	return results;
 }
 
-export async function getFrequentUsers(forUid: string, limit = 10): Promise<FireCachedUser[]> {
+export async function getFrequentUsers(forUid: string, limit = 10): Promise<CachedUser[]> {
 	if (!forUid) return [];
 
 	const now = create.nowMs();
@@ -390,7 +386,7 @@ export async function getFrequentUsers(forUid: string, limit = 10): Promise<Fire
 	const inFlight = perUserFreqInFlight.get(forUid);
 	if (inFlight) return inFlight;
 
-	const promise = (async (): Promise<FireCachedUser[]> => {
+	const promise = (async (): Promise<CachedUser[]> => {
 		await ensureFresh();
 
 		try {

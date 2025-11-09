@@ -32,7 +32,7 @@ export default function FlarePanel() {
 		<div className="max-w-md mx-auto space-y-8 px-4">
 			{/* Heading */}
 			<div className="text-center space-y-4">
-				<h2 className="font-bold text-3xl text-neutral-800 dark:text-neutral-100 font-comic">
+				<h2 className="font-bold text-3xl text-neutral-800 dark:text-neutral-100 font-bubblegum">
 					Your spark, your circle.
 				</h2>
 				<p className="text-sm text-neutral-500 dark:text-neutral-300 leading-relaxed">
@@ -42,7 +42,7 @@ export default function FlarePanel() {
 					{[...Array(3)].map((_, i) => (
 						<div
 							key={i}
-							className="w-2 h-2 rounded-full bg-indigo-400 animate-bounce"
+							className="w-2 h-2 rounded-full border-1 border-slate-400 animate-bounce"
 							style={{ animationDelay: `${i * 200}ms` }}
 						/>
 					))}
@@ -63,7 +63,7 @@ export default function FlarePanel() {
 							</div>
 
 							<div>
-								<div className="text-sm font-semibold text-neutral-900 dark:text-neutral-100 group-hover:text-[#ff3e00] transition-colors duration-200 text-center">
+								<div className="text-sm font-semibold text-neutral-900 dark:text-neutral-100 group-hover:text-slate-500  transition-colors duration-200 text-center">
 									{feature.title}
 								</div>
 								<div className="text-xs text-neutral-500 dark:text-neutral-400 group-hover:text-neutral-600 transition-colors duration-200 text-center">
@@ -76,14 +76,14 @@ export default function FlarePanel() {
 			</div>
 
 			{/* Pro tip */}
-			<div className="text-center p-2 bg-gradient-to-r from-indigo-100 to-indigo-200 dark:from-indigo-900/30 rounded-lg ring-2 ring-indigo-300/50 ">
+			<div className="text-center p-2 dark:from-slate-900/30 rounded-lg ring-2 ring-slate-300/50 ">
 				<div className="text-xs text-neutral-700 dark:text-neutral-200 mb-3 flex items-center justify-center gap-2">
-					<BiRocket className="text-indigo-500 w-4 h-4" />
+					<BiRocket className="text-slate-500 w-4 h-4" />
 					<span className="font-medium">Pro tip</span>
 				</div>
 				<p className="text-xs text-neutral-700 dark:text-neutral-200">
 					A short identifier (like{' '}
-					<span className="font-semibold text-indigo-700 bg-white/80 px-2 py-0.5 rounded-md shadow-sm dark:bg-indigo-950/40">
+					<span className="font-semibold text-slate-700 bg-white/80 px-2 py-0.5 rounded-md shadow-sm dark:bg-slate-950/40">
 						You@Firechat69
 					</span>
 					) makes joining faster.

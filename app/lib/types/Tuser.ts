@@ -47,7 +47,7 @@ export interface FireProfile {
  * Lightweight cached user representation.
  * Suitable for client-side caching and transfer.
  */
-export interface FireCachedUser {
+export interface CachedUser {
 	uid: UID;
 	usernamey: string;
 	displayName: string;
@@ -64,8 +64,8 @@ export interface FireCachedUser {
  * JSON-friendly for easy storage/transfer.
  */
 export interface FireUserCache {
-	byUsername: Record<string, FireCachedUser>;
-	byUid: Record<string, FireCachedUser>;
+	byUsername: Record<string, CachedUser>;
+	byUid: Record<string, CachedUser>;
 	timestamp: number;
 	meta?: Record<string, unknown>;
 }

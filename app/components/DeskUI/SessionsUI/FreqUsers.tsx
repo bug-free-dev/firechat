@@ -5,20 +5,20 @@ import { FaUsers } from 'react-icons/fa';
 
 import { isRecentlyActive } from '@/app/components/DeskUI/util';
 import { FireAvatar } from '@/app/components/UI';
-import { FireCachedUser, FireProfile } from '@/app/lib/types';
+import { CachedUser, FireProfile } from '@/app/lib/types';
 
 import ProfileSlide from './ProfileSlide';
 
 interface FrequentUsersProps {
-	users: FireCachedUser[];
+	users: CachedUser[];
 	currentUser: FireProfile;
 }
 
 export const FrequentUsers: React.FC<FrequentUsersProps> = ({ users, currentUser }) => {
-	const [selectedUser, setSelectedUser] = useState<FireCachedUser | null>(null);
+	const [selectedUser, setSelectedUser] = useState<CachedUser | null>(null);
 	const [isSlideOpen, setIsSlideOpen] = useState(false);
 
-	const handleUserClick = useCallback((user: FireCachedUser) => {
+	const handleUserClick = useCallback((user: CachedUser) => {
 		setSelectedUser(user);
 		setIsSlideOpen(true);
 	}, []);

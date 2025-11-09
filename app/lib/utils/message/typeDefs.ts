@@ -1,12 +1,9 @@
-/* <------- API PAYLOAD TYPES -------> */
-
 import type { DataSnapshot } from 'firebase/database';
 
-import { ChatMessage, FireCachedUser, ServerResult } from '@/app/lib/types';
+import type { CachedUser, ChatMessage, ServerResult } from '@/app/lib/types';
 
-/**
- * Payload for sending a message
- */
+/* <------- API PAYLOAD TYPES -------> */
+
 export interface SendMessagePayload {
 	readonly sessionId: string;
 	readonly senderUid: string;
@@ -16,18 +13,12 @@ export interface SendMessagePayload {
 	readonly extras?: Readonly<Record<string, unknown>>;
 }
 
-/**
- * Params for fetching messages
- */
 export interface GetMessagesParams {
 	readonly sessionId: string;
 	readonly limit?: number;
 	readonly before?: string;
 }
 
-/**
- * Params for reactions
- */
 export interface ReactionParams {
 	readonly messageId: string;
 	readonly sessionId: string;
@@ -35,9 +26,6 @@ export interface ReactionParams {
 	readonly emoji: string;
 }
 
-/**
- * Params for deleting messages
- */
 export interface DeleteMessageParams {
 	readonly messageId: string;
 	readonly sessionId: string;
@@ -72,76 +60,99 @@ export interface UseMessagesOptions {
 		readonly maxMessagesInMemory?: number;
 		readonly typingProfile?: TypingProfile;
 		readonly typingDebounceMs?: number;
+		readonly autoFetchInitial?: boolean;
 	};
 }
 
 export interface UseMessagesReturn {
 	readonly messages: ChatMessage[];
+	readonly messagesMap: Map<string, ChatMessage>;
 	readonly sending: boolean;
-   readonly inFlightCount: number;
-   readonly isSorted: boolean;
-	readonly typingUsers: FireCachedUser[];
+	readonly isSorted: true;
+	readonly typingUsers: CachedUser[];
+	readonly isFetching: boolean;
+	readonly hasMore: boolean;
 	readonly setTyping: (isTyping: boolean) => void;
-	readonly sendMessage: (text: string, replyTo?: string) => Promise<ServerResult<ChatMessage>>;
+	readonly sendMessage: (
+		text: string,
+		replyTo?: string,
+		extras?: Record<string, unknown>
+	) => Promise<ServerResult<ChatMessage>>;
 	readonly fetchOlder: (
 		beforeIso?: string,
 		limit?: number
 	) => Promise<ServerResult<ChatMessage[]>>;
+	readonly fetchInitial: () => Promise<ServerResult<ChatMessage[]>>;
 	readonly addReaction: (messageId: string, emoji: string) => Promise<ServerResult<null>>;
 	readonly removeReaction: (messageId: string, emoji: string) => Promise<ServerResult<null>>;
 	readonly deleteMessage: (messageId: string) => Promise<ServerResult<null>>;
 	readonly clear: () => void;
 }
 
-/* <------- RTDB PAYLOAD TYPES -------> */
+/* <------- INTERNAL HOOK TYPES -------> */
 
-interface FireTimeObject {
-	seconds?: number;
-	nanoseconds?: number;
-	_seconds?: number;
-	_nanoseconds?: number;
+export interface UseMessageStoreParams {
+	readonly sessionId: string;
+	readonly userUid: string;
+	readonly services: MessagesServices;
+	readonly maxMessagesInMemory?: number;
 }
 
-export interface RTDBMessagePayload {
-	roomId?: string;
-	sessionId?: string;
-	sender?: string;
-	type?: string;
-	text?: string;
-	replyTo?: string;
-	reactions?: Record<string, string[]>;
-	extras?: Record<string, unknown>;
-	status?: string;
-	createdAt?: string | number | FireTimeObject;
+export interface UseMessageStoreReturn {
+	readonly messages: ChatMessage[];
+	readonly messagesMap: Map<string, ChatMessage>;
+	readonly isSorted: true;
+	readonly sending: boolean;
+	readonly upsertMessage: (msg: ChatMessage) => void;
+	readonly removeMessage: (msgId: string) => void;
+	readonly sendMessage: (
+		text: string,
+		replyTo?: string,
+		extras?: Record<string, unknown>
+	) => Promise<ServerResult<ChatMessage>>;
+	readonly addReaction: (messageId: string, emoji: string) => Promise<ServerResult<null>>;
+	readonly removeReaction: (messageId: string, emoji: string) => Promise<ServerResult<null>>;
+	readonly deleteMessage: (messageId: string) => Promise<ServerResult<null>>;
+	readonly clear: () => void;
 }
 
-export interface RTDBTypingPayload {
-	uid?: string;
-	usernamey?: string;
-	displayName?: string;
-	avatarUrl?: string | null;
-	kudos?: number;
-	mood?: string;
-	createdAt?: string | number | FireTimeObject;
-	startedAt?: string | number | FireTimeObject;
-	meta?: Record<string, unknown>;
+export interface UseMessageFetchParams {
+	readonly sessionId: string;
+	readonly services: MessagesServices;
+	readonly initialLimit?: number;
+	readonly onMessagesBatch: (messages: ChatMessage[]) => void;
 }
 
-export interface OptimisticMessage extends ChatMessage {
-   readonly _optimistic: true;
-   readonly _timestamp: number;
+export interface UseMessageFetchReturn {
+	readonly fetchOlder: (
+		beforeIso?: string,
+		limit?: number
+	) => Promise<ServerResult<ChatMessage[]>>;
+	readonly fetchInitial: () => Promise<ServerResult<ChatMessage[]>>;
+	readonly isFetching: boolean;
+	readonly hasMore: boolean;
 }
 
-export type OptimisticOperation = {
-   readonly id: string;
-   readonly type: 'send' | 'react_add' | 'react_remove' | 'delete';
-   readonly timestamp: number;
-   readonly rollback?: () => void;
-};
+export interface UseMessageSyncParams {
+	readonly sessionId: string;
+	readonly userUid: string;
+	readonly liveLimit: number;
+	readonly typingProfile?: TypingProfile;
+	readonly typingDebounceMs?: number;
+	readonly onMessageUpsert: (msg: ChatMessage) => void;
+	readonly onMessageRemove: (msgId: string) => void;
+}
 
-/* <------- LISTENER TYPES -------> */
+export interface UseMessageSyncReturn {
+	readonly typingUsers: CachedUser[];
+	readonly setTyping: (isTyping: boolean) => void;
+	readonly cleanup: () => void;
+}
+
+/* <------- RTDB TYPES -------> */
 
 export type SnapshotCallback = (snap: DataSnapshot) => void;
+
 export interface RTDBListeners {
 	added?: SnapshotCallback;
 	changed?: SnapshotCallback;

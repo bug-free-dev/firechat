@@ -1,15 +1,15 @@
-import { FireCachedUser } from '../../types';
+import { CachedUser } from '@/app/lib/types';
 
 export interface UserCache {
-	readonly users: Map<string, FireCachedUser>;
-	readonly byUid: Map<string, FireCachedUser>;
+	readonly users: Map<string, CachedUser>;
+	readonly byUid: Map<string, CachedUser>;
 	readonly identifiers: Set<string>;
 	readonly timestamp: number;
 }
 
 export interface FrequentUserCache {
 	readonly ts: number;
-	readonly users: readonly FireCachedUser[];
+	readonly users: readonly CachedUser[];
 }
 
 export interface ValidationResult {

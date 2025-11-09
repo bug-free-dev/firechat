@@ -2,15 +2,14 @@
 
 import { FaUserPlus } from 'react-icons/fa';
 
-import { FireCachedUser } from '@/app/lib/types';
-
-import { FireAvatar } from '../UI';
+import { FireAvatar } from '@/app/components/UI';
+import type { CachedUser } from '@/app/lib/types';
 
 export interface ParticipantsPanelProps {
-	participants: string[]; // uids
-	profiles: Record<string, FireCachedUser>;
+	participants: string[];
+	profiles: Record<string, CachedUser>;
 	currentUserUid: string;
-	onOpenInvite?: () => void; // opens AddParticipantPicker
+	onOpenInvite?: () => void;
 }
 
 const ParticipantsPanel: React.FC<ParticipantsPanelProps> = ({
@@ -25,7 +24,7 @@ const ParticipantsPanel: React.FC<ParticipantsPanelProps> = ({
 				{onOpenInvite && (
 					<button
 						onClick={() => onOpenInvite()}
-						className="w-full flex items-center justify-center gap-2 p-3 bg-neutral-50 border border-dashed border-neutral-300 rounded-xl hover:border-cyan-400 hover:bg-cyan-50/50 transition-all text-neutral-600"
+						className="w-full flex items-center justify-center gap-2 p-3 bg-neutral-50 border border-dashed border-neutral-300 rounded-xl hover:border-sky-400 hover:bg-cyan-50/50 transition-all text-neutral-600"
 					>
 						<FaUserPlus className="w-4 h-4" />
 						<span className="font-medium text-sm">Add Participant</span>

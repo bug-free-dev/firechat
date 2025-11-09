@@ -3,20 +3,20 @@
 import React, { forwardRef, useId, useMemo, useState } from 'react';
 import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
 
-type FireInputSize = 'sm' | 'md' | 'lg';
+type Firesize = 'sm' | 'md' | 'lg';
 type FireInputVariant = 'default' | 'custom';
 
 interface FireInputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'size'> {
 	label?: string;
 	showPasswordToggle?: boolean;
-	inputSize?: FireInputSize;
+	size?: Firesize;
 	variant?: FireInputVariant;
 	inputClassName?: string;
 	containerClassName?: string;
 }
 
-const sizeMap: Record<FireInputSize, string> = {
-	sm: 'py-1.5 text-sm px-2',
+const sizeMap: Record<Firesize, string> = {
+	sm: 'py-2 text-sm px-2',
 	md: 'py-2.5 text-[15px] px-3',
 	lg: 'py-3.5 text-lg px-4',
 };
@@ -28,19 +28,19 @@ const sizeMap: Record<FireInputSize, string> = {
  */
 const variantClasses: Record<FireInputVariant, string> = {
 	default:
-		'bg-white border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-neutral-400/20 focus:border-neutral-300/70 hover:border-neutral-300/60',
+		'bg-white border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-neutral-400/20 focus:border-neutral-300/70 hover:border-neutral-300/50',
 	custom:
-		'rounded-t-lg border-b-3 border-neutral-200/50 dark:border-neutral-700 bg-neutral-100/30 dark:bg-neutral-800/70 focus:bg-white dark:focus:bg-transparent focus:border-violet-500/80 transition-colors duration-200',
+		'rounded-t-lg border-b-3 border-neutral-200/50 dark:border-neutral-700 bg-neutral-100/30 dark:bg-neutral-800/70 focus:bg-white dark:focus:bg-transparent focus:border-indigo-500/60 transition-colors duration-200',
 };
 
-const labelBase = 'text-sm font-medium text-neutral-700 dark:text-neutral-200';
+const labelBase = 'text-sm font-medium text-neutral-700';
 
 export const FireInput = forwardRef<HTMLInputElement, FireInputProps>(
 	(
 		{
 			label,
 			showPasswordToggle,
-			inputSize = 'md',
+			size = 'md',
 			variant = 'default',
 			className = '',
 			inputClassName = '',
@@ -57,7 +57,7 @@ export const FireInput = forwardRef<HTMLInputElement, FireInputProps>(
 		const shouldShowToggle = isPassword && (showPasswordToggle ?? true);
 		const inputType = isPassword ? (showPassword ? 'text' : 'password') : type;
 
-		const sizeClasses = sizeMap[inputSize];
+		const sizeClasses = sizeMap[size];
 		const variantClass = variantClasses[variant];
 
 		const baseInput = useMemo(
@@ -73,7 +73,7 @@ export const FireInput = forwardRef<HTMLInputElement, FireInputProps>(
 					variantClass,
 					inputClassName,
 					className,
-					'pr-10',
+					'pr-5',
 				]
 					.filter(Boolean)
 					.join(' '),

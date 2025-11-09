@@ -15,7 +15,7 @@ export const KudosCard: React.FC<KudosCardProps> = ({
 	onOpenDetailed,
 }) => {
 	return (
-		<div className="bg-white rounded-xl border border-neutral-200 p-3 hover:shadow-sm transition-all duration-200">
+		<div className="bg-white rounded-xl border border-neutral-200 p-3 transition-all duration-200">
 			{/* User Info */}
 			<div className="flex items-center gap-3 mb-3">
 				<FireAvatar src={user.avatarUrl} seed={user.uid} size={40} />

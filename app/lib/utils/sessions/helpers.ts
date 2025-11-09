@@ -1,4 +1,4 @@
-/* <------------------- SESSION HELPERS -------------------> */
+/* <---------- SESSION HELPERS -----------> */
 
 import { grantKudos } from '@/app/lib/api/kudosAPI';
 import { adminDb, adminRTDB } from '@/app/lib/firebase/FireAdmin';

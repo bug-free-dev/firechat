@@ -147,7 +147,7 @@ export const SessionCard: React.FC<SessionCardProps> = ({
 
 	return (
 		<div
-			className={`group relative bg-white/60 backdrop-blur-sm rounded-2xl p-4 transition-all duration-200 hover:shadow-sm ${borderClass}`}
+			className={`group relative bg-white/60 rounded-2xl p-4 transition-all duration-200 hover:shadow ${borderClass}`}
 			onClick={() => {
 				if (isParticipant && !isInvited && session.isActive && session.id) {
 					router.push(`/room/${session.id}`);
@@ -181,7 +181,17 @@ export const SessionCard: React.FC<SessionCardProps> = ({
 				<div className="flex-1 min-w-0">
 					<div className="flex items-center gap-2 text-xs text-neutral-500">
 						<FiClock className="w-4 h-4 text-neutral-500" />
-						<span>{formatTime(session.createdAt)}</span>
+						<span>
+							{formatTime(session.createdAt, 'en-US', {
+								weekday: 'short',
+								month: 'short',
+								day: 'numeric',
+								year: '2-digit',
+								hour: '2-digit',
+								minute: '2-digit',
+								hour12: true,
+							})}
+						</span>
 					</div>
 				</div>
 

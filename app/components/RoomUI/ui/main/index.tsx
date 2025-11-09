@@ -5,14 +5,19 @@ import { useParams, useRouter } from 'next/navigation';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
 
-import Orchestra from '@/app/components/RoomUI/Orchestra';
+import Orchestra from '@/app/components/RoomUI/ui/main/Orchestra';
 import { FireLoader, FirePrompt } from '@/app/components/UI';
 import * as messageAPI from '@/app/lib/api/messageAPI';
 import * as sessionAPI from '@/app/lib/api/sessionAPI';
 import { rtdb } from '@/app/lib/firebase/FireClient';
 import { useAuthState } from '@/app/lib/routing/context/AuthStateContext';
-import type { FireCachedUser, SessionDoc } from '@/app/lib/types';
-import { RTDBInvitedUser, RTDBParticipant, RTDBSessionMetadata } from '@/app/lib/types';
+import type {
+	CachedUser,
+	RTDBInvitedUser,
+	RTDBParticipant,
+	RTDBSessionMetadata,
+	SessionDoc,
+} from '@/app/lib/types';
 import { getAllCachedUsers, getFrequentUsers } from '@/app/lib/utils/memory';
 
 interface RTDBSessionValue {
@@ -23,26 +28,24 @@ interface RTDBSessionValue {
 
 type AccessState = 'checking' | 'needs_identifier' | 'joining' | 'granted' | 'denied';
 
-const Room:React.FC = React.memo(()=> {
+const MAX_ATTEMPTS = 3;
+
+const Room: React.FC = React.memo(() => {
 	const params = useParams();
 	const router = useRouter();
 	const sessionId = params?.sessionId as string | undefined;
-
 	const { profile, isLoading: profileLoading, verifyIdentifier } = useAuthState();
 
 	const [session, setSession] = useState<SessionDoc | null>(null);
-	const [profiles, setProfiles] = useState<Record<string, FireCachedUser>>({});
-	const [frequentUsers, setFrequentUsers] = useState<FireCachedUser[]>([]);
-	const [allUsers, setAllUsers] = useState<FireCachedUser[]>([]);
+	const [profiles, setProfiles] = useState<Record<string, CachedUser>>({});
+	const [frequentUsers, setFrequentUsers] = useState<CachedUser[]>([]);
+	const [allUsers, setAllUsers] = useState<CachedUser[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
-
-	// ðŸ”’ ACCESS CONTROL STATE
 	const [accessState, setAccessState] = useState<AccessState>('checking');
 	const [identifierValue, setIdentifierValue] = useState('');
 	const [attempts, setAttempts] = useState(0);
 
-	// Memoized message services
 	const messageServices = useMemo(
 		() => ({
 			sendMessage: messageAPI.sendMessage,
@@ -70,14 +73,9 @@ const Room:React.FC = React.memo(()=> {
 
 				setAllUsers(cached);
 				setFrequentUsers(frequent);
-
-				const profilesMap: Record<string, FireCachedUser> = {};
-				cached.forEach((user) => {
-					profilesMap[user.uid] = user;
-				});
-				setProfiles(profilesMap);
+				setProfiles(Object.fromEntries(cached.map((u) => [u.uid, u])));
 			} catch {
-				// Silent fail - non-critical
+				// Non-critical failure
 			}
 		})();
 
@@ -86,54 +84,53 @@ const Room:React.FC = React.memo(()=> {
 		};
 	}, [profile?.uid]);
 
-	/* <----------- STABLE CALLBACKS (moved out of effects) -----------> */
-
-	// Handle join errors â€” use functional updates to avoid stale attempts
 	const handleJoinError = useCallback((errorCode: string) => {
-		switch (errorCode) {
-			case 'IDENTIFIER_REQUIRED':
+		const errorMap: Record<string, () => void> = {
+			IDENTIFIER_REQUIRED: () => {
 				setAccessState('needs_identifier');
 				toast('This session requires your secret key');
-				break;
-
-			case 'IDENTIFIER_INVALID':
+			},
+			IDENTIFIER_INVALID: () => {
 				setAttempts((prev) => {
 					const next = prev + 1;
-					if (next >= 3) {
-						toast('Are you really who you say you are ðŸ‘€?');
+					const remaining = MAX_ATTEMPTS - next;
+					if (next >= MAX_ATTEMPTS) {
+						toast('Access denied after 3 failed attempts');
 						setAccessState('denied');
 						setError('Access denied after 3 failed attempts');
 					} else {
-						toast(`Incorrect key. ${3 - next} attempt${3 - next === 1 ? '' : 's'} remaining`);
+						toast(
+							`Incorrect key. ${remaining} attempt${remaining === 1 ? '' : 's'} remaining`
+						);
 						setAccessState('needs_identifier');
 					}
 					return next;
 				});
-				break;
-
-			case 'SESSION_INACTIVE':
+			},
+			SESSION_INACTIVE: () => {
 				setAccessState('denied');
 				setError('This session has ended');
-				break;
-
-			case 'NOT_FOUND':
+			},
+			NOT_FOUND: () => {
 				setAccessState('denied');
 				setError('Session not found');
-				break;
-
-			case 'USER_NOT_FOUND':
+			},
+			USER_NOT_FOUND: () => {
 				setAccessState('denied');
 				setError('Your profile could not be loaded');
-				break;
+			},
+		};
 
-			default:
-				toast('Unable to join session');
-				setAccessState('denied');
-				setError('Access denied');
+		const handler = errorMap[errorCode];
+		if (handler) {
+			handler();
+		} else {
+			toast('Unable to join session');
+			setAccessState('denied');
+			setError('Access denied');
 		}
 	}, []);
 
-	// Attempt to join session (stable)
 	const attemptJoin = useCallback(
 		async (sid: string, identifier?: string) => {
 			if (!profile?.uid) return;
@@ -161,7 +158,6 @@ const Room:React.FC = React.memo(()=> {
 		[profile?.uid, handleJoinError]
 	);
 
-	// Generic RTDB error handler (stable)
 	const handleRTDBError = useCallback((err: unknown) => {
 		const isPermissionDenied =
 			typeof err === 'object' &&
@@ -176,8 +172,7 @@ const Room:React.FC = React.memo(()=> {
 		setLoading(false);
 	}, []);
 
-	/* <----------- PHASE 1: Fetch session metadata and check access requirements -----------> */
-
+	// Main session listener
 	useEffect(() => {
 		if (!sessionId || !profile?.uid || !rtdb) return;
 
@@ -191,7 +186,6 @@ const Room:React.FC = React.memo(()=> {
 			try {
 				const val = snapshot.val() as RTDBSessionValue | null;
 
-				// Session doesn't exist
 				if (!val?.metadata) {
 					setError('This session no longer exists');
 					setAccessState('denied');
@@ -203,12 +197,10 @@ const Room:React.FC = React.memo(()=> {
 				const invitedUids = Object.keys(val.invited ?? {});
 				const participantUids = Object.keys(val.participants ?? {});
 
-				// Check if user has any relationship to session
 				const isParticipant = participantUids.includes(profile.uid);
 				const isInvited = invitedUids.includes(profile.uid);
 				const isCreator = meta.creator === profile.uid;
 
-				// Build session object
 				const sessionDoc: SessionDoc = {
 					id: sessionId,
 					title: meta.title,
@@ -224,30 +216,24 @@ const Room:React.FC = React.memo(()=> {
 
 				setSession(sessionDoc);
 
-				// ðŸ”’ ACCESS DECISION LOGIC
-				// Case 1: Already a participant or creator â†’ GRANTED
+				// Access control logic
 				if (isParticipant || isCreator) {
 					setAccessState('granted');
 					setLoading(false);
 					return;
 				}
 
-				// Case 2: Invited but not participant
 				if (isInvited) {
-					// Check if identifier required
 					if (meta.identifierRequired) {
 						setAccessState('needs_identifier');
 						setLoading(false);
 						return;
 					}
-
-					// No identifier needed, auto-join
 					setAccessState('joining');
 					void attemptJoin(sessionId, undefined);
 					return;
 				}
 
-				// Case 3: No relationship to session
 				setError('You need an invitation to join this session');
 				setAccessState('denied');
 				setLoading(false);
@@ -269,14 +255,11 @@ const Room:React.FC = React.memo(()=> {
 		};
 	}, [sessionId, profile?.uid, attemptJoin, handleRTDBError]);
 
-	/* <----------- IDENTIFIER VERIFY / SUBMIT -----------> */
-
 	const handleIdentifierVerify = useCallback(
 		async (input: string): Promise<boolean> => {
 			if (!verifyIdentifier) return false;
 			try {
-				const valid = await verifyIdentifier(input);
-				return valid;
+				return await verifyIdentifier(input);
 			} catch {
 				return false;
 			}
@@ -287,18 +270,18 @@ const Room:React.FC = React.memo(()=> {
 	const handleIdentifierSubmit = useCallback(async () => {
 		if (!sessionId || !identifierValue.trim()) return;
 
-		// Verify locally first
 		const locallyValid = await handleIdentifierVerify(identifierValue);
 		if (!locallyValid) {
 			setAttempts((prev) => {
 				const next = prev + 1;
-				if (next >= 3) {
+				const remaining = MAX_ATTEMPTS - next;
+				if (next >= MAX_ATTEMPTS) {
 					toast('Too many failed attempts. Contact the creator for help');
 					setAccessState('denied');
 					setError('Access denied after 3 failed attempts');
 				} else {
 					toast(
-						`That's not the right key. ${3 - next} attempt${3 - next === 1 ? '' : 's'} left`
+						`That's not the right key. ${remaining} attempt${remaining === 1 ? '' : 's'} left`
 					);
 					setAccessState('needs_identifier');
 				}
@@ -307,11 +290,8 @@ const Room:React.FC = React.memo(()=> {
 			return;
 		}
 
-		// Attempt join with verified identifier
 		await attemptJoin(sessionId, identifierValue);
 	}, [sessionId, identifierValue, handleIdentifierVerify, attemptJoin]);
-
-	/* <----------- SESSION ACTION HANDLERS -----------> */
 
 	const handleEndSession = useCallback(
 		async (sid: string): Promise<void> => {
@@ -353,9 +333,7 @@ const Room:React.FC = React.memo(()=> {
 		if (!uid) return;
 		try {
 			const res = await sessionAPI.addParticipant(sid, uid);
-			if (!res.ok) {
-				toast('Person already invited');
-			}
+			if (!res.ok) toast('Person already invited');
 		} catch {
 			toast.error('Failed to add participant');
 		}
@@ -412,13 +390,13 @@ const Room:React.FC = React.memo(()=> {
 		[profile?.uid]
 	);
 
-	// User fetch/search handlers
-	const fetchFrequentUsersHandler = useCallback(async (): Promise<FireCachedUser[]> => {
-		return frequentUsers;
-	}, [frequentUsers]);
+	const fetchFrequentUsersHandler = useCallback(
+		async (): Promise<CachedUser[]> => frequentUsers,
+		[frequentUsers]
+	);
 
 	const searchUsersHandler = useCallback(
-		async (query: string): Promise<FireCachedUser[]> => {
+		async (query: string): Promise<CachedUser[]> => {
 			if (!query.trim()) return [];
 			const q = query.trim().toLowerCase();
 			return allUsers.filter(
@@ -428,9 +406,7 @@ const Room:React.FC = React.memo(()=> {
 		[allUsers]
 	);
 
-	/* <----------- RENDER STATES -----------> */
-
-	// Loading profile or initial session check
+	// Render states
 	if (profileLoading || loading) {
 		return (
 			<div className="flex items-center justify-center h-screen bg-neutral-50">
@@ -443,9 +419,7 @@ const Room:React.FC = React.memo(()=> {
 		return (
 			<FirePrompt
 				open={true}
-				onClose={() => {
-					router.push('/desk');
-				}}
+				onClose={() => router.push('/desk')}
 				header={`Enter your secret key for ${session.title || 'session'}. (Attempts ${attempts})`}
 				value={identifierValue}
 				onChange={setIdentifierValue}
@@ -466,7 +440,6 @@ const Room:React.FC = React.memo(()=> {
 		);
 	}
 
-	// âŒ ACCESS DENIED
 	if (accessState === 'denied' || error) {
 		return (
 			<div className="flex flex-col items-center justify-center h-screen bg-neutral-50 gap-4 px-4">
@@ -498,7 +471,7 @@ const Room:React.FC = React.memo(()=> {
 	return (
 		<Orchestra
 			session={session}
-			currentUser={profile as FireCachedUser}
+			currentUser={profile as CachedUser}
 			profiles={profiles}
 			messageServices={messageServices}
 			onEndSession={handleEndSession}

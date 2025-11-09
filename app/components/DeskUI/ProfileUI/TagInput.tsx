@@ -1,23 +1,23 @@
 'use client';
 
 import { useState } from 'react';
-import { HiX } from 'react-icons/hi';
+import { IoAdd, IoClose, IoSparkles } from 'react-icons/io5';
+import { RiPriceTag3Line } from 'react-icons/ri';
 
-import { TAG_COLORS } from '@/app/components/UI';
+import { FireButton, FireInput, TAG_COLORS } from '@/app/components/UI';
 
 type TagInputProps = {
 	value: string[];
 	onChange: (tags: string[]) => void;
 	placeholder?: string;
 	max?: number;
-	prefix?: string;
 	editable: boolean;
 };
 
 export const TagInput: React.FC<TagInputProps> = ({
 	value,
 	onChange,
-	placeholder = 'Add tag...',
+	placeholder = 'Add a tag...',
 	max = 12,
 	editable,
 }) => {
@@ -43,67 +43,86 @@ export const TagInput: React.FC<TagInputProps> = ({
 	};
 
 	return (
-		<div className="space-y-3">
-			<div className="flex flex-wrap gap-2">
-				{value.map((tag, index) => {
-					const colorSet = TAG_COLORS[index % TAG_COLORS.length];
+		<div className="space-y-2">
+			{/* Tags Display Container */}
+			<div>
+				{value.length > 0 ? (
+					<div className="flex flex-wrap gap-2">
+						{value.map((tag, index) => {
+							const colorSet = TAG_COLORS[index % TAG_COLORS.length];
 
-					return (
-						<span
-							key={index}
-							className={`
-                inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium
-                ring-2 ${colorSet.bg} ${colorSet.text} ${colorSet.ring}
-                transition-all duration-200 hover:scale-105
-              `}
-						>
-							<span>{tag}</span>
-							{editable && (
-								<button
-									onClick={() => handleRemove(index)}
-									className="hover:opacity-70 transition-opacity"
-									aria-label={`Remove ${tag}`}
+							return (
+								<span
+									key={index}
+									className={`
+                    group inline-flex items-center gap-2 pl-3 pr-2 py-1
+                    rounded-xl ${colorSet.bg} ${colorSet.text} ${colorSet.ring}
+                    text-sm font-medium tracking-tight
+                    transition-all duration-200 ease-out
+                    hover:shadow-sm ${colorSet.hover}
+                  `}
 								>
-									<HiX className="w-3 h-3" />
-								</button>
-							)}
-						</span>
-					);
-				})}
-
-				{value.length === 0 && !editable && (
-					<span className="text-sm text-gray-400 italic">No tags yet</span>
+									<RiPriceTag3Line className="w-3.5 h-3.5 opacity-60" />
+									<span>{tag}</span>
+									{editable && (
+										<button
+											onClick={() => handleRemove(index)}
+											className="ml-0.5 p-0.5 rounded-lg hover:bg-black/5 transition-colors duration-150"
+											aria-label={`Remove ${tag}`}
+										>
+											<IoClose className="w-3 h-3" />
+										</button>
+									)}
+								</span>
+							);
+						})}
+					</div>
+				) : (
+					<div className="flex flex-col items-center justify-center h-full text-neutral-400 py-2">
+						<IoSparkles className="w-5 h-5 mb-1.5 opacity-30" />
+						<span className="text-sm">{editable ? 'No tags yet' : 'No tags available'}</span>
+					</div>
 				)}
 			</div>
 
+			{/* Input Section */}
 			{editable && (
-				<div className="flex gap-2">
-					<input
-						type="text"
-						value={input}
-						onChange={(e) => setInput(e.target.value)}
-						onKeyDown={handleKeyDown}
-						placeholder={placeholder}
-						disabled={value.length >= max}
-						className="
-              flex-1 px-3 py-2 text-sm rounded-lg 
-              bg-white ring-2 ring-gray-200/30
-              focus:ring-gray-300/40 outline-none transition-all 
-              disabled:bg-gray-50 disabled:cursor-not-allowed
-            "
-					/>
-					<button
-						onClick={handleAdd}
-						disabled={!input.trim() || value.length >= max}
-						className="
-              px-4 py-2 text-sm font-medium rounded-lg
-              bg-gray-900 text-white hover:bg-gray-800
-              disabled:bg-gray-300 disabled:cursor-not-allowed
-              transition-colors
-            "
-					>
-						Add
-					</button>
+				<div className="space-y-2">
+					<div className="flex gap-2 items-center">
+						{/* input grows to take available space */}
+						<div className="flex-1 max-w-[400px] mt-2">
+							<FireInput
+								value={input}
+								onChange={(e) => setInput(e.target.value)}
+								onKeyDown={handleKeyDown}
+								placeholder={placeholder}
+								disabled={value.length >= max}
+								variant="default"
+								size="sm"
+							/>
+						</div>
+
+						<FireButton
+							onClick={handleAdd}
+							disabled={!input.trim() || value.length >= max}
+							variant="default"
+							size="sm"
+							className="mt-2"
+						>
+							<IoAdd className="w-4 h-4 mr-1" />
+							Add
+						</FireButton>
+					</div>
+
+					{/* Tag Counter */}
+					<div className="flex items-center justify-between px-0.5">
+						<span className="text-xs text-neutral-500 font-medium">
+							{value.length} / {max} tags
+						</span>
+						{value.length >= max && (
+							<span className="text-xs text-amber-600 font-medium">Maximum reached</span>
+						)}
+					</div>
 				</div>
 			)}
 		</div>

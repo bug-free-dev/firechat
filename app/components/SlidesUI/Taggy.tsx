@@ -82,7 +82,7 @@ export function Taggy({ value, onChange, step = 5, total = 7 }: TaggyProps) {
 			{/* Main Content */}
 			<div className="mt-3 relative z-10 max-w-3xl w-full mx-auto px-6 text-center animate-fade-in-up">
 				<div className="mb-14">
-					<h1 className="font-comic text-5xl lg:text-6xl text-slate-900 inline-flex items-center justify-center gap-3 mb-4">
+					<h1 className="font-bubblegum text-5xl lg:text-6xl text-slate-900 inline-flex items-center justify-center gap-3 mb-4">
 						<RiPriceTag3Line className="text-lime-500 w-12 h-12 animate-pulse-soft" />
 						Taggy
 					</h1>

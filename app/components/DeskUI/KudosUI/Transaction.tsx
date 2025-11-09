@@ -21,7 +21,7 @@ export const KudosTransactionItem: React.FC<KudosTransactionItemProps> = ({
 							: `From @${getUsername(transaction.from)}`}
 					</div>
 					{transaction.note && (
-						<div className="text-xs text-neutral-500 truncate">{transaction.note}</div>
+						<div className="text-xs text-neutral-500">{transaction.note}</div>
 					)}
 				</div>
 			</div>

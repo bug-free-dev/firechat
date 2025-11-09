@@ -75,7 +75,7 @@ textarea {
 
 ::-webkit-scrollbar-thumb {
 	background-color: var(--scroll-thumb);
-	border-radius: 0px;
+	border-radius: 100px;
 	transition: background-color 0.2s ease;
 }
 
@@ -209,4 +209,31 @@ textarea {
 
 .fc-btn[data-i] {
 	animation-delay: calc(var(--i, 0) * 70ms);
+}
+.gradient-ring-wrapper {
+   display: inline-block;
+   padding: 3px;
+   border-radius: 10rem;
+   background: linear-gradient(90deg, #eb735d, #e96b6b, #f7578c);
+box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12), 0 2px 4px rgba(0, 0, 0, 0.06);
+   transition: all 0.3s ease;
+}
+
+.gradient-ring-wrapper button {
+   display: inline-flex;
+   align-items: center;
+   border: none;
+   border-radius: 10rem;
+   background-color: white;
+   color: #1e293b;
+   font-weight: 600;
+   cursor: pointer;
+   transition: transform 0.2s ease, filter 0.2s ease, box-shadow 0.2s ease;
+}
+
+.gradient-ring-wrapper:hover {
+   transform: scale(1.03);
+   filter: brightness(1.05);
+   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.12);
+   transition: all 0.3s ease;
 }

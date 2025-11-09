@@ -6,31 +6,24 @@ interface WaveLoaderProps {
 	size?: number;
 	gap?: number;
 	colors?: string[];
-	text?: string;
 }
 
-const defaultColors = ['bg-cyan-400/60', 'bg-yellow-400/60', 'bg-lime-400/60'];
+const defaultColors = ['bg-amber-400/50', 'bg-orange-500/50', 'bg-rose-500/50', 'bg-pink-500/50'];
 
 export const WaveLoader: React.FC<WaveLoaderProps> = ({
 	size = 2,
 	gap = 2,
 	colors = defaultColors,
-	text = '',
 }) => {
 	return (
-		<div className="mt-2 flex flex-col items-center justify-center">
-			<div className={`flex items-end gap-${gap} h-6`}>
-				{colors.map((color, idx) => (
-					<span
-						key={idx}
-						className={`${color} w-${size} h-${size} rounded-full animate-wave`}
-						style={{ animationDelay: `${idx * 0.12}s` }}
-					/>
-				))}
-			</div>
-			{text && (
-				<span className="mt-2 text-sm font-medium text-neutral-600 select-none">{text}</span>
-			)}
+		<div className={`py-2 flex items-center justify-center gap-${gap}`}>
+			{colors.map((color, idx) => (
+				<span
+					key={idx}
+					className={`${color} w-${size} h-${size} rounded-full animate-wave`}
+					style={{ animationDelay: `${idx * 0.12}s` }}
+				/>
+			))}
 		</div>
 	);
 };

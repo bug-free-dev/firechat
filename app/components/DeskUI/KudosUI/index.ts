@@ -1,4 +1,4 @@
-export * from './KudosCard';
-export * from './KudosSendSlide';
-export * from './KudosTransaction';
+export * from './Card';
 export * from './propsType';
+export * from './SendSlide';
+export * from './Transaction';

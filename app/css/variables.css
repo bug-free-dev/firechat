@@ -1,12 +1,13 @@
 :root {
 	/* Fonts */
 	--font-rubik: 'Rubik', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-	--font-moonrocks: 'Rubik Moonrocks', cursive;
-	--font-knewave: 'Knewave', cursive;
-	--font-comic: 'Bubblegum Sans', cursive;
-	--font-jolly: 'Jolly Lodger', cursive;
-	--font-righteous: 'Righteous', cursive;
-	--font-quicksand: 'Quicksand', 'Geist', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+	--font-monton: 'Monoton', system-ui, sans-serif;
+	--font-knewave: 'Knewave', 'Geist';
+	--font-bubblegum: 'Bubblegum Sans', 'Geist';
+	--font-comic-relief: 'Comic Relief', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+	--font-jolly: 'Jolly Lodger', 'Comic Relief', cursive;
+	--font-righteous: 'Righteous', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+	--font-quicksand: 'Quicksand', -apple-system, system-ui, BlinkMacSystemFont, sans-serif;
 	--font-main: var(--font-quicksand);
 
 	/* Brand / UI */
@@ -28,18 +29,16 @@
 	--scroll-thumb-hover: rgba(0, 0, 0, 0.25);
 }
 
-/* font helpers (small, explicit helpers kept) */
-.font-moonrocks {
-	font-family: var(--font-moonrocks);
-}
-
 .font-knewave {
 	font-family: var(--font-knewave);
-	font-size: 40;
 }
 
 .font-jolly {
 	font-family: var(--font-jolly);
+}
+
+.font-comic {
+	font-family: var(--font-comic-relief);
 }
 
 .font-righteous {
@@ -50,10 +49,10 @@
 	font-family: var(--font-quicksand);
 }
 
-.font-comic {
-	font-family: var(--font-comic);
+.font-bubblegum {
+	font-family: var(--font-bubblegum);
 }
 
-.font-rubik {
-	font-family: var(--font-rubik);
+.font-monton {
+	font-family: var(--font-monton);
 }

@@ -9,7 +9,7 @@ interface FireButtonProps {
 	loading?: boolean;
 	disabled?: boolean;
 	variant?: 'default' | 'secondary' | 'outline' | 'ghost' | 'destructive';
-	size?: 'small' | 'medium' | 'large';
+	size?: 'sm' | 'md' | 'lg';
 	className?: string;
 }
 
@@ -20,7 +20,7 @@ export const FireButton: React.FC<FireButtonProps> = ({
 	loading = false,
 	disabled = false,
 	variant = 'default',
-	size = 'medium',
+	size = 'md',
 	className = '',
 }) => {
 	const base = `
@@ -31,9 +31,9 @@ export const FireButton: React.FC<FireButtonProps> = ({
 	`;
 
 	const sizeMap: Record<string, string> = {
-		small: 'h-9 px-3 text-sm',
-		medium: 'h-10 px-4 text-sm',
-		large: 'h-11 px-8 text-base',
+		sm: 'h-9 px-3 text-sm',
+		md: 'h-10 px-4 text-sm',
+		lg: 'h-11 px-8 text-base',
 	};
 
 	const variantMap: Record<string, string> = {
