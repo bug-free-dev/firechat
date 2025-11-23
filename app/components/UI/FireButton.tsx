@@ -4,7 +4,7 @@ import React from 'react';
 
 interface FireButtonProps {
 	children: React.ReactNode;
-	onClick?: () => void;
+	onClick?: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
 	type?: 'button' | 'submit' | 'reset';
 	loading?: boolean;
 	disabled?: boolean;
@@ -24,11 +24,13 @@ export const FireButton: React.FC<FireButtonProps> = ({
 	className = '',
 }) => {
 	const base = `
-		inline-flex items-center justify-center font-medium rounded-lg
-		transition-all duration-200
-		focus:outline-none focus:ring-2 focus:ring-offset-2
-		disabled:pointer-events-none disabled:opacity-50 
-	`;
+	inline-flex items-center justify-center font-medium rounded-lg
+	transition-all duration-200
+	focus:outline-none focus:ring-2 focus:ring-offset-2
+	disabled:pointer-events-none disabled:opacity-50
+	focus:ring-offset-neutral-100 dark:focus:ring-offset-neutral-900
+`;
+
 
 	const sizeMap: Record<string, string> = {
 		sm: 'h-9 px-3 text-sm',
@@ -38,34 +40,29 @@ export const FireButton: React.FC<FireButtonProps> = ({
 
 	const variantMap: Record<string, string> = {
 		default: `
-			bg-neutral-900 text-neutral-50
-			hover:bg-neutral-800
-			focus:ring-neutral-900
+			bg-neutral-100 text-neutral-900 dark:bg-neutral-800/80 dark:text-neutral-100
+			hover:bg-neutral-200 dark:hover:bg-neutral-600/90
+			focus:ring-neutral-700/40
 		`,
 		secondary: `
-			bg-neutral-100 text-neutral-900
-			hover:bg-neutral-200
-			focus:ring-neutral-900/20
-			focus:ring-offset-neutral-100
+			bg-neutral-200 text-neutral-900 dark:bg-neutral-700/80 dark:text-neutral-200
+			hover:bg-neutral-300 dark:hover:bg-neutral-500/90
+			focus:ring-neutral-600/40
 		`,
 		outline: `
-			bg-white text-neutral-900 border border-neutral-300
-			hover:bg-neutral-50/40
-			hover:text-neutral-900
-			focus:ring-neutral-900/10
-			focus:ring-offset-white
+			bg-transparent text-neutral-900 dark:text-neutral-100
+			border border-neutral-300 dark:border-neutral-600/50
+			backdrop-blur-sm
+			hover:bg-neutral-100/50 dark:hover:bg-neutral-700/50
+			focus:ring-neutral-600/40
 		`,
 		ghost: `
-			bg-transparent text-neutral-900
-			hover:bg-neutral-50/30
-			focus:ring-neutral-900/10
-			focus:ring-offset-white
+			bg-transparent text-neutral-900 dark:text-neutral-100
+			hover:bg-neutral-100/40 dark:hover:bg-neutral-700/40
+			focus:ring-neutral-600/30
 		`,
 		destructive: `
-			bg-red-600 text-white
-			hover:bg-red-700
-			focus:ring-red-600/30
-			focus:ring-offset-white
+			bg-red-600 text-white hover:bg-red-700 focus:ring-red-600/30
 		`,
 	};
 

@@ -59,14 +59,14 @@ export const ProfileAvatarSection: React.FC<ProfileAvatarSectionProps> = ({
 		<>
 			<div className="relative group">
 				<div className="relative inline-block">
-					<div className="rounded-full overflow-hidden ring-4 ring-gray-100/50">
+					<div className="rounded-full overflow-hidden ring-4 ring-neutral-100/50 dark:ring-neutral-800/50">
 						<FireAvatar seed={displayName} src={avatarUrl} size={200} background="#fafafa" />
 					</div>
 
 					{isEditing && (
 						<button
 							onClick={() => fileInputRef.current?.click()}
-							className="absolute inset-0 flex items-center justify-center bg-black/30 rounded-full opacity-0 hover:opacity-100 transition-opacity duration-200"
+							className="absolute inset-0 flex items-center justify-center bg-black/30 dark:bg-black/50 rounded-full opacity-0 hover:opacity-100 transition-opacity duration-200"
 							title="Upload image"
 						>
 							<HiOutlinePhotograph className="w-8 h-8 text-white" />
@@ -110,7 +110,7 @@ export const ProfileAvatarSection: React.FC<ProfileAvatarSectionProps> = ({
 
 							<button
 								type="button"
-								className="fc-btn bg-gradient-to-r from-purple-500 to-blue-500 text-white hover:from-purple-600 hover:to-blue-600 shadow-md"
+								className="fc-btn bg-gradient-to-r from-purple-500 to-blue-500 text-white hover:from-purple-600 hover:to-blue-600 dark:from-purple-600 dark:to-blue-600 dark:hover:from-purple-700 dark:hover:to-blue-700 shadow-md dark:shadow-lg dark:shadow-purple-900/20"
 								title="Choose AI Avatar"
 								aria-label="Choose AI Avatar"
 								data-i={2}

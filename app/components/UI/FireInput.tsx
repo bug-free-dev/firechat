@@ -21,19 +21,40 @@ const sizeMap: Record<Firesize, string> = {
 	lg: 'py-3.5 text-lg px-4',
 };
 
-/**
- * Variants:
- * - default: rounded box
- * - custom: border b-3
- */
 const variantClasses: Record<FireInputVariant, string> = {
-	default:
-		'bg-white border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-neutral-400/20 focus:border-neutral-300/70 hover:border-neutral-300/50',
-	custom:
-		'rounded-t-lg border-b-3 border-neutral-200/50 dark:border-neutral-700 bg-neutral-100/30 dark:bg-neutral-800/70 focus:bg-white dark:focus:bg-transparent focus:border-indigo-500/60 transition-colors duration-200',
+  default: `
+    bg-white dark:bg-neutral-900
+    border border-neutral-200 dark:border-neutral-700/50
+    rounded-lg
+    transition-colors duration-200
+
+    hover:border-neutral-300/60 dark:hover:border-neutral-600/60
+
+    focus:outline-none
+    focus:ring-2 focus:ring-neutral-400/20 dark:focus:ring-neutral-700/30
+    focus:ring-offset-1 focus:ring-offset-white
+    dark:focus:ring-offset-neutral-900
+
+    focus:border-neutral-300/80 dark:focus:border-neutral-600/80
+  `,
+
+  custom: `
+    rounded-t-lg border-neutral-200/50 dark:border-neutral-700
+
+    bg-neutral-100/30 dark:bg-neutral-800/70
+    transition-colors duration-200
+
+    focus:bg-white dark:focus:bg-neutral-900
+
+    focus:ring-2 focus:ring-indigo-400
+    focus:ring-offset-2 focus:ring-offset-white
+    dark:focus:ring-offset-neutral-900
+  `,
 };
 
-const labelBase = 'text-sm font-medium text-neutral-700';
+
+const labelBase =
+	'text-sm font-medium text-neutral-700 dark:text-neutral-300';
 
 export const FireInput = forwardRef<HTMLInputElement, FireInputProps>(
 	(
@@ -66,8 +87,10 @@ export const FireInput = forwardRef<HTMLInputElement, FireInputProps>(
 					'w-full',
 					'outline-none',
 					'appearance-none',
-					'placeholder-neutral-400',
+					'placeholder-neutral-400 dark:placeholder-neutral-500',
 					'text-neutral-900 dark:text-neutral-100',
+					'bg-white dark:bg-neutral-900',
+					'border-neutral-200 dark:border-neutral-700',
 					'transition-colors duration-180',
 					sizeClasses,
 					variantClass,
@@ -105,7 +128,7 @@ export const FireInput = forwardRef<HTMLInputElement, FireInputProps>(
 							onClick={() => setShowPassword((s) => !s)}
 							tabIndex={0}
 							aria-label={showPassword ? 'Hide password' : 'Show password'}
-							className="absolute right-2 top-1/2 -translate-y-1/2 z-10 flex items-center justify-center p-1 text-neutral-500 hover:text-neutral-700 transition-colors duration-150"
+							className="absolute right-2 top-1/2 -translate-y-1/2 z-10 flex items-center justify-center p-1 text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 transition-colors duration-150"
 						>
 							{showPassword ? (
 								<AiOutlineEyeInvisible size={18} />

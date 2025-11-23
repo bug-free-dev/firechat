@@ -5,7 +5,9 @@ import 'highlight.js/styles/github-dark.css';
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import type { Metadata } from 'next';
-import { Toaster, type ToastOptions } from 'react-hot-toast';
+
+import {ThemedToaster} from "@/app/components/UI"
+import { ThemeProvider } from '@/app/lib/theme/provider/ThemeProvider';
 
 import { AuthProvider } from './lib/routing/context/AuthStateContext';
 
@@ -16,18 +18,6 @@ export const metadata: Metadata = {
 		icon: '/Firechat.svg',
 	},
 };
-const toastConfig: ToastOptions = {
-	position: 'bottom-left',
-	duration: 800,
-	style: {
-		background: '#ffffff',
-		color: '#111827',
-		fontSize: '0.95rem',
-		fontWeight: 500,
-		borderRadius: '0.75rem',
-		padding: '14px 18px',
-	},
-};
 
 export default function RootLayout({
 	children,
@@ -36,11 +26,15 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang="en">
-			<body className={`antialiased`}>
+         <body className={`antialiased`}>
+            <ThemeProvider
+    >
 				<AuthProvider>{children}</AuthProvider>
-				<Toaster {...toastConfig} />
+				<ThemedToaster />
+    </ThemeProvider>
 				<Analytics />
 				<SpeedInsights />
+
 			</body>
 		</html>
 	);

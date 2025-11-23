@@ -15,7 +15,7 @@ import {
 import { MdOutlineShield } from 'react-icons/md';
 import { RiFireLine } from 'react-icons/ri';
 
-import { FireAvatar } from '@/app/components/UI';
+import { FireAvatar,FireButton } from '@/app/components/UI';
 import { FireProfile, SessionDoc } from '@/app/lib/types';
 import { getUserByUid } from '@/app/lib/utils/memory';
 import { formatTime } from '@/app/lib/utils/time';
@@ -106,31 +106,31 @@ export const SessionCard: React.FC<SessionCardProps> = ({
 		? {
 				icon: RiFireLine,
 				text: 'Active',
-				color: 'text-yellow-600',
-				bg: 'bg-yellow-50/60',
-				border: 'border-yellow-200/60',
+				color: 'text-yellow-600 dark:text-yellow-400',
+				bg: 'bg-yellow-50/60 dark:bg-yellow-900/30',
+				border: 'border-yellow-200/60 dark:border-yellow-700/30',
 			}
 		: session.isLocked
 			? {
 					icon: FiLock,
 					text: 'Locked',
-					color: 'text-red-600',
-					bg: 'bg-red-50/60',
-					border: 'border-red-200/60',
+					color: 'text-red-600 dark:text-red-400',
+					bg: 'bg-red-50/60 dark:bg-red-900/28',
+					border: 'border-red-200/60 dark:border-red-700/30',
 				}
 			: {
 					icon: FiXCircle,
 					text: 'Ended',
-					color: 'text-neutral-500',
-					bg: 'bg-neutral-50/60',
-					border: 'border-neutral-200/40',
+					color: 'text-neutral-500 dark:text-neutral-400',
+					bg: 'bg-neutral-50/60 dark:bg-neutral-900/40',
+					border: 'border-neutral-200/40 dark:border-neutral-700/40',
 				};
 
 	const StatusIcon = statusConfig.icon as React.ElementType;
 
 	const borderClass = isInvited
-		? 'border-2 border-dashed border-orange-300/85 outline-none'
-		: 'border-2 border-neutral-200/40 outline-none';
+		? 'border-2 border-dashed border-orange-300/85 dark:border-orange-300/70 outline-none'
+		: 'border-2 border-neutral-200/40 dark:border-neutral-700/40 outline-none';
 
 	const handleJoinClick = (e: React.MouseEvent) => {
 		e.preventDefault();
@@ -147,232 +147,250 @@ export const SessionCard: React.FC<SessionCardProps> = ({
 
 	return (
 		<div
-			className={`group relative bg-white/60 rounded-2xl p-4 transition-all duration-200 hover:shadow ${borderClass}`}
-			onClick={() => {
-				if (isParticipant && !isInvited && session.isActive && session.id) {
-					router.push(`/room/${session.id}`);
-				}
-			}}
-		>
-			{/* Active pulse */}
-			{session.isActive && (
-				<div className="absolute -top-1 -right-1 w-2.5 h-2.5">
-					<span className="absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-60 animate-ping" />
-				</div>
-			)}
+	className={`group relative bg-white/10 dark:bg-neutral-900 rounded-2xl p-4 transition-all duration-200 hover:shadow dark:hover:shadow-lg ${borderClass}`}
+	onClick={() => {
+		if (isParticipant && !isInvited && session.isActive && session.id) {
+			router.push(`/room/${session.id}`);
+		}
+	}}
+>
+	{/* Active pulse */}
+	{session.isActive && (
+		<div className="absolute -top-1 -right-1 w-2.5 h-2.5">
+			<span className="absolute inline-flex h-full w-full rounded-full bg-emerald-400 dark:bg-emerald-400 opacity-60 animate-ping" />
+		</div>
+	)}
 
-			{/* Invited badge */}
-			{isInvited && (
-				<div className="absolute -top-3 -left-3 flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold text-orange-600 bg-white/70 border border-orange-300/60 border-dashed backdrop-blur-sm">
-					<FiHeart className="w-4 h-4" />
-					<span>Invited</span>
-				</div>
-			)}
+	{/* Invited badge */}
+	{isInvited && (
+		<div className="absolute -top-3 -left-3 flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold text-orange-600 dark:text-orange-400 bg-white/70 dark:bg-neutral-800/70 border border-orange-300/60 dark:border-orange-300/50 border-dashed backdrop-blur-sm">
+			<FiHeart className="w-4 h-4" />
+			<span>Invited</span>
+		</div>
+	)}
 
-			{/* Secure badge */}
-			{session.identifierRequired && (
-				<div className="absolute -top-2 left-16 px-2 py-0.5 bg-indigo-600 text-white text-xs font-semibold rounded-full shadow-sm flex items-center gap-1">
-					<MdOutlineShield className="w-3 h-3" />
-					Secure
-				</div>
-			)}
+	{/* Secure badge */}
+	{session.identifierRequired && (
+		<div className="absolute -top-2 left-16 px-2 py-0.5 bg-indigo-600 dark:bg-indigo-500 text-white text-xs font-semibold rounded-full shadow-sm flex items-center gap-1">
+			<MdOutlineShield className="w-3 h-3" />
+			Secure
+		</div>
+	)}
 
-			<div className="flex items-start justify-between mb-3">
-				<div className="flex-1 min-w-0">
-					<div className="flex items-center gap-2 text-xs text-neutral-500">
-						<FiClock className="w-4 h-4 text-neutral-500" />
-						<span>
-							{formatTime(session.createdAt, 'en-US', {
-								weekday: 'short',
-								month: 'short',
-								day: 'numeric',
-								year: '2-digit',
-								hour: '2-digit',
-								minute: '2-digit',
-								hour12: true,
-							})}
-						</span>
-					</div>
-				</div>
+	<div className="flex items-start justify-between mb-3">
+		<div className="flex-1 min-w-0">
+			<div className="flex items-center gap-2 text-xs text-neutral-500 dark:text-neutral-400">
+				<FiClock className="w-4 h-4 text-neutral-500 dark:text-neutral-400" />
+				<span>
+					{formatTime(session.createdAt, 'en-US', {
+						weekday: 'short',
+						month: 'short',
+						day: 'numeric',
+						year: '2-digit',
+						hour: '2-digit',
+						minute: '2-digit',
+						hour12: true,
+					})}
+				</span>
+			</div>
+		</div>
 
-				{/* Menu for creator */}
-				{isCreator && !isInvited && (
-					<div className="relative">
-						<button
-							onClick={(e) => {
-								e.preventDefault();
-								e.stopPropagation();
-								setMenuOpen(!menuOpen);
-							}}
-							className="p-1.5 rounded-md hover:bg-neutral-100 transition-colors"
-							aria-label="Session options"
-						>
-							<FiMoreVertical className="w-5 h-5 text-neutral-700 drop-shadow-sm" />
-						</button>
+		{/* Menu for creator */}
+		{isCreator && !isInvited && (
+			<div className="relative">
+<button
+	onClick={(e) => {
+		e.preventDefault();
+		e.stopPropagation();
+		setMenuOpen(!menuOpen);
+	}}
+	aria-label="Session options"
+	className="
+		p-1 rounded-md
+		bg-transparent text-neutral-700 dark:text-neutral-200
+		hover:bg-neutral-100/40 dark:hover:bg-neutral-700/40
+		focus:outline-none 
+		focus:ring-2 
+		focus:ring-offset-2 focus:ring-offset-neutral-100 dark:focus:ring-offset-neutral-900
+		focus:ring-neutral-600/30
+		transition-colors
+	"
+>
+	<FiMoreVertical className="w-5 h-5 drop-shadow-sm" />
+</button>
 
-						{menuOpen && (
-							<div className="absolute right-0 mt-2 w-44 bg-white rounded-lg shadow-lg border border-neutral-200 z-20 p-1">
-								{onEndSession && session.isActive && (
-									<button
-										onClick={(e) => {
-											e.preventDefault();
-											e.stopPropagation();
-											onEndSession(session.id || '');
-											setMenuOpen(false);
-										}}
-										className="w-full flex rounded-lg items-center gap-2 px-3 py-2 text-sm hover:bg-neutral-50 text-left transition-colors"
-									>
-										<FiXCircle className="w-4 h-4" />
-										End Session
-									</button>
-								)}
 
-								{onLockSession && session.isActive && (
-									<button
-										onClick={(e) => {
-											e.preventDefault();
-											e.stopPropagation();
-											onLockSession(session.id || '');
-											setMenuOpen(false);
-										}}
-										className="w-full flex rounded-lg items-center gap-2 px-3 py-2 text-sm hover:bg-neutral-50 text-left transition-colors"
-									>
-										<FiLock className="w-4 h-4" />
-										{session.isLocked ? 'Unlock' : 'Lock'}
-									</button>
-								)}
 
-								{onInvite && (
-									<button
-										onClick={(e) => {
-											e.preventDefault();
-											e.stopPropagation();
-											onInvite(session);
-											setMenuOpen(false);
-										}}
-										className="w-full flex rounded-lg items-center gap-2 px-3 py-2 text-sm hover:bg-neutral-50 text-left transition-colors"
-									>
-										<FiShare2 className="w-4 h-4" />
-										Invite & Copy link
-									</button>
-								)}
-							</div>
+				{menuOpen && (
+					<div className="absolute right-0 mt-2 w-44 bg-white dark:bg-neutral-900 rounded-lg shadow-lg dark:shadow-sm border border-neutral-200 dark:border-neutral-700/40 z-20 p-1">
+						{onEndSession && session.isActive && (
+							<FireButton
+								onClick={(e) => {
+									e.preventDefault();
+									e.stopPropagation();
+									onEndSession(session.id || '');
+									setMenuOpen(false);
+								}}
+								variant="ghost"
+								size="sm"
+								className="w-full justify-start gap-2 text-neutral-700 dark:text-neutral-200"
+							>
+								<FiXCircle className="w-4 h-4" />
+								End Session
+							</FireButton>
+						)}
+
+						{onLockSession && session.isActive && (
+							<FireButton
+								onClick={(e) => {
+									e.preventDefault();
+									e.stopPropagation();
+									onLockSession(session.id || '');
+									setMenuOpen(false);
+								}}
+								variant="ghost"
+								size="sm"
+								className="w-full justify-start gap-2 text-neutral-700 dark:text-neutral-200"
+							>
+								<FiLock className="w-4 h-4" />
+								{session.isLocked ? 'Unlock' : 'Lock'}
+							</FireButton>
+						)}
+
+						{onInvite && (
+							<FireButton
+								onClick={(e) => {
+									e.preventDefault();
+									e.stopPropagation();
+									onInvite(session);
+									setMenuOpen(false);
+								}}
+								variant="ghost"
+								size="sm"
+								className="w-full justify-start gap-2 text-neutral-700 dark:text-neutral-200"
+							>
+								<FiShare2 className="w-4 h-4" />
+								Invite & Copy link
+							</FireButton>
 						)}
 					</div>
 				)}
 			</div>
+		)}
+	</div>
 
-			{/* status pill */}
-			<div
-				className={`inline-flex items-center gap-2 px-3 py-1 rounded-full ${statusConfig.bg} ${statusConfig.border} mb-3`}
-			>
-				<StatusIcon className={`w-4 h-4 ${statusConfig.color} drop-shadow-sm`} />
-				<span className={`text-xs font-medium ${statusConfig.color}`}>
-					{isInvited ? 'Invited' : statusConfig.text}
-				</span>
-			</div>
+	{/* status pill */}
+	<div
+		className={`inline-flex items-center gap-2 px-3 py-1 rounded-full ${statusConfig.bg} ${statusConfig.border} mb-3`}
+	>
+		<StatusIcon className={`w-4 h-4 ${statusConfig.color} drop-shadow-sm`} />
+		<span className={`text-xs font-medium ${statusConfig.color}`}>
+			{isInvited ? 'Invited' : statusConfig.text}
+		</span>
+	</div>
 
-			<div className="mb-3">
-				<h3 className="font-semibold text-neutral-900 truncate text-sm mb-0.5">
-					{session.title || 'Untitled Session'}
-				</h3>
-				{isInvited && <p className="text-xs text-neutral-500">Invited by {creatorName}</p>}
-			</div>
+	<div className="mb-3">
+		<h3 className="font-semibold text-neutral-900 dark:text-neutral-100 truncate text-sm mb-0.5">
+			{session.title || 'Untitled Session'}
+		</h3>
+		{isInvited && <p className="text-xs text-neutral-500 dark:text-neutral-400">Invited by {creatorName}</p>}
+	</div>
 
-			<div className="mb-3">
-				<div className="flex items-center gap-2 mb-2">
-					<FiUsers className="w-4 h-4 text-neutral-500" />
-					<span className="text-xs font-medium text-neutral-600">
-						{session.participants?.length || 0} participant
-						{(session.participants?.length || 0) !== 1 ? 's' : ''}
-					</span>
-				</div>
+	<div className="mb-3">
+		<div className="flex items-center gap-2 mb-2">
+			<FiUsers className="w-4 h-4 text-neutral-500 dark:text-neutral-400" />
+			<span className="text-xs font-medium text-neutral-600 dark:text-neutral-300">
+				{session.participants?.length || 0} participant
+				{(session.participants?.length || 0) !== 1 ? 's' : ''}
+			</span>
+		</div>
 
-				<div className="flex items-center gap-1.5">
-					{(session.participants || []).slice(0, 5).map((uid) => (
-						<FireAvatar key={uid} seed={uid} size={28} src={avatars[uid]} />
-					))}
-					{(session.participants?.length || 0) > 5 && (
-						<div className="flex items-center justify-center w-7 h-7 rounded-full bg-neutral-100 text-[10px] font-medium text-neutral-600">
-							+{(session.participants?.length || 0) - 5}
-						</div>
-					)}
-				</div>
-			</div>
-
-			<div className="flex gap-2">
-				{/* invited join */}
-				{isInvited && session.isActive && onJoinSession && (
-					<button
-						onClick={handleJoinClick}
-						className="flex-1 inline-flex items-center justify-center gap-2 px-3 py-1.5 text-sm font-semibold rounded-lg text-white bg-neutral-900 hover:bg-neutral-800 transition-colors"
-					>
-						<RiFireLine className="w-5 h-5" />
-						Join Now
-					</button>
-				)}
-
-				{/* Creator: End Session (exclusive) */}
-				{isCreator && !isInvited && session.isActive && onEndSession && (
-					<button
-						onClick={(e) => {
-							e.preventDefault();
-							e.stopPropagation();
-							onEndSession(session.id || '');
-						}}
-						className="flex-1 inline-flex items-center justify-center gap-2 px-3 py-1.5 text-sm font-semibold rounded-lg text-white bg-red-500 hover:bg-red-600 transition-all"
-					>
-						<FiXCircle className="w-5 h-5" />
-						End Session
-					</button>
-				)}
-
-				{/* Participant but not creator: Leave */}
-				{!isCreator && isParticipant && !isInvited && session.isActive && onLeaveSession && (
-					<button
-						onClick={(e) => {
-							e.preventDefault();
-							e.stopPropagation();
-							onLeaveSession(session.id || '');
-						}}
-						className="flex-1 inline-flex items-center justify-center gap-2 px-3 py-1.5 text-sm font-semibold rounded-lg text-red-600 bg-white border-2 border-red-200 hover:bg-red-50 transition-all"
-					>
-						<FiLogOut className="w-5 h-5" />
-						Leave
-					</button>
-				)}
-
-				{/* Join for non-participants */}
-				{!isParticipant && !isInvited && session.isActive && onJoinSession && (
-					<button
-						onClick={handleJoinClick}
-						className="flex-1 inline-flex items-center justify-center gap-2 px-3 py-1.5 text-sm font-semibold rounded-lg text-white bg-neutral-900 hover:bg-neutral-800 transition-all"
-					>
-						<RiFireLine className="w-5 h-5" />
-						Join
-					</button>
-				)}
-
-				{/* Open room for participants */}
-				{isParticipant && !isInvited && session.isActive && (
-					<button
-						onClick={(e) => {
-							e.preventDefault();
-							e.stopPropagation();
-							if (session.id) router.push(`/room/${session.id}`);
-						}}
-						className="flex-1 inline-flex items-center justify-center px-3 py-1.5 text-sm font-semibold rounded-lg text-neutral-700 bg-neutral-50 hover:bg-neutral-100 transition-all"
-					>
-						Open Room
-					</button>
-				)}
-			</div>
-
-			{isParticipant && !isInvited && session.isActive && (
-				<div className="absolute top-1 right-2 text-[10px] text-neutral-400 opacity-0 group-hover:opacity-100 transition-opacity">
-					Click to open
+		<div className="flex items-center gap-1.5">
+			{(session.participants || []).slice(0, 5).map((uid) => (
+				<FireAvatar key={uid} seed={uid} size={28} src={avatars[uid]} />
+			))}
+			{(session.participants?.length || 0) > 5 && (
+				<div className="flex items-center justify-center w-7 h-7 rounded-full bg-neutral-100 dark:bg-neutral-800 text-[10px] font-medium text-neutral-600 dark:text-neutral-300">
+					+{(session.participants?.length || 0) - 5}
 				</div>
 			)}
 		</div>
+	</div>
+
+	<div className="flex gap-2">
+		{/* invited join */}
+		{isInvited && session.isActive && onJoinSession && (
+			<FireButton onClick={handleJoinClick} variant="default" size="sm" className="flex-1 gap-2">
+				<RiFireLine className="w-5 h-5" />
+				Join Now
+			</FireButton>
+		)}
+
+		{/* Creator: End Session */}
+		{isCreator && !isInvited && session.isActive && onEndSession && (
+			<FireButton
+				onClick={(e) => {
+					e.preventDefault();
+					e.stopPropagation();
+					onEndSession(session.id || '');
+				}}
+				variant="destructive"
+				size="sm"
+				className="flex-1 gap-2"
+			>
+				<FiXCircle className="w-5 h-5" />
+				End Session
+			</FireButton>
+		)}
+
+		{/* Participant: Leave */}
+		{!isCreator && isParticipant && !isInvited && session.isActive && onLeaveSession && (
+			<FireButton
+				onClick={(e) => {
+					e.preventDefault();
+					e.stopPropagation();
+					onLeaveSession(session.id || '');
+				}}
+				variant="outline"
+				size="sm"
+				className="flex-1 gap-2 text-red-600 border-red-200 dark:text-red-400 dark:border-red-600 dark:hover:bg-red-900"
+			>
+				<FiLogOut className="w-5 h-5" />
+				Leave
+			</FireButton>
+		)}
+
+		{/* Join for non-participants */}
+		{!isParticipant && !isInvited && session.isActive && onJoinSession && (
+			<FireButton onClick={handleJoinClick} variant="default" size="sm" className="flex-1 gap-2">
+				<RiFireLine className="w-5 h-5" />
+				Join
+			</FireButton>
+		)}
+
+		{/* Open room for participants */}
+		{isParticipant && !isInvited && session.isActive && (
+			<FireButton
+				onClick={(e) => {
+					e.preventDefault();
+					e.stopPropagation();
+					if (session.id) router.push(`/room/${session.id}`);
+				}}
+				variant="outline"
+				size="sm"
+				className="flex-1 gap-2 text-neutral-700 dark:text-neutral-200"
+			>
+				Open Room
+			</FireButton>
+		)}
+	</div>
+
+	{isParticipant && !isInvited && session.isActive && (
+		<div className="absolute -top-1 right-2 text-[10px] text-neutral-400 dark:text-neutral-500 opacity-0 group-hover:opacity-100 transition-opacity">
+			Click to open
+		</div>
+	)}
+</div>
+
 	);
 };

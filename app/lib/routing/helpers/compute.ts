@@ -69,5 +69,5 @@ export function isPublicPath(pathname: string): boolean {
  * Helper: Check if path is part of auth flow (signup/email-verify).
  */
 export function isAuthFlowPath(pathname: string): boolean {
-	return pathname === '/fireup' || pathname === '/onboard';
+	return pathname === '/fireup' || pathname === '/onboarding';
 }

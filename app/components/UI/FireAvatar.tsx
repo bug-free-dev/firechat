@@ -2,7 +2,7 @@
 
 import React from 'react';
 
-import { getSvgUrl } from '@/app/components/UI/avatarHelpers';
+import { getSvgUrl } from './avatarHelpers';
 
 export interface FireAvatarProps {
 	seed: string;

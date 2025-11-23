@@ -21,7 +21,7 @@ export function InboxTab({ threads, currentUser, onOpenInbox, loading }: InboxTa
 		return (
 			<div className="flex items-center justify-center py-20">
 				<div className="text-center">
-					<FaInbox className="w-12 h-12 mx-auto mb-4 text-orange-500/30 " />
+					<FaInbox className="w-12 h-12 mx-auto mb-4 text-zinc-400/40 dark:text-zinc-400/30" />
 					<WaveLoader />
 				</div>
 			</div>
@@ -31,12 +31,12 @@ export function InboxTab({ threads, currentUser, onOpenInbox, loading }: InboxTa
 	if (threads.length === 0) {
 		return (
 			<div className="flex flex-col items-center justify-center py-20 text-center">
-				<FaInbox className="w-20 h-20 mb-6 text-orange-300 opacity-50" />
-				<h3 className="text-4xl font-knewave text-neutral-700 mb-2">
+				<FaInbox className="w-20 h-20 mb-6 text-zinc-300 dark:text-zinc-400/60" />
+				<h3 className="text-4xl font-knewave text-neutral-800 dark:text-neutral-300 mb-2">
 					No whispers in your inbox
 				</h3>
-				<p className="text-neutral-500 max-w-sm font-comic">
-					Start a private conversation from someones profile to see messages here.
+				<p className="text-neutral-500 dark:text-neutral-400 max-w-sm font-comic">
+					Start a private conversation from someone&apos;s profile to see messages here.
 				</p>
 			</div>
 		);

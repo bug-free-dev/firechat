@@ -42,17 +42,14 @@ export const FirePicker: React.FC<PickerProps> = ({
 	const [results, setResults] = useState<CachedUser[]>([]);
 	const [loading, setLoading] = useState(false);
 
-	// Use refs to avoid re-creating the effect
 	const searchUsersRef = useRef(searchUsers);
 	const currentParticipantsRef = useRef(currentParticipants);
 
-	// Update refs without causing re-renders
 	useEffect(() => {
 		searchUsersRef.current = searchUsers;
 		currentParticipantsRef.current = currentParticipants;
 	}, [searchUsers, currentParticipants]);
 
-	// Reset state when modal closes
 	useEffect(() => {
 		if (!open) {
 			setSelected(new Map());
@@ -61,14 +58,12 @@ export const FirePicker: React.FC<PickerProps> = ({
 		}
 	}, [open]);
 
-	// Optimized search with stable dependencies
 	useEffect(() => {
 		if (!query.trim()) {
 			setResults([]);
 			setLoading(false);
 			return;
 		}
-
 		let canceled = false;
 		setLoading(true);
 
@@ -87,17 +82,13 @@ export const FirePicker: React.FC<PickerProps> = ({
 			}
 		};
 
-		const timeout = setTimeout(() => {
-			void performSearch();
-		}, 200);
-
+		const timeout = setTimeout(() => void performSearch(), 200);
 		return () => {
 			canceled = true;
 			clearTimeout(timeout);
 		};
-	}, [query]); // Only depend on query
+	}, [query]);
 
-	// Memoized toggle function
 	const toggle = useCallback(
 		(u: CachedUser) => {
 			setSelected((prev) => {
@@ -117,7 +108,6 @@ export const FirePicker: React.FC<PickerProps> = ({
 		[maxSelection]
 	);
 
-	// Memoized confirm function
 	const confirm = useCallback(() => {
 		if (selected.size === 0) {
 			toast('Select at least one contact');
@@ -127,34 +117,31 @@ export const FirePicker: React.FC<PickerProps> = ({
 		onClose();
 	}, [selected, onConfirm, onClose]);
 
-	// Memoized frequent users - stable reference
 	const frequentFiltered = useMemo(() => {
 		const partSet = new Set(currentParticipants);
 		return frequentUsers.filter((u) => !partSet.has(u.uid)).slice(0, 12);
 	}, [frequentUsers, currentParticipants]);
 
-	// Memoized header title
 	const headerTitle = useMemo(
 		() => title || (session ? `Invite to ${session.title ?? 'session'}` : 'Invite Users'),
 		[title, session]
 	);
 
-	// Memoized selected array to prevent re-creating on every render
 	const selectedArray = useMemo(() => Array.from(selected.values()), [selected]);
 
 	return (
 		<FireSlide open={open} onClose={onClose} header={headerTitle} size="md">
 			<div className="space-y-4">
-				<p className="text-sm text-neutral-600">{description}</p>
+				<p className="text-sm text-neutral-600 dark:text-neutral-300">{description}</p>
 
-				{/* Frequent Contacts */}
+				{/* Frequent Users */}
 				{frequentFiltered.length > 0 && (
 					<div className="animate-slide-in">
 						<div className="flex items-center gap-2 mb-2">
-							<div className="text-xs font-semibold text-neutral-500 uppercase tracking-wide">
+							<div className="text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wide">
 								Frequent
 							</div>
-							<div className="h-px flex-1 bg-neutral-200" />
+							<div className="h-px flex-1 bg-neutral-200 dark:bg-neutral-700/40" />
 						</div>
 						<div className="flex gap-2 overflow-x-auto py-2 scrollbar-none">
 							{frequentFiltered.map((u) => {
@@ -163,17 +150,21 @@ export const FirePicker: React.FC<PickerProps> = ({
 									<button
 										key={u.uid}
 										onClick={() => toggle(u)}
-										className={`flex flex-col items-center gap-1 min-w-[60px]  transition-all duration-200`}
+										className={`flex flex-col items-center gap-1 min-w-[60px] transition-all duration-200`}
 										aria-pressed={picked}
 									>
 										<FireAvatar
 											seed={u.uid}
 											src={u.avatarUrl ?? null}
 											size={36}
-											className={`${picked ? 'ring-offset-4 ring-2 ring-yellow-600/80' : null}`}
+											className={`${picked ? 'ring-offset-4 ring-2 dark:ring-offset-neutral-900 ring-yellow-600/80' : ''}`}
 										/>
 										<span
-											className={`text-xs truncate max-w-[56px] font-medium mt-1 ${picked ? 'text-yellow-600/80' : 'text-neutral-700'}`}
+											className={`text-xs truncate max-w-[56px] font-medium mt-1 ${
+												picked
+													? 'text-yellow-600/80'
+													: 'text-neutral-700 dark:text-neutral-300'
+											}`}
 										>
 											@{u.usernamey}
 										</span>
@@ -187,57 +178,52 @@ export const FirePicker: React.FC<PickerProps> = ({
 				{/* Search Users */}
 				<div className="animate-slide-in">
 					<div className="flex items-center gap-2 mb-2">
-						<div className="text-xs font-semibold text-neutral-500 uppercase tracking-wide">
+						<div className="text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wide">
 							Search Users
 						</div>
-						<div className="h-px flex-1 bg-neutral-200" />
+						<div className="h-px flex-1 bg-neutral-200 dark:bg-neutral-700/40" />
 					</div>
-					<div className="flex items-center gap-2 rounded-lg px-2 py-1 w-full sm:w-auto">
-						<FiSearch className="w-4 h-4 text-neutral-400 mr-2" />
+					<div className="flex items-center gap-2 rounded-lg px-2 py-1 w-full sm:w-auto ">
+						<FiSearch className="w-4 h-4 text-neutral-400 dark:text-neutral-500" />
 						<FireInput
 							value={query}
 							onChange={(e) => setQuery(e.target.value)}
 							placeholder="Search by username or display name..."
+							className="bg-transparent dark:bg-transparent focus:ring-2 focus:ring-yellow-400/30"
 						/>
 					</div>
 
-					{/* Loading spinner */}
 					{loading && (
 						<div className="flex items-center justify-center py-4">
-							<div className="animate-spin rounded-full h-5 w-5 border-2 border-neutral-300 border-t-yellow-500" />
+							<div className="animate-spin rounded-full h-5 w-5 border-2 border-neutral-300 dark:border-neutral-600 border-t-yellow-500" />
 						</div>
 					)}
 
-					{/* Search results */}
 					{!loading && results.length > 0 && (
-						<div className="mt-2 grid grid-cols-2 gap-2 max-h-[300px] overflow-y-auto scroll">
+						<div className="mt-2 grid grid-cols-2 gap-2 max-h-[300px] overflow-y-auto">
 							{results.map((u) => {
 								const active = selected.has(u.uid);
 								return (
 									<button
 										key={u.uid}
 										onClick={() => toggle(u)}
-										className={`truncate p-2 flex items-center gap-2 text-left rounded-lg ring-2 m-2 transition-all duration-200 ${
+										className={`truncate p-2 flex items-center gap-2 text-left rounded-lg ring-2 transition-all duration-200 ${
 											active
-												? 'ring-yellow-500 bg-yellow-50'
-												: 'ring-neutral-200 hover:ring-neutral-300'
+												? 'ring-yellow-500 bg-yellow-50 dark:bg-yellow-900/30'
+												: 'ring-neutral-200 hover:ring-neutral-300 dark:ring-neutral-700/40 dark:hover:ring-neutral-600/40'
 										}`}
 									>
 										<FireAvatar seed={u.uid} src={u.avatarUrl ?? null} size={32} />
 										<div className="flex-1 min-w-0">
-											<div className="font-medium text-sm truncate text-neutral-900">
+											<div className="font-medium text-sm truncate text-neutral-900 dark:text-neutral-100">
 												@{u.usernamey}
 											</div>
-											<div className="text-xs truncate text-neutral-500">
+											<div className="text-xs truncate text-neutral-500 dark:text-neutral-400">
 												{u.displayName}
 											</div>
 										</div>
 										<div className="text-yellow-500 text-lg">
-											{active ? (
-												<FaCheckDouble className="w-3 h-3 fc-slide-in-left" />
-											) : (
-												<MdOutlinePersonAdd className="fc-slide-in-left" />
-											)}
+											{active ? <FaCheckDouble className="w-3 h-3" /> : <MdOutlinePersonAdd />}
 										</div>
 									</button>
 								);
@@ -246,7 +232,7 @@ export const FirePicker: React.FC<PickerProps> = ({
 					)}
 
 					{!loading && query && results.length === 0 && (
-						<div className="mt-4 text-center py-6 text-sm text-neutral-500">
+						<div className="mt-4 text-center py-6 text-sm text-neutral-500 dark:text-neutral-400">
 							No matches — try another name.
 						</div>
 					)}
@@ -256,20 +242,20 @@ export const FirePicker: React.FC<PickerProps> = ({
 				{selected.size > 0 && (
 					<div className="animate-fade-scale">
 						<div className="flex items-center gap-2 mb-2">
-							<div className="text-xs font-semibold text-neutral-500 uppercase tracking-wide">
+							<div className="text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wide">
 								Selected ({selected.size})
 							</div>
-							<div className="h-px flex-1 bg-neutral-300/20" />
+							<div className="h-px flex-1 bg-neutral-300/20 dark:bg-neutral-700/30" />
 						</div>
 
-						<div className="flex items-center gap-1 flex-wrap bg-neutral-100/50 rounded-xl p-2 backdrop-blur-sm">
+						<div className="flex items-center gap-1 flex-wrap bg-neutral-100/50 dark:bg-neutral-900/30 rounded-xl p-2 backdrop-blur-sm">
 							{selectedArray.map((u) => (
 								<div
 									key={u.uid}
-									className="flex items-center gap-1 px-2 py-1 rounded-full ring-neutral-400/30 ring-2 hover:bg-white/20 transition-colors duration-200 m-[2px]"
+									className="flex items-center gap-1 px-2 py-1 rounded-full ring-2 ring-neutral-400/30 dark:ring-neutral-600/40 hover:bg-white/20 dark:hover:bg-neutral-700/50 transition-colors duration-200 m-[2px]"
 								>
 									<FireAvatar seed={u.uid} src={u.avatarUrl ?? null} size={20} />
-									<div className="text-xs font-medium text-neutral-800 truncate">
+									<div className="text-xs font-medium text-neutral-800 dark:text-neutral-100 truncate">
 										@{u.usernamey}
 									</div>
 									<button
@@ -277,7 +263,7 @@ export const FirePicker: React.FC<PickerProps> = ({
 										aria-label="Remove"
 										className="transition-transform hover:scale-110"
 									>
-										<IoCloseCircleOutline className="w-4 h-4 text-neutral-400 hover:text-red-400 transition-colors duration-200" />
+										<IoCloseCircleOutline className="w-4 h-4 text-neutral-400 dark:text-neutral-300 hover:text-red-400 dark:hover:text-red-400 transition-colors duration-200" />
 									</button>
 								</div>
 							))}

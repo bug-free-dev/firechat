@@ -34,10 +34,8 @@ export const FireTabSwitcher = <T extends string = string>({
 	iconPosition = 'left',
 	animated = true,
 }: FireTabSwitcherProps<T>) => {
-	// Memoize active index for performance
 	const activeIndex = useMemo(() => tabs.findIndex((t) => t.id === activeTab), [tabs, activeTab]);
 
-	// Size variants
 	const sizeClasses = {
 		sm: 'py-2 px-3 text-xs',
 		md: 'py-2.5 px-4 text-sm',
@@ -50,13 +48,11 @@ export const FireTabSwitcher = <T extends string = string>({
 		lg: 'gap-2.5',
 	};
 
-	// Variant styles
 	const variantClasses = {
 		pills: 'rounded-xl',
 		rounded: 'rounded-lg',
 	};
 
-	// Calculate indicator position and width
 	const indicatorStyle = useMemo(() => {
 		if (activeIndex === -1) return { opacity: 0 };
 
@@ -72,15 +68,23 @@ export const FireTabSwitcher = <T extends string = string>({
 	return (
 		<div className={`relative ${className}`}>
 			<div
-				className={`relative flex items-center bg-neutral-100 ${variantClasses[variant]} p-1 overflow-hidden`}
+				className={`
+					relative flex items-center
+					bg-neutral-100 dark:bg-neutral-800/40
+					${variantClasses[variant]}
+					p-1 overflow-hidden
+				`}
 			>
-				{/* Sliding background indicator */}
 				<div
-					className={`absolute top-1 bottom-1 left-1 bg-white ${variantClasses[variant]} ${animated ? 'transition-all duration-300 ease-out' : ''}`}
+					className={`
+						absolute top-1 bottom-1 left-1
+						bg-white dark:bg-neutral-700/40
+						${variantClasses[variant]}
+						${animated ? 'transition-all duration-300 ease-out' : ''}
+					`}
 					style={indicatorStyle}
 				/>
 
-				{/* Tab buttons */}
 				{tabs.map((tab) => {
 					const isActive = activeTab === tab.id;
 					const isDisabled = tab.disabled;
@@ -93,50 +97,47 @@ export const FireTabSwitcher = <T extends string = string>({
 							disabled={isDisabled}
 							title={tab.tooltip}
 							className={`
-								relative flex-1 
-								flex items-center justify-center
+								relative flex-1 flex items-center justify-center
 								${gapClasses[size]}
 								${sizeClasses[size]}
 								font-medium
-								transition-all duration-200 
-								z-10
-								${isActive ? 'text-neutral-900' : 'text-neutral-500 hover:text-neutral-700'}
+								transition-all duration-200 z-10
+
+								${isActive 
+									? 'text-neutral-900 dark:text-neutral-100' 
+									: 'text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200'
+								}
+
 								${isDisabled ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer'}
 							`}
 						>
-							{/* Icon - Left */}
 							{tab.icon && iconPosition === 'left' && (
-								<span
-									className={`flex-shrink-0 ${animated ? 'transition-colors duration-200' : ''}`}
-								>
+								<span className={animated ? 'transition-colors duration-200' : ''}>
 									{tab.icon}
 								</span>
 							)}
 
-							{/* Label */}
 							<span className={animated ? 'transition-colors duration-200' : ''}>
 								{tab.label}
 							</span>
 
-							{/* Icon - Right */}
 							{tab.icon && iconPosition === 'right' && (
-								<span
-									className={`flex-shrink-0 ${animated ? 'transition-colors duration-200' : ''}`}
-								>
+								<span className={animated ? 'transition-colors duration-200' : ''}>
 									{tab.icon}
 								</span>
 							)}
 
-							{/* Count Badge */}
 							{hasCount && (
 								<span
 									className={`
-										px-1.5 py-0.5 
-										rounded-full 
-										text-xs 
-										font-medium 
+										px-1.5 py-0.5 rounded-full text-xs font-medium
 										${animated ? 'transition-all duration-200' : ''}
-										${isActive ? 'bg-neutral-900 text-white' : 'bg-neutral-200 text-neutral-600'}
+
+										${
+											isActive
+												? 'bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900'
+												: 'bg-neutral-200 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300'
+										}
 									`}
 								>
 									{tab.count}

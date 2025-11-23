@@ -7,7 +7,7 @@ import { BiCrown, BiRocket } from 'react-icons/bi';
 import { FiClock, FiGift, FiSearch, FiSend } from 'react-icons/fi';
 import { RiCoinsLine } from 'react-icons/ri';
 
-import { FireInput } from '@/app/components/UI';
+import { FireButton,FireInput } from '@/app/components/UI';
 import type { CachedUser, KudosTxn } from '@/app/lib/types';
 
 import { KudosCard, type KudosPanelProps, KudosSendSlide, KudosTransactionItem } from '../KudosUI';
@@ -40,11 +40,11 @@ export const KudosPanel: React.FC<KudosPanelProps> = ({
 			case 'gift':
 				return <FiGift className="w-4 h-4 text-pink-500" />;
 			case 'reward':
-				return <BiCrown className="w-4 h-4" style={{ color: 'var(--monokai-yellow)' }} />;
+				return <BiCrown className="w-4 h-4 text-lime-500" />;
 			case 'system':
 				return <BiRocket className="w-4 h-4 text-sky-500" />;
 			default:
-				return <FiGift className="w-4 h-4" style={{ color: 'var(--monokai-yellow)' }} />;
+				return <FiGift className="w-4 h-4 text-yellow-500"/>;
 		}
 	};
 
@@ -112,39 +112,37 @@ export const KudosPanel: React.FC<KudosPanelProps> = ({
 		setNote('');
 		setSlideOpen(true);
 	};
-
-	return (
-		<div className={`w-full px-4 py-6 bg-white ${className}`}>
+return (
+		<div className={`w-full px-4 py-6 bg-neutral-50 dark:bg-neutral-900 transition-colors ${className}`}>
 			<div className="max-w-5xl mx-auto">
-				<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 w-full px-2 sm:px-0">
-					{/* Heading */}
+				{/* Header */}
+				<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4 w-full px-2 sm:px-0">
 					<div className="flex flex-col items-center gap-2 mb-6">
-						<h2 className="font-bubblegum text-[var(--monokai-yellow)] text-3xl text-center font-semibold">
-							<FiGift className="inline-block mr-2 text-[var(--monokai-yellow)]" /> Kudos
+						<h2 className="font-bubblegum text-yellow-500 dark:text-yellow-100 text-3xl text-center font-semibold">
+							<FiGift className="inline-block mr-2 text-yellow-500 dark:text-yellow-400" /> Kudos
 						</h2>
-						<p className="text-sm text-neutral-600">Quick appreciation</p>
+						<p className="text-sm text-neutral-500 dark:text-neutral-400">Quick appreciation</p>
 					</div>
 
 					{/* Search + Send */}
 					<div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3 mt-3 sm:mt-0 w-full sm:w-auto">
 						<div className="flex items-center gap-2 rounded-lg px-2 py-1 w-full sm:w-auto">
-							<FiSearch className="text-neutral-500" />
+							<FiSearch className="text-neutral-500 dark:text-neutral-400" />
 							<FireInput
 								value={search}
 								onChange={(e) => setSearch(e.target.value)}
 								placeholder="Search anyone..."
-								className="pl-5"
+								className="pl-5 bg-transparent text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 dark:placeholder-neutral-500"
 							/>
 						</div>
 
-						<button
+						<FireButton
 							onClick={() => openDetailed()}
-							className="flex items-center justify-center gap-2 px-3 py-2 rounded-md bg-neutral-50 hover:bg-neutral-100 text-neutral-700 w-full sm:w-auto"
-							aria-label="Detailed send"
+							className="flex items-center justify-center gap-2 w-full sm:w-auto transition-colors"
 						>
-							<FiSend className="text-neutral-700" />
+							<FiSend className="text-neutral-900 dark:text-neutral-100" />
 							<span className="text-sm">Send</span>
-						</button>
+						</FireButton>
 					</div>
 				</div>
 
@@ -152,37 +150,28 @@ export const KudosPanel: React.FC<KudosPanelProps> = ({
 				<div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
 					<div className="flex items-center gap-4">
 						<div
-							className="rounded-lg flex items-center justify-center border border-neutral-200/40"
-							style={{
-								width: 88,
-								height: 88,
-								background: '#fff',
-								boxShadow: '0 6px 18px rgba(0,0,0,0.04)',
-							}}
+							className="rounded-lg flex items-center justify-center border border-neutral-200/40 dark:border-neutral-700/40 shadow-sm dark:shadow-black/20 transition-all"
 						>
-							<RiCoinsLine
-								className="w-10 h-10"
-								style={{ color: 'var(--monokai-yellow)' }}
-							/>
+							<RiCoinsLine className="w-10 h-10 text-yellow-500 dark:text-yellow-400" />
 						</div>
 						<div>
-							<div className="text-3xl" style={{ color: 'var(--monokai-yellow)' }}>
+							<div className="text-3xl font-semibold text-neutral-900 dark:text-neutral-100">
 								{currentUser.kudos}
 							</div>
-							<div className="text-sm text-neutral-600">Your balance</div>
+							<div className="text-sm text-neutral-500 dark:text-neutral-400">Your balance</div>
 						</div>
 					</div>
 
-					<div className="flex gap-6 text-sm text-neutral-600">
+					<div className="flex gap-6 text-sm text-neutral-500 dark:text-neutral-400">
 						<div>
 							Given:{' '}
-							<span className="font-medium text-neutral-800">
+							<span className="font-medium text-neutral-900 dark:text-neutral-100">
 								{currentUser.kudosGiven ?? 0}
 							</span>
 						</div>
 						<div>
 							Received:{' '}
-							<span className="font-medium text-neutral-800">
+							<span className="font-medium text-neutral-900 dark:text-neutral-100">
 								{currentUser.kudosReceived ?? 0}
 							</span>
 						</div>
@@ -192,13 +181,13 @@ export const KudosPanel: React.FC<KudosPanelProps> = ({
 				{/* People list */}
 				<div className="mb-6">
 					<div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-3 gap-2 sm:gap-0">
-						<div className="text-sm text-neutral-500 hidden sm:block">Quick-send badges</div>
+						<div className="text-sm text-neutral-500 dark:text-neutral-400 hidden sm:block">Quick-send badges</div>
 					</div>
 
 					<div className="mb-8">
 						<div className="flex items-center justify-between mb-4">
-							<h2 className="text-2xl font-bold text-neutral-900">People</h2>
-							<div className="text-sm text-neutral-500">
+							<h2 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100">People</h2>
+							<div className="text-sm text-neutral-500 dark:text-neutral-400">
 								{filtered.length} user{filtered.length !== 1 ? 's' : ''}
 							</div>
 						</div>
@@ -218,7 +207,7 @@ export const KudosPanel: React.FC<KudosPanelProps> = ({
 						</div>
 
 						{filtered.length === 0 && (
-							<div className="text-center py-12 text-neutral-400">
+							<div className="text-center py-12 text-neutral-400 dark:text-neutral-500">
 								<FiSearch className="w-12 h-12 mx-auto mb-3 opacity-50" />
 								<div>No users found</div>
 							</div>
@@ -228,8 +217,8 @@ export const KudosPanel: React.FC<KudosPanelProps> = ({
 					{/* Recent history */}
 					<div>
 						<div className="flex items-center justify-between mb-3">
-							<h3 className="text-lg font-semibold text-neutral-800">Recent activity</h3>
-							<div className="flex items-center gap-2 text-sm text-neutral-500">
+							<h3 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">Recent activity</h3>
+							<div className="flex items-center gap-2 text-sm text-neutral-500 dark:text-neutral-400">
 								<FiClock />
 								<span>Latest {recentLimit}</span>
 							</div>
@@ -249,11 +238,8 @@ export const KudosPanel: React.FC<KudosPanelProps> = ({
 							))}
 
 							{transactions.length === 0 && (
-								<div className="text-center py-8 text-neutral-400">
-									<FiGift
-										className="w-10 h-10 mx-auto mb-2"
-										style={{ color: 'var(--monokai-yellow)' }}
-									/>
+								<div className="text-center py-8 text-neutral-400 dark:text-neutral-500">
+									<FiGift className="w-10 h-10 mx-auto mb-2 text-yellow-500 dark:text-yellow-400" />
 									<div>No transactions yet — be the first to send kudos!</div>
 								</div>
 							)}

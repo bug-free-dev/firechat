@@ -1,5 +1,3 @@
-'use client';
-
 import React from 'react';
 import { MdOutlineWhatshot } from 'react-icons/md';
 

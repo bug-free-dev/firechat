@@ -14,7 +14,7 @@ import { RiPriceTag3Line } from 'react-icons/ri';
 
 import { TAG_COLORS } from '@/app/components/UI';
 import { FireArea, FireButton, FireInput } from '@/app/components/UI';
-import { FireToast } from '@/app/components/UI';
+import { confirm } from '@/app/components/UI';
 import { updateUserProfile } from '@/app/lib/api/userAPI';
 import { useAuthState } from '@/app/lib/routing/context/AuthStateContext';
 import type { FireProfile } from '@/app/lib/types';
@@ -133,7 +133,6 @@ export const ProfilePanel: React.FC<ProfilePanelProps> = ({ profile, onUpdate })
 			return;
 		}
 
-		// Validate file size (5MB max)
 		if (file.size > 5 * 1024 * 1024) {
 			toast.error('Image size should be less than 5MB');
 			return;
@@ -148,7 +147,6 @@ export const ProfilePanel: React.FC<ProfilePanelProps> = ({ profile, onUpdate })
 		reader.onload = () => {
 			const result = reader.result as string;
 
-			// Check if the base64 string is too large
 			if (result.length > MAX_IMAGE_SIZE) {
 				const img = new Image();
 				img.onload = () => {
@@ -176,7 +174,7 @@ export const ProfilePanel: React.FC<ProfilePanelProps> = ({ profile, onUpdate })
 	};
 
 	const handleLogout = () => {
-		FireToast({
+		confirm({
 			title: 'Sign Out',
 			message: 'Are you sure you want to sign out?',
 			actions: [
@@ -198,7 +196,7 @@ export const ProfilePanel: React.FC<ProfilePanelProps> = ({ profile, onUpdate })
 	};
 
 	const handleDeleteAccount = () => {
-		FireToast({
+		confirm({
 			title: 'Delete Account',
 			message:
 				'This action cannot be undone. Your account and all data will be permanently deleted.',
@@ -221,7 +219,7 @@ export const ProfilePanel: React.FC<ProfilePanelProps> = ({ profile, onUpdate })
 	};
 
 	return (
-		<div className="w-full min-h-screen bg-white">
+		<div className="w-full min-h-screen bg-white dark:bg-neutral-900">
 			<ProfileHeader onLogout={handleLogout} onDeleteAccount={handleDeleteAccount} />
 
 			<div className="max-w-5xl mx-auto px-6 py-12">
@@ -241,7 +239,9 @@ export const ProfilePanel: React.FC<ProfilePanelProps> = ({ profile, onUpdate })
 						/>
 
 						<div className="w-full text-center lg:text-left space-y-1">
-							<p className="text-md text-gray-500">@{profile.usernamey}</p>
+							<p className="text-md text-neutral-500 dark:text-neutral-400">
+								@{profile.usernamey}
+							</p>
 							{isEditing ? (
 								<input
 									value={String(editData.displayName ?? '')}
@@ -250,14 +250,14 @@ export const ProfilePanel: React.FC<ProfilePanelProps> = ({ profile, onUpdate })
 									}
 									placeholder="Display name"
 									className="
-                    w-50 p-1 text-md font-semibold text-gray-900 text-center lg:text-left
-                    px-2 py-1 rounded-md bg-gray-50/50
-                    ring-2 ring-gray-200/30 focus:ring-gray-300/50
+                    w-50 p-1 text-md font-semibold text-neutral-900 dark:text-neutral-100 text-center lg:text-left
+                    px-2 py-1 rounded-md bg-neutral-50/50 dark:bg-neutral-800/50
+                    ring-2 ring-neutral-200/30 dark:ring-neutral-700/40 focus:ring-neutral-300/50 dark:focus:ring-neutral-600/50
                     outline-none transition-all
                   "
 								/>
 							) : (
-								<h2 className="text-xl font-semibold text-gray-900">
+								<h2 className="text-xl font-semibold text-neutral-900 dark:text-neutral-100">
 									{profile.displayName}
 								</h2>
 							)}
@@ -273,11 +273,13 @@ export const ProfilePanel: React.FC<ProfilePanelProps> = ({ profile, onUpdate })
 									<span
 										key={i}
 										className={`
-          inline-flex items-center gap-2 pl-3 pr-3 py-1
-          rounded-xl ${colorSet.bg} ${colorSet.text} ${colorSet.ring}
-          text-sm font-medium tracking-tight
-          transition-all duration-200 ease-out ${colorSet.hover}
-        `}
+											inline-flex items-center gap-2 pl-3 pr-3 py-1
+											rounded-xl ${colorSet.bg} ${colorSet.text} ${colorSet.ring}
+											dark:${colorSet.bg} dark:${colorSet.text} dark:${colorSet.ring}
+											text-sm font-medium tracking-tight
+											transition-all duration-200 ease-out ${colorSet.hover}
+											dark:hover:shadow-lg dark:hover:shadow-black/10
+										`}
 									>
 										<RiPriceTag3Line className="w-3.5 h-3.5 opacity-60" />
 										{tag}
@@ -285,7 +287,7 @@ export const ProfilePanel: React.FC<ProfilePanelProps> = ({ profile, onUpdate })
 								);
 							})}
 							{(profile.tags ?? []).length === 0 && (
-								<div className="flex items-center gap-1.5 text-neutral-400">
+								<div className="flex items-center gap-1.5 text-neutral-400 dark:text-neutral-500">
 									<IoSparkles className="w-4 h-4 opacity-30" />
 									<span className="text-sm">No tags yet</span>
 								</div>
@@ -297,8 +299,8 @@ export const ProfilePanel: React.FC<ProfilePanelProps> = ({ profile, onUpdate })
 					<div className="lg:col-span-2 space-y-6">
 						{/* About */}
 						<div>
-							<label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-3">
-								<HiOutlineInformationCircle className="w-5 h-5 text-blue-500" />
+							<label className="flex items-center gap-2 text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-3">
+								<HiOutlineInformationCircle className="w-5 h-5 text-blue-500 dark:text-blue-400" />
 								About
 							</label>
 							{isEditing ? (
@@ -309,7 +311,7 @@ export const ProfilePanel: React.FC<ProfilePanelProps> = ({ profile, onUpdate })
 									rows={4}
 								/>
 							) : (
-								<div className="px-4 py-3 rounded-lg bg-gray-50/50 ring-2 ring-gray-100/50 text-sm text-gray-700">
+								<div className="px-4 py-3 rounded-lg bg-neutral-50/50 dark:bg-neutral-900/50 ring-2 ring-neutral-100/50 dark:ring-neutral-800/50 text-sm text-neutral-700 dark:text-neutral-300">
 									{profile.about || 'No bio yet'}
 								</div>
 							)}
@@ -318,8 +320,8 @@ export const ProfilePanel: React.FC<ProfilePanelProps> = ({ profile, onUpdate })
 						{/* Mood & Status */}
 						<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 							<div>
-								<label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-3">
-									<HiOutlineEmojiHappy className="w-5 h-5 text-amber-500" />
+								<label className="flex items-center gap-2 text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-3">
+									<HiOutlineEmojiHappy className="w-5 h-5 text-amber-500 dark:text-amber-400" />
 									Mood
 								</label>
 								{isEditing ? (
@@ -328,15 +330,15 @@ export const ProfilePanel: React.FC<ProfilePanelProps> = ({ profile, onUpdate })
 										onChange={(val) => setEditData({ ...editData, mood: val })}
 									/>
 								) : (
-									<div className="px-4 py-3 rounded-lg bg-gray-50/50 ring-2 ring-gray-100/50 text-sm text-gray-700">
+									<div className="px-4 py-3 rounded-lg bg-neutral-50/50 dark:bg-neutral-900/50 ring-2 ring-neutral-100/50 dark:ring-neutral-800/50 text-sm text-neutral-700 dark:text-neutral-300">
 										{profile.mood || 'No mood set'}
 									</div>
 								)}
 							</div>
 
 							<div>
-								<label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-3">
-									<HiOutlineHashtag className="w-5 h-5 text-blue-500" />
+								<label className="flex items-center gap-2 text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-3">
+									<HiOutlineHashtag className="w-5 h-5 text-blue-500 dark:text-blue-400" />
 									Status
 								</label>
 								{isEditing ? (
@@ -347,7 +349,7 @@ export const ProfilePanel: React.FC<ProfilePanelProps> = ({ profile, onUpdate })
 										className="w-full"
 									/>
 								) : (
-									<div className="px-4 py-3 rounded-lg bg-gray-50/50 ring-2 ring-gray-100/50 text-sm text-gray-700">
+									<div className="px-4 py-3 rounded-lg bg-neutral-50/50 dark:bg-neutral-900/50 ring-2 ring-neutral-100/50 dark:ring-neutral-800/50 text-sm text-neutral-700 dark:text-neutral-300">
 										{profile.status || 'No status'}
 									</div>
 								)}
@@ -356,10 +358,10 @@ export const ProfilePanel: React.FC<ProfilePanelProps> = ({ profile, onUpdate })
 
 						{/* Tags */}
 						<div>
-							<label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-3">
-								<HiOutlineTag className="w-5 h-5 text-pink-500" />
+							<label className="flex items-center gap-2 text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-3">
+								<HiOutlineTag className="w-5 h-5 text-pink-500 dark:text-pink-400" />
 								Tags
-								<span className="text-xs text-gray-500">
+								<span className="text-xs text-neutral-500 dark:text-neutral-400">
 									({(editData.tags ?? []).length}/12)
 								</span>
 							</label>
@@ -374,10 +376,10 @@ export const ProfilePanel: React.FC<ProfilePanelProps> = ({ profile, onUpdate })
 
 						{/* Quirks */}
 						<div>
-							<label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-3">
-								<HiOutlineStar className="w-5 h-5 text-violet-500" />
+							<label className="flex items-center gap-2 text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-3">
+								<HiOutlineStar className="w-5 h-5 text-violet-500 dark:text-violet-400" />
 								Quirks
-								<span className="text-xs text-gray-500">
+								<span className="text-xs text-neutral-500 dark:text-neutral-400">
 									({(editData.quirks ?? []).length}/6)
 								</span>
 							</label>

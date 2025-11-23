@@ -10,7 +10,7 @@ export default function Page() {
 	const [activeTab, setActiveTab] = useState<'login' | 'signup'>('login');
 
 	return (
-		<main className="animate-slide-up min-h-screen relative overflow-hidden duration-200">
+		<main className="animate-slide-up min-h-screen relative overflow-hidden duration-200 bg-white dark:bg-neutral-900">
 			<FireHeader variant="default" />
 
 			<div className="max-w-7xl mx-auto px-6 py-12 relative z-10">
@@ -31,8 +31,8 @@ export default function Page() {
 				</div>
 			</div>
 
-			<footer className="bottom-0 absolute flex-row flex items-center justify-center w-full p-4 bg-gradient-to-t from-white to-transparent dark:from-transparent">
-				<span className="text-neutral-500 text-lg font-jolly">
+			<footer className="bottom-0 absolute flex-row flex items-center justify-center w-full p-4 bg-gradient-to-t from-white to-transparent dark:from-neutral-900/60 dark:to-transparent">
+				<span className="text-neutral-800 dark:text-neutral-200 text-xl font-jolly">
 					Made with ❤️ Thanks for being here.
 				</span>
 			</footer>

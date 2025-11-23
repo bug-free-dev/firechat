@@ -31,8 +31,18 @@ export const OAuthButton: React.FC<OAuthButtonProps> = ({
     px-5 py-2.5 text-sm font-medium text-neutral-700
     transition-colors duration-200 ease-in-out
     hover:bg-neutral-50
-    active:bg-neutral-100/40
+    active:bg-neutral-100/10
     focus:outline-none focus:ring-2 focus:ring-slate-400/30
+  focus:ring-offset-2 focus:ring-offset-white
+
+  dark:bg-neutral-800/30
+  dark:text-neutral-200
+  dark:border-neutral-700/40
+  dark:hover:bg-neutral-800/60
+  dark:active:bg-neutral-800/40
+  dark:focus:ring-neutral-600/40
+  dark:focus:ring-offset-2 dark:focus:ring-offset-neutral-900
+  backdrop-blur-sm
   `;
 
 	const disabledClass = disabled ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer';

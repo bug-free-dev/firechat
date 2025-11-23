@@ -46,10 +46,10 @@ export const NavTabs: React.FC<DeskTabsProps> = ({ activeTab, onTabChange }) => 
 
 	const highlightColor =
 		activeTab === 'profile'
-			? 'bg-orange-100'
+			? 'bg-orange-100 dark:bg-orange-600/40'
 			: activeTab === 'kudos'
-				? 'bg-yellow-100'
-				: 'bg-lime-100';
+			? 'bg-yellow-100 dark:bg-yellow-500/30'
+			: 'bg-lime-100 dark:bg-lime-600/30';
 
 	const indicatorStyle = useMemo(() => {
 		if (activeIndex === -1) return { opacity: 0 };
@@ -62,14 +62,14 @@ export const NavTabs: React.FC<DeskTabsProps> = ({ activeTab, onTabChange }) => 
 	}, [activeIndex, tabs.length]);
 
 	const colorMap: Record<TabConfig['color'], string> = {
-		orange: 'text-orange-600',
-		yellow: 'text-yellow-500',
-		lime: 'text-lime-600',
+		orange: 'text-orange-600 dark:text-orange-400',
+		yellow: 'text-yellow-500 dark:text-yellow-300',
+		lime: 'text-lime-600 dark:text-lime-400',
 	};
 
 	// Base classes
 	const containerBase =
-		'relative bg-white border border-neutral-200 rounded-full px-2 flex gap-2 overflow-hidden';
+		'relative bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700/40 rounded-full px-2 flex gap-2 overflow-hidden';
 	const buttonBase =
 		'relative z-10 flex-1 flex items-center justify-center gap-2 px-3 py-3 text-sm font-semibold rounded-full transition-colors duration-300';
 

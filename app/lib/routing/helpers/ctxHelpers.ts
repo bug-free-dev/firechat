@@ -1,6 +1,6 @@
 import { FireProfile } from '@/app/lib/types';
 import { Memory } from '@/app/lib/utils/localStorage';
-import { normalizeProfile } from '@/app/lib/utils/sanitizer';
+import { normalizeProfile } from '@/app/lib/utils/normalize';
 
 export interface ProfileCache {
 	profile: FireProfile;

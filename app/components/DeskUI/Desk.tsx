@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 
-import { FireButton, FireHeader, FireInput, FireSlide, FireToast } from '@/app/components/UI';
+import { confirm,FireButton, FireHeader, FireInput, FireSlide } from '@/app/components/UI';
 import { FirePicker as InvitePicker } from '@/app/components/UI';
 import * as sessionAPI from '@/app/lib/api/sessionAPI';
 import { useFireInbox } from '@/app/lib/hooks/useFireInbox';
@@ -56,7 +56,7 @@ export default function Desk() {
 		userUid: profile?.uid ?? null,
 		services,
 		enableRealtime: true,
-		pollingInterval: 50000,
+		pollingInterval: 600000,
 		autoRefresh: true,
 	});
 
@@ -210,7 +210,7 @@ export default function Desk() {
 	};
 
 	const onEndSession = async (sessionId: string) => {
-		FireToast({
+		confirm({
 			title: 'End Session',
 			message: 'If you end the session, all chat history will be lost. End it?',
 			actions: [
@@ -407,112 +407,119 @@ export default function Desk() {
 	};
 
 	return (
-		<div
-			className="flex flex-col min-h-screen bg-neutral-50"
-			onTouchStart={handleTouchStart}
-			onTouchEnd={handleTouchEnd}
-		>
-			<FireHeader />
-			<main className="flex-1 pb-24">{renderActivePanel()}</main>
-			<NavTabs activeTab={activeTab} onTabChange={setActiveTab} />
+  <div
+         className="flex flex-col min-h-screen bg-neutral-50 dark:bg-neutral-900 transition-colors duration-300"
+         
+    onTouchStart={handleTouchStart}
+    onTouchEnd={handleTouchEnd}
+  >
+    {/* Header */}
+    <FireHeader />
 
-			{/* Create Session Slide */}
-			<FireSlide
-				open={createOpen}
-				onClose={() => setCreateOpen(false)}
-				size="md"
-				header="Spark a chat"
-				footer={
-					<div className="flex gap-3 justify-end">
-						<FireButton variant="outline" onClick={() => setCreateOpen(false)}>
-							Cancel
-						</FireButton>
-						<FireButton
-							onClick={handleCreateSubmit}
-							disabled={creating}
-							variant="default"
-							loading={creating}
-						>
-							{creating ? 'Creating...' : 'Create'}
-						</FireButton>
-					</div>
-				}
-			>
-				<div className="space-y-4">
-					<div>
-						<label className="text-sm text-neutral-600 block mb-1">Title</label>
-						<FireInput
-							value={title}
-							onChange={(e) => setTitle(e.target.value)}
-							placeholder="Session name (optional)"
-						/>
-					</div>
-					<div className="flex items-center gap-2">
-						<input
-							id="identifierRequired"
-							type="checkbox"
-							checked={identifierRequired}
-							onChange={(e) => setIdentifierRequired(e.target.checked)}
-							className="w-4 h-4"
-						/>
-						<label htmlFor="identifierRequired" className="text-sm text-neutral-700">
-							Do you want them to join with their identifier key?
-						</label>
-					</div>
+    {/* Main Content */}
+    <main className="flex-1 pb-24">{renderActivePanel()}</main>
 
-					<div>
-						<label className="text-sm text-neutral-600 block mb-1">Invite contacts</label>
-						<div className="flex gap-2 items-center">
-							<div className="flex-1">
-								{createInvited.length === 0 ? (
-									<div className="text-xs text-neutral-500 mt-2">
-										No contacts chosen yet — pick from Frequent or search.
-									</div>
-								) : (
-									<div className="text-xs text-neutral-700 mt-2">
-										{createInvited.length} contact(s) selected
-									</div>
-								)}
-							</div>
+    {/* Bottom Navigation */}
+    <NavTabs activeTab={activeTab} onTabChange={setActiveTab} />
 
-							<button
-								onClick={() => setCreateInviteOpen(true)}
-								className="py-2 px-3 rounded-lg bg-slate-50 text-slate-600 font-medium hover:bg-slate-100 transition"
-							>
-								Pick contacts
-							</button>
-						</div>
-					</div>
-				</div>
-			</FireSlide>
+    {/* Create Session Slide */}
+    <FireSlide
+      open={createOpen}
+      onClose={() => setCreateOpen(false)}
+      size="md"
+      className="dark:bg-neutral-900 dark:border-neutral-700"
+      header="Spark a chat"
+      footer={
+        <div className="flex gap-3 justify-end">
+          <FireButton variant="outline" onClick={() => setCreateOpen(false)}>
+            Cancel
+          </FireButton>
+          <FireButton
+            onClick={handleCreateSubmit}
+            disabled={creating}
+            variant="default"
+            loading={creating}
+          >
+            Create
+          </FireButton>
+        </div>
+      }
+    >
+      <div className="space-y-4 text-neutral-800 dark:text-neutral-100">
+        {/* Title */}
+        <div>
+          <label className="text-sm block mb-1">Title</label>
+          <FireInput
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="Session name (optional)"
+          />
+        </div>
 
-			{/* InvitePicker */}
-			<InvitePicker
-				open={createInviteOpen}
-				onClose={() => setCreateInviteOpen(false)}
-				frequentUsers={frequentUsers}
-				session={
-					{
-						id: 'create-temp',
-						creator: profile?.uid ?? 'unknown',
-						participants: [],
-						isActive: true,
-						isLocked: false,
-						identifierRequired,
-						createdAt: new Date().toISOString(),
-						meta: {},
-					} as SessionDoc
-				}
-				onConfirm={(users) => {
-					setCreateInvited((prev) => {
-						const map = new Map(prev.map((u) => [u.uid, u]));
-						for (const u of users) map.set(u.uid, u);
-						return Array.from(map.values()).slice(0, 50);
-					});
-					setCreateInviteOpen(false);
-					toast.success(`Added ${users.length} contact(s)`);
-				}}
-			/>
-		</div>
-	);
+        {/* Identifier */}
+        <div className="flex items-center gap-2">
+          <input
+            id="identifierRequired"
+            type="checkbox"
+            checked={identifierRequired}
+            onChange={(e) => setIdentifierRequired(e.target.checked)}
+            className="w-4 h-4 accent-yellow-400"
+          />
+          <label htmlFor="identifierRequired" className="text-sm">
+            Require identifier key to join?
+          </label>
+        </div>
+
+        {/* Invite Contacts */}
+        <div>
+          <label className="text-sm block mb-1">Invite contacts</label>
+          <div className="flex gap-2 items-center">
+            <div className="flex-1 text-xs">
+              {createInvited.length === 0 ? (
+                <span className="text-neutral-500 dark:text-neutral-400 mt-2">
+                  No contacts chosen yet — pick from Frequent or search.
+                </span>
+              ) : (
+                <span className="text-neutral-700 dark:text-neutral-300 mt-2">
+                  {createInvited.length} contact(s) selected
+                </span>
+              )}
+            </div>
+
+            <FireButton onClick={() => setCreateInviteOpen(true)} variant="secondary">
+              Pick contacts
+            </FireButton>
+          </div>
+        </div>
+      </div>
+    </FireSlide>
+
+    {/* Invite Picker */}
+    <InvitePicker
+      open={createInviteOpen}
+      onClose={() => setCreateInviteOpen(false)}
+      frequentUsers={frequentUsers}
+      session={{
+        id: 'create-temp',
+        creator: profile?.uid ?? 'unknown',
+        participants: [],
+        isActive: true,
+        isLocked: false,
+        identifierRequired,
+        createdAt: new Date().toISOString(),
+        meta: {},
+      } as SessionDoc}
+      onConfirm={(users) => {
+        setCreateInvited((prev) => {
+          const map = new Map(prev.map((u) => [u.uid, u]));
+          for (const u of users) map.set(u.uid, u);
+          return Array.from(map.values()).slice(0, 50);
+        });
+        setCreateInviteOpen(false);
+        toast.success(`Added ${users.length} contact(s)`);
+      }}
+    />
+  </div>
+);
+
 }

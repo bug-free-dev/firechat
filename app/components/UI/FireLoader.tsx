@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import { HiFire } from 'react-icons/hi';
 
 type LoaderProps = {
 	size?: number;
@@ -10,10 +9,10 @@ type LoaderProps = {
 	className?: string;
 };
 
-export const FireLoader: React.FC<LoaderProps> = ({ size = 100, message, compact, className }) => {
+export const FireLoader: React.FC<LoaderProps> = ({ size = 150, message, compact, className }) => {
 	return (
 		<div
-			className={`fixed inset-0 z-50 flex items-center justify-center bg-white/80 ${className || ''}`}
+			className={`fixed inset-0 z-50 flex items-center justify-center bg-white dark:bg-neutral-900 ${className || ''}`}
 			role="status"
 			aria-live="polite"
 		>
@@ -27,23 +26,27 @@ export const FireLoader: React.FC<LoaderProps> = ({ size = 100, message, compact
 						viewBox="0 0 24 24"
 						fill="none"
 					>
-						<circle cx="12" cy="12" r="10" stroke="#e5e7eb" strokeWidth="2" />
+						<circle
+							cx="12"
+							cy="12"
+							r="10"
+							stroke="#e5e7eb"
+							className="dark:stroke-neutral-700"
+							strokeWidth="2"
+						/>
 						<path
 							d="M22 12a10 10 0 0 1-10 10"
-							stroke="#ff7a4a"
+							stroke="#2b2b2b"
+							className="dark:stroke-neutral-50"
 							strokeWidth="2"
 							strokeLinecap="round"
 						/>
 					</svg>
-
-					<div className="absolute inset-0 flex items-center justify-center">
-						<HiFire style={{ color: '#ff7a4a' }} size={size * 0.4} aria-hidden />
-					</div>
 				</div>
 
 				{/* Message */}
 				{message && (
-					<div className={`${compact ? 'text-sm' : 'text-base'} text-gray-700`}>
+					<div className={`${compact ? 'text-sm' : 'text-base'} text-gray-700 dark:text-neutral-100`}>
 						<span>{message}</span>
 					</div>
 				)}

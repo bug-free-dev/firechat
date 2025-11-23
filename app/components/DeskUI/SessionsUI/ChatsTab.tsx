@@ -69,7 +69,7 @@ export const ChatsTab: React.FC<ChatsTabProps> = ({
 		return (
 			<div className="flex items-center justify-center py-20">
 				<div className="text-center">
-					<IoChatbubblesOutline className="w-12 h-12 mx-auto mb-4 text-orange-500/40" />
+					<IoChatbubblesOutline className="w-12 h-12 mx-auto mb-4 text-zinc-400/50 dark:text-zinc-400/40" />
 					<WaveLoader />
 				</div>
 			</div>
@@ -84,13 +84,17 @@ export const ChatsTab: React.FC<ChatsTabProps> = ({
 
 			{mergedSessions.length === 0 ? (
 				<div className="flex flex-col items-center justify-center py-20 text-center">
-					<MdOutlineWhatshot className="w-20 h-20 mb-6 text-orange-300 opacity-50" />
-					<h3 className="text-4xl font-knewave text-neutral-700 mb-3">No sparks yet</h3>
-					<p className="font-comic text-neutral-400 mb-6 max-w-sm">
+					<MdOutlineWhatshot className="w-20 h-20 mb-6 text-zinc-300/50 dark:text-zinc-400/40" />
+					<h3 className="text-4xl font-knewave text-neutral-800 dark:text-neutral-100 mb-3">
+						No sparks yet
+					</h3>
+					<p className="font-comic text-neutral-500 dark:text-neutral-400 mb-6 max-w-sm">
 						Fire up your first session and start a conversation!
 					</p>
 					{onCreateSession && (
-						<FireButton onClick={onCreateSession} className="flex items-center gap-2">
+						<FireButton
+							onClick={onCreateSession}
+						>
 							<IoAddOutline className="w-5 h-5" />
 							Fire Up a Session
 						</FireButton>

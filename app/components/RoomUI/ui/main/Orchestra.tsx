@@ -8,7 +8,7 @@ import { ParticipantsPanel } from '@/app/components/RoomUI/ui/atoms';
 import RoomTopBar from '@/app/components/RoomUI/ui/atoms/RoomTopBar';
 import { MsgComposer, VMessageList } from '@/app/components/RoomUI/ui/blocks';
 import { TypingIndicator } from '@/app/components/RoomUI/ui/indicators';
-import { FireToast } from '@/app/components/UI';
+import { confirm } from '@/app/components/UI';
 import { FirePicker as ParticipantPicker } from '@/app/components/UI';
 import { useFireMessages } from '@/app/lib/hooks/useFireMessages';
 import type { CachedUser, ChatMessage, SessionDoc } from '@/app/lib/types';
@@ -216,7 +216,7 @@ const Orchestra: React.FC<OrchestraProps> = memo(
 				return toast.error('End session not configured');
 			}
 
-			FireToast({
+			confirm({
 				title: 'End Session',
 				message: 'Are you sure you want to end this session? This action cannot be undone.',
 				actions: [
@@ -246,7 +246,7 @@ const Orchestra: React.FC<OrchestraProps> = memo(
 				return toast.error('Leave session not configured');
 			}
 
-			FireToast({
+			confirm({
 				title: 'Leave Session',
 				message: 'Are you sure you want to leave this session?',
 				actions: [

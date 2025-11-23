@@ -1,75 +1,139 @@
 'use client';
 
-import React, { TextareaHTMLAttributes } from 'react';
+import React, {
+	forwardRef,
+	TextareaHTMLAttributes,
+	useId,
+	useMemo,
+} from 'react';
 
+type Firesize = 'sm' | 'md' | 'lg';
 type FireAreaVariant = 'default' | 'custom';
 
-interface FireAreaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
+interface FireAreaProps
+	extends Omit<TextareaHTMLAttributes<HTMLTextAreaElement>, 'size'> {
 	label?: string;
 	helperText?: string;
 	icon?: React.ReactNode;
+	size?: Firesize;
 	variant?: FireAreaVariant;
-	className?: string;
+	containerClassName?: string;
+	textareaClassName?: string;
 }
 
-export const FireArea: React.FC<FireAreaProps> = ({
-	label,
-	helperText,
-	icon,
-	variant = 'default',
-	className = '',
-	...props
-}) => {
-	const baseClasses = `
-    w-full
-    outline-none
-    resize-none
-    text-sm
-    placeholder-neutral-400
-    transition-all duration-200
-    dark:text-neutral-100
-    p-3
-  `;
+const sizeMap: Record<Firesize, string> = {
+	sm: 'py-2 px-2 text-sm leading-5',
+	md: 'py-2.5 px-3 text-[15px] leading-6',
+	lg: 'py-3.5 px-4 text-lg leading-7',
+};
 
-	const variantClasses: Record<FireAreaVariant, string> = {
-		default: `
-      bg-neutral-100/30 
-      border border-neutral-200/40
-      rounded-md
-      focus:ring-2 focus:ring-neutral-200/70
-      focus:border-neutral-300 outline-none
-    `,
-		custom: `
-      bg-neutral-100/30
-      rounded-t-lg
-      border-b-[3px] border-neutral-200/40
-      focus:bg-white dark:focus:bg-neutral-900
-      focus:border-indigo-500/60
-      transition-colors duration-200
-    `,
-	};
+const variantClasses: Record<FireAreaVariant, string> = {
+	default: `
+		bg-white dark:bg-neutral-900
+		border border-neutral-200 dark:border-neutral-700/40
+		rounded-lg
+		transition-colors duration-200
 
-	return (
-		<div className={`relative w-full ${className}`}>
-			{label && (
-				<label className="font-knewave text-sm text-neutral-600 mb-3 block select-none">
-					{label}
-				</label>
-			)}
+		hover:border-neutral-300/60 dark:hover:border-neutral-600/60
 
-			<div className="relative w-full">
-				<textarea
-					{...props}
-					className={`${baseClasses} ${variantClasses[variant]} ${icon ? 'pr-10' : ''}`}
-				/>
-				{icon && (
-					<div className="absolute right-3 top-1/2 -translate-y-1/2 text-yellow-400">
-						{icon}
-					</div>
+		focus:outline-none
+		focus:ring-2 focus:ring-neutral-400/20 dark:focus:ring-neutral-700/30
+		focus:ring-offset-1 focus:ring-offset-white
+		dark:focus:ring-offset-neutral-900
+
+		focus:border-neutral-300/80 dark:focus:border-neutral-600/80
+	`,
+	custom: `
+		rounded-t-lg
+		border-b-3 border-neutral-200/50 dark:border-neutral-700
+
+		bg-neutral-100/30 dark:bg-neutral-800/70
+		backdrop-blur-sm
+		transition-colors duration-200
+
+		focus:bg-white dark:focus:bg-neutral-900
+		focus:border-indigo-500/60
+		focus:ring-2 focus:ring-indigo-400/20
+
+		focus:ring-offset-2 focus:ring-offset-white
+		dark:focus:ring-offset-neutral-900
+	`,
+};
+
+const labelBase =
+	'text-sm font-medium text-neutral-700 dark:text-neutral-300';
+
+export const FireArea = forwardRef<HTMLTextAreaElement, FireAreaProps>(
+	(
+		{
+			label,
+			helperText,
+			icon,
+			containerClassName = '',
+			textareaClassName = '',
+			className = '',
+			size = 'md',
+			variant = 'default',
+			...props
+		},
+		ref
+	) => {
+		const id = useId();
+		const sizeClasses = sizeMap[size];
+		const variantClass = variantClasses[variant];
+
+		const baseTextarea = useMemo(
+			() =>
+				[
+					'w-full',
+					'resize-none',
+					'outline-none',
+					'appearance-none',
+					'placeholder-neutral-400 dark:placeholder-neutral-500',
+					'text-neutral-900 dark:text-neutral-100',
+					'transition-colors duration-180',
+					sizeClasses,
+					variantClass,
+					textareaClassName,
+					className,
+					icon ? 'pr-10' : '',
+				]
+					.filter(Boolean)
+					.join(' '),
+			[sizeClasses, variantClass, textareaClassName, className, icon]
+		);
+
+		return (
+			<div className={`w-full flex flex-col gap-1 select-none ${containerClassName}`}>
+				{label && (
+					<label htmlFor={id} className={labelBase}>
+						{label}
+						{props.required && <span className="ml-1 text-red-500">*</span>}
+					</label>
+				)}
+
+				<div className="relative">
+					<textarea
+						{...props}
+						ref={ref}
+						id={id}
+						className={baseTextarea}
+						style={{ WebkitTapHighlightColor: 'transparent' }}
+					/>
+
+					{icon && (
+						<div className="absolute right-2 top-3 text-neutral-500 dark:text-neutral-400">
+							{icon}
+						</div>
+					)}
+				</div>
+
+				{helperText && (
+					<p className="text-xs text-neutral-500 dark:text-neutral-400">
+						{helperText}
+					</p>
 				)}
 			</div>
-
-			{helperText && <p className="mt-1 text-xs text-neutral-500">{helperText}</p>}
-		</div>
-	);
-};
+		);
+	}
+);

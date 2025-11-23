@@ -50,7 +50,6 @@ export function InboxThreadCard({ thread, currentUser, onOpenInbox }: InboxThrea
 		};
 	}, [otherParticipants]);
 
-	// Build header label: use display names if available
 	const header =
 		otherParticipants.length === 0
 			? 'No participants'
@@ -63,14 +62,14 @@ export function InboxThreadCard({ thread, currentUser, onOpenInbox }: InboxThrea
 	return (
 		<button
 			onClick={() => onOpenInbox?.(thread.id)}
-			className={`w-full text-left p-4 rounded-xl border-2 transition-all duration-300 hover:shadow-sm ${
-				hasUnread
-					? 'bg-orange-50/50 border-orange-200/40 hover:border-orange-300/50'
-					: 'bg-white border-neutral-200/40 hover:border-neutral-300/50'
-			}`}
+			className={`w-full text-left p-4 rounded-xl border-2 transition-all duration-300 hover:shadow-sm
+				${
+					hasUnread
+						? 'bg-orange-50/50 border-orange-200/40 hover:border-orange-300/50 dark:bg-orange-900/20 dark:border-orange-700/40 dark:hover:border-orange-600/50'
+						: 'bg-white border-neutral-200/40 hover:border-neutral-300/50 dark:bg-neutral-900/20 dark:border-neutral-700/40 dark:hover:border-neutral-600/50'
+				}`}
 		>
 			<div className="flex items-start gap-4">
-				{/* stacked avatars */}
 				<div className="flex -space-x-2">
 					{otherParticipants.slice(0, 3).map((participant) => (
 						<FireAvatar
@@ -78,19 +77,21 @@ export function InboxThreadCard({ thread, currentUser, onOpenInbox }: InboxThrea
 							seed={participant}
 							size={40}
 							src={avatars[participant] ?? undefined}
-							className="ring-2 ring-white"
+							className="ring-2 ring-white dark:ring-neutral-900"
 						/>
 					))}
 				</div>
 
 				<div className="flex-1 min-w-0">
 					<div className="flex items-center justify-between mb-1">
-						<h4 className="font-semibold text-neutral-800 truncate">{header}</h4>
+						<h4 className="font-semibold text-neutral-800 dark:text-neutral-200 truncate">
+							{header}
+						</h4>
 
 						{hasUnread && (
 							<div className="flex items-center gap-1">
-								<FiBell className="w-5 h-5 text-orange-500 " />
-								<span className="px-2 py-0.5 bg-orange-500 text-white text-xs font-bold rounded-full">
+								<FiBell className="w-5 h-5 text-orange-500 dark:text-orange-400" />
+								<span className="px-2 py-0.5 bg-orange-500 dark:bg-orange-600 text-white text-xs font-bold rounded-full">
 									{thread.unreadCount}
 								</span>
 							</div>
@@ -99,10 +100,10 @@ export function InboxThreadCard({ thread, currentUser, onOpenInbox }: InboxThrea
 
 					{thread.lastMessage && (
 						<>
-							<p className="text-sm text-neutral-600 truncate mb-1">
+							<p className="text-sm text-neutral-600 dark:text-neutral-400 truncate mb-1">
 								{thread.lastMessage.text}
 							</p>
-							<div className="flex items-center gap-2 text-xs text-neutral-400">
+							<div className="flex items-center gap-2 text-xs text-neutral-400 dark:text-neutral-500">
 								<FaClock className="w-3 h-3" />
 								<span>
 									{formatTime(thread.lastMessage.timestamp, 'en-US', {
@@ -122,7 +123,7 @@ export function InboxThreadCard({ thread, currentUser, onOpenInbox }: InboxThrea
 
 				{hasUnread && (
 					<div className="flex-shrink-0">
-						<FaCircle className="w-2 h-2 text-orange-500" />
+						<FaCircle className="w-2 h-2 text-orange-500 dark:text-orange-400" />
 					</div>
 				)}
 			</div>

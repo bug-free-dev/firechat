@@ -285,8 +285,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
 			case AuthState.NEW_USER:
 			case AuthState.NOT_ONBOARDED:
-				if (pathname !== '/onboard') {
-					targetPath = '/onboard';
+				if (pathname !== '/onboarding') {
+					targetPath = '/onboarding';
 				}
 				break;
 
