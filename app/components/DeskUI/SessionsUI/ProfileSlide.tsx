@@ -189,7 +189,9 @@ export default function ProfileSlide({ user, isOpen, onClose }: UserProfileSlide
 										className="flex items-start gap-2.5 p-2 rounded-lg bg-neutral-50/50 dark:bg-neutral-800/50"
 									>
 										<div className="w-5 h-5 rounded-md bg-neutral-100 dark:bg-neutral-700 flex items-center justify-center flex-shrink-0">
-											<span className="text-[12px] text-neutral-600 dark:text-neutral-300">✦</span>
+											<span className="text-[12px] text-neutral-600 dark:text-neutral-300">
+												✦
+											</span>
 										</div>
 										<span className="text-sm text-neutral-700 dark:text-neutral-300 leading-relaxed flex-1">
 											{quirk}

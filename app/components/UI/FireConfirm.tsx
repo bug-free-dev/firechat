@@ -23,9 +23,9 @@ export const confirm = ({ title, message, actions }: FireConfirmProps) => {
 	toast.custom(
 		(t) => (
 			<div
-  role="status"
-  aria-live="polite"
-  className={`
+				role="status"
+				aria-live="polite"
+				className={`
     max-w-xs w-full
     bg-white/30 dark:bg-neutral-900
     text-slate-900 dark:text-neutral-50
@@ -36,7 +36,7 @@ export const confirm = ({ title, message, actions }: FireConfirmProps) => {
     transform-gpu transition-all duration-250 ease-out
     ${t.visible ? 'translate-y-0 opacity-100' : '-translate-y-4 opacity-0'}
   `}
->
+			>
 				{/* header */}
 				<div className="flex items-center justify-between px-3 py-2">
 					<div className="flex items-center gap-2">
@@ -71,26 +71,33 @@ export const confirm = ({ title, message, actions }: FireConfirmProps) => {
 					<div className="px-3 pb-3 pt-1">
 						<div className="flex gap-2 items-center justify-end flex-wrap">
 							{limited.map((action, i) => {
-								const base = 'inline-flex items-center justify-center rounded-md text-[13px] font-medium px-2.5 py-1 transition select-none';
+								const base =
+									'inline-flex items-center justify-center rounded-md text-[13px] font-medium px-2.5 py-1 transition select-none';
 								const style =
 									action.variant === 'primary'
 										? 'bg-indigo-600 text-white hover:bg-indigo-700'
 										: action.variant === 'danger'
-										? 'bg-rose-100 text-rose-700 hover:bg-rose-200 dark:bg-rose-800 dark:text-rose-100 dark:hover:bg-rose-700'
-										: 'bg-slate-50 text-slate-800 hover:bg-slate-100 dark:bg-neutral-700/40 dark:text-neutral-100 dark:hover:bg-neutral-700/60';
+											? 'bg-rose-100 text-rose-700 hover:bg-rose-200 dark:bg-rose-800 dark:text-rose-100 dark:hover:bg-rose-700'
+											: 'bg-slate-50 text-slate-800 hover:bg-slate-100 dark:bg-neutral-700/40 dark:text-neutral-100 dark:hover:bg-neutral-700/60';
 
 								return (
 									<button
 										key={i}
 										onClick={() => {
-											try { action.onClick(); } finally { toast.dismiss(t.id); }
+											try {
+												action.onClick();
+											} finally {
+												toast.dismiss(t.id);
+											}
 										}}
 										className={`${base} ${style}`}
 										aria-label={action.label}
 										title={action.label}
 									>
 										{action.icon && (
-											<span className="flex items-center justify-center mr-1">{action.icon}</span>
+											<span className="flex items-center justify-center mr-1">
+												{action.icon}
+											</span>
 										)}
 										<span className="text-center">{action.label}</span>
 									</button>

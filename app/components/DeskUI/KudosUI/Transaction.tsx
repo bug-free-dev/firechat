@@ -31,18 +31,14 @@ export const KudosTransactionItem: React.FC<KudosTransactionItemProps> = ({
 			<div className="text-right">
 				<div
 					className={`text-sm font-semibold ${
-						isOutgoing
-							? 'text-red-500 dark:text-red-400'
-							: 'text-lime-500 dark:text-lime-400'
+						isOutgoing ? 'text-red-500 dark:text-red-400' : 'text-lime-500 dark:text-lime-400'
 					}`}
 				>
 					{isOutgoing ? '-' : '+'}
 					{transaction.amount}
 				</div>
 				<div className="text-xs text-neutral-400 dark:text-neutral-500">
-					{transaction.createdAt instanceof Date
-						? transaction.createdAt.toLocaleString()
-						: ''}
+					{transaction.createdAt instanceof Date ? transaction.createdAt.toLocaleString() : ''}
 				</div>
 			</div>
 		</div>

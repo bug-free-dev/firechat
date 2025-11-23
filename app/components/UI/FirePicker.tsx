@@ -223,7 +223,11 @@ export const FirePicker: React.FC<PickerProps> = ({
 											</div>
 										</div>
 										<div className="text-yellow-500 text-lg">
-											{active ? <FaCheckDouble className="w-3 h-3" /> : <MdOutlinePersonAdd />}
+											{active ? (
+												<FaCheckDouble className="w-3 h-3" />
+											) : (
+												<MdOutlinePersonAdd />
+											)}
 										</div>
 									</button>
 								);

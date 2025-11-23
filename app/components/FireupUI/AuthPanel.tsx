@@ -199,7 +199,8 @@ export default function AuthForm({ activeTab, onTabChange }: Props) {
 			<h2 className="mt-6 font-bold text-2xl text-neutral-800 dark:text-neutral-100 text-center mb-1 font-bubblegum">
 				{activeTab === 'login' ? (
 					<span className="inline-flex items-center gap-2 ">
-						<PiFireLight className="text-orange-500 dark:text-orange-400 h-8 w-8" /> Welcome Back
+						<PiFireLight className="text-orange-500 dark:text-orange-400 h-8 w-8" /> Welcome
+						Back
 					</span>
 				) : (
 					<span className="inline-flex items-center gap-2">
@@ -288,23 +289,21 @@ export default function AuthForm({ activeTab, onTabChange }: Props) {
 							loading={isLoading}
 							className="flex-1"
 							disabled={isLoading}
-                     variant="secondary"
+							variant="secondary"
 						>
 							{activeTab === 'login' ? 'Sign In' : 'Create Account'}
 						</FireButton>
 
 						{activeTab === 'login' && (
 							<FireButton
-	type="button"
-	onClick={handleForgot}
-	disabled={isLoading}
-                        size="sm"
-                        variant="outline"
->
-	Forgot?
-</FireButton>
-
-
+								type="button"
+								onClick={handleForgot}
+								disabled={isLoading}
+								size="sm"
+								variant="outline"
+							>
+								Forgot?
+							</FireButton>
 						)}
 					</div>
 

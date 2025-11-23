@@ -188,125 +188,124 @@ export const SessionsPanel: React.FC<SessionsPanelProps> = ({
 
 	return (
 		<div className="relative w-full min-h-screen bg-white dark:bg-neutral-900 px-4 sm:px-6 py-8 overflow-hidden">
-	<div className="max-w-5xl mx-auto relative z-10">
-		{/* Header with Kudos Balance */}
-		<div className="flex flex-col items-center justify-between gap-4 mb-6 text-center">
-			<div>
-				<h1 className="font-bubblegum text-3xl text-neutral-800 dark:text-lime-100 flex items-center gap-3 justify-center ">
-					<IoChatbubblesOutline className="text-lime-500" />
-					Sessions
-				</h1>
-				<p className="text-sm text-neutral-500 dark:text-neutral-400 mt-1 text-center">
-					Start your conversation now!
-				</p>
+			<div className="max-w-5xl mx-auto relative z-10">
+				{/* Header with Kudos Balance */}
+				<div className="flex flex-col items-center justify-between gap-4 mb-6 text-center">
+					<div>
+						<h1 className="font-bubblegum text-3xl text-neutral-800 dark:text-lime-100 flex items-center gap-3 justify-center ">
+							<IoChatbubblesOutline className="text-lime-500" />
+							Sessions
+						</h1>
+						<p className="text-sm text-neutral-500 dark:text-neutral-400 mt-1 text-center">
+							Start your conversation now!
+						</p>
+					</div>
+
+					{/* Kudos Badge */}
+				</div>
+
+				{/* Tab Navigation */}
+				<FireTabSwitcher
+					activeTab={activeTab}
+					onTabChange={setActiveTab}
+					tabs={[
+						{
+							id: 'chats',
+							label: 'Chats',
+							icon: <IoChatbubblesOutline className="w-4.5 h-4.5" />,
+							count: filteredSessions.filter((s) => s.isActive).length,
+							tooltip: 'Where sparks turn into bonfires',
+						},
+						{
+							id: 'inbox',
+							label: 'Inbox',
+							icon: <FaInbox className="w-4 h-4" />,
+							count: inboxThreads.filter((t) => (t.unreadCount || 0) > 0).length,
+							tooltip: 'Private whispers, just for you',
+						},
+					]}
+					className="mb-6"
+				/>
+
+				{/* Search Bar */}
+				<div className="flex items-center gap-2 mb-4">
+					<FiSearch className="text-neutral-500 dark:text-neutral-400 w-4 h-4 m-1" />
+					<FireInput
+						value={searchQuery}
+						onChange={(e) => setSearchQuery(e.target.value)}
+						placeholder={
+							activeTab === 'chats' ? 'Search sessions...' : 'Search conversations...'
+						}
+						className="pl-5"
+					/>
+				</div>
+
+				{/* Tab Content */}
+				<div className="min-h-[400px]">
+					{activeTab === 'chats' ? (
+						<ChatsTab
+							sessions={filteredSessions}
+							currentUser={currentUser}
+							frequentUsers={frequentUsers || []}
+							isCreator={isCreator}
+							invitedSessions={invitedSessions}
+							isParticipant={isParticipant}
+							onCreateSession={onCreateSession}
+							onInvite={(s) => openInvitePicker(s)}
+							onJoinSession={handleJoinAttempt}
+							onLeaveSession={onLeaveSession}
+							onEndSession={onEndSession}
+							onLockSession={onLockSession}
+							loading={loading}
+						/>
+					) : (
+						<InboxTab
+							threads={filteredInbox}
+							currentUser={currentUser}
+							onOpenInbox={onOpenInbox}
+							loading={loading}
+						/>
+					)}
+				</div>
 			</div>
 
-			{/* Kudos Badge */}
-		</div>
+			{/* Floating Action Button */}
+			{onCreateSession && activeTab === 'chats' && (
+				<FloatingActionButton onClick={onCreateSession} />
+			)}
 
-		{/* Tab Navigation */}
-		<FireTabSwitcher
-			activeTab={activeTab}
-			onTabChange={setActiveTab}
-			tabs={[
-				{
-					id: 'chats',
-					label: 'Chats',
-					icon: <IoChatbubblesOutline className="w-4.5 h-4.5" />,
-					count: filteredSessions.filter((s) => s.isActive).length,
-					tooltip: 'Where sparks turn into bonfires',
-				},
-				{
-					id: 'inbox',
-					label: 'Inbox',
-					icon: <FaInbox className="w-4 h-4" />,
-					count: inboxThreads.filter((t) => (t.unreadCount || 0) > 0).length,
-					tooltip: 'Private whispers, just for you',
-				},
-			]}
-			className="mb-6"
-		/>
-
-		{/* Search Bar */}
-		<div className="flex items-center gap-2 mb-4">
-			<FiSearch className="text-neutral-500 dark:text-neutral-400 w-4 h-4 m-1" />
-			<FireInput
-				value={searchQuery}
-				onChange={(e) => setSearchQuery(e.target.value)}
-				placeholder={
-					activeTab === 'chats' ? 'Search sessions...' : 'Search conversations...'
-				}
-				className="pl-5"
-			/>
-		</div>
-
-		{/* Tab Content */}
-		<div className="min-h-[400px]">
-			{activeTab === 'chats' ? (
-				<ChatsTab
-					sessions={filteredSessions}
-					currentUser={currentUser}
+			{/* InvitePicker */}
+			{inviteForSession && (
+				<InvitePicker
+					open={!!inviteForSession}
+					onClose={() => setInviteForSession(null)}
 					frequentUsers={frequentUsers || []}
-					isCreator={isCreator}
-					invitedSessions={invitedSessions}
-					isParticipant={isParticipant}
-					onCreateSession={onCreateSession}
-					onInvite={(s) => openInvitePicker(s)}
-					onJoinSession={handleJoinAttempt}
-					onLeaveSession={onLeaveSession}
-					onEndSession={onEndSession}
-					onLockSession={onLockSession}
-					loading={loading}
+					session={inviteForSession}
+					onConfirm={handleInviteConfirm}
 				/>
-			) : (
-				<InboxTab
-					threads={filteredInbox}
-					currentUser={currentUser}
-					onOpenInbox={onOpenInbox}
-					loading={loading}
+			)}
+
+			{/* Identifier prompt (FirePrompt) */}
+			{promptForSession && (
+				<FirePrompt
+					open={!!promptForSession}
+					onClose={() => {
+						setPromptForSession(null);
+						setPromptValue('');
+						setAttemptsMap((m) => {
+							const copy = { ...m };
+							delete copy[promptForSession.id || ''];
+							return copy;
+						});
+					}}
+					header={`Enter identifier for ${promptForSession.title ?? 'session'}`}
+					value={promptValue}
+					onChange={setPromptValue}
+					placeholder="Your secret identifier"
+					onSubmit={handleVerifySubmit}
+					size="md"
 				/>
 			)}
 		</div>
-	</div>
-
-	{/* Floating Action Button */}
-	{onCreateSession && activeTab === 'chats' && (
-		<FloatingActionButton onClick={onCreateSession} />
-	)}
-
-	{/* InvitePicker */}
-	{inviteForSession && (
-		<InvitePicker
-			open={!!inviteForSession}
-			onClose={() => setInviteForSession(null)}
-			frequentUsers={frequentUsers || []}
-			session={inviteForSession}
-			onConfirm={handleInviteConfirm}
-		/>
-	)}
-
-	{/* Identifier prompt (FirePrompt) */}
-	{promptForSession && (
-		<FirePrompt
-			open={!!promptForSession}
-			onClose={() => {
-				setPromptForSession(null);
-				setPromptValue('');
-				setAttemptsMap((m) => {
-					const copy = { ...m };
-					delete copy[promptForSession.id || ''];
-					return copy;
-				});
-			}}
-			header={`Enter identifier for ${promptForSession.title ?? 'session'}`}
-			value={promptValue}
-			onChange={setPromptValue}
-			placeholder="Your secret identifier"
-			onSubmit={handleVerifySubmit}
-			size="md"
-		/>
-	)}
-</div>
-
 	);
 };

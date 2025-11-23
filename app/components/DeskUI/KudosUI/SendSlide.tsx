@@ -36,7 +36,12 @@ export const KudosSendSlide: React.FC<KudosSlideProps> = ({
 			}
 			footer={
 				<div className="flex gap-2 mt-2">
-					<FireButton onClick={onClose} variant="outline" disabled={loading} className="flex-1">
+					<FireButton
+						onClick={onClose}
+						variant="outline"
+						disabled={loading}
+						className="flex-1"
+					>
 						Cancel
 					</FireButton>
 					<FireButton
@@ -83,26 +88,28 @@ export const KudosSendSlide: React.FC<KudosSlideProps> = ({
 
 				{/* Amount */}
 				<div className="mb-3">
-					<label className="text-sm text-neutral-600 dark:text-neutral-400 block mb-1">Amount</label>
+					<label className="text-sm text-neutral-600 dark:text-neutral-400 block mb-1">
+						Amount
+					</label>
 					<FireInput
 						value={amountStr}
 						onChange={(e) => onAmountChange(e.target.value)}
 						placeholder="Enter amount"
 						type="number"
-						
 					/>
 				</div>
 
 				{/* Note */}
 				<div className="mb-3">
-					<label className="text-sm text-neutral-600 dark:text-neutral-400 block mb-1">Note (optional)</label>
+					<label className="text-sm text-neutral-600 dark:text-neutral-400 block mb-1">
+						Note (optional)
+					</label>
 					<FireArea
 						value={note}
 						onChange={(e) => onNoteChange(e.target.value)}
 						placeholder="Say something nice (optional)..."
 						rows={3}
 						helperText="Keep it short and sweet"
-						
 					/>
 				</div>
 

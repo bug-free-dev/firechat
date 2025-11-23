@@ -35,29 +35,26 @@ export const KudosCard: React.FC<KudosCardProps> = ({
 			{/* Action Buttons */}
 			<div className="flex items-center gap-2">
 				{quickAmounts.map((a) => (
-				<button
-	key={a}
-	onClick={() => onQuickSend(user, a)}
-	disabled={loading || a > currentUserKudos}
-	className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-neutral-700/40 ${
-		a > currentUserKudos
-			? 'bg-neutral-200 dark:bg-neutral-700/40 text-neutral-500 dark:text-neutral-400 cursor-not-allowed'
-			: 'bg-neutral-50 dark:bg-neutral-800/50 text-neutral-900 dark:text-neutral-100 hover:bg-neutral-100 dark:hover:bg-neutral-700/60'
-	}`}
->
-	+{a}
-</button>
-
-
+					<button
+						key={a}
+						onClick={() => onQuickSend(user, a)}
+						disabled={loading || a > currentUserKudos}
+						className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-neutral-700/40 ${
+							a > currentUserKudos
+								? 'bg-neutral-200 dark:bg-neutral-700/40 text-neutral-500 dark:text-neutral-400 cursor-not-allowed'
+								: 'bg-neutral-50 dark:bg-neutral-800/50 text-neutral-900 dark:text-neutral-100 hover:bg-neutral-100 dark:hover:bg-neutral-700/60'
+						}`}
+					>
+						+{a}
+					</button>
 				))}
 				<button
-	onClick={() => onOpenDetailed(user)}
-	className="px-3 py-2 bg-yellow-50 dark:bg-yellow-600 hover:bg-yellow-100 dark:hover:bg-yellow-500 text-yellow-600 dark:text-yellow-100 rounded-lg transition-colors flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-yellow-400 dark:focus:ring-yellow-400"
-	aria-label={`Send custom amount to ${user.usernamey}`}
->
-	<FiSend className="w-4 h-4" />
-</button>
-
+					onClick={() => onOpenDetailed(user)}
+					className="px-3 py-2 bg-yellow-50 dark:bg-yellow-600 hover:bg-yellow-100 dark:hover:bg-yellow-500 text-yellow-600 dark:text-yellow-100 rounded-lg transition-colors flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-yellow-400 dark:focus:ring-yellow-400"
+					aria-label={`Send custom amount to ${user.usernamey}`}
+				>
+					<FiSend className="w-4 h-4" />
+				</button>
 			</div>
 		</div>
 	);

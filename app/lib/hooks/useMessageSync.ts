@@ -21,7 +21,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { clearUserTyping, setUserTyping } from '@/app/lib/api/typingAPI';
 import { rtdb } from '@/app/lib/firebase/FireClient';
-import type { CachedUser,ChatMessage } from '@/app/lib/types';
+import type { CachedUser, ChatMessage } from '@/app/lib/types';
 import {
 	parseMessageFromSnapshot,
 	parseTypingUserFromSnapshot,

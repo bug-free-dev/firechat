@@ -6,7 +6,7 @@ import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import type { Metadata } from 'next';
 
-import {ThemedToaster} from "@/app/components/UI"
+import { ThemedToaster } from '@/app/components/UI';
 import { ThemeProvider } from '@/app/lib/theme/provider/ThemeProvider';
 
 import { AuthProvider } from './lib/routing/context/AuthStateContext';
@@ -26,15 +26,13 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang="en">
-         <body className={`antialiased`}>
-            <ThemeProvider
-    >
-				<AuthProvider>{children}</AuthProvider>
-				<ThemedToaster />
-    </ThemeProvider>
+			<body className={`antialiased`}>
+				<ThemeProvider>
+					<AuthProvider>{children}</AuthProvider>
+					<ThemedToaster />
+				</ThemeProvider>
 				<Analytics />
 				<SpeedInsights />
-
 			</body>
 		</html>
 	);

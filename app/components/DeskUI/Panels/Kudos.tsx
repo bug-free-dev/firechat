@@ -7,7 +7,7 @@ import { BiCrown, BiRocket } from 'react-icons/bi';
 import { FiClock, FiGift, FiSearch, FiSend } from 'react-icons/fi';
 import { RiCoinsLine } from 'react-icons/ri';
 
-import { FireButton,FireInput } from '@/app/components/UI';
+import { FireButton, FireInput } from '@/app/components/UI';
 import type { CachedUser, KudosTxn } from '@/app/lib/types';
 
 import { KudosCard, type KudosPanelProps, KudosSendSlide, KudosTransactionItem } from '../KudosUI';
@@ -44,7 +44,7 @@ export const KudosPanel: React.FC<KudosPanelProps> = ({
 			case 'system':
 				return <BiRocket className="w-4 h-4 text-sky-500" />;
 			default:
-				return <FiGift className="w-4 h-4 text-yellow-500"/>;
+				return <FiGift className="w-4 h-4 text-yellow-500" />;
 		}
 	};
 
@@ -112,16 +112,21 @@ export const KudosPanel: React.FC<KudosPanelProps> = ({
 		setNote('');
 		setSlideOpen(true);
 	};
-return (
-		<div className={`w-full px-4 py-6 bg-neutral-50 dark:bg-neutral-900 transition-colors ${className}`}>
+	return (
+		<div
+			className={`w-full px-4 py-6 bg-white dark:bg-neutral-900 transition-colors ${className}`}
+		>
 			<div className="max-w-5xl mx-auto">
 				{/* Header */}
 				<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4 w-full px-2 sm:px-0">
 					<div className="flex flex-col items-center gap-2 mb-6">
 						<h2 className="font-bubblegum text-yellow-500 dark:text-yellow-100 text-3xl text-center font-semibold">
-							<FiGift className="inline-block mr-2 text-yellow-500 dark:text-yellow-400" /> Kudos
+							<FiGift className="inline-block mr-2 text-yellow-500 dark:text-yellow-400" />{' '}
+							Kudos
 						</h2>
-						<p className="text-sm text-neutral-500 dark:text-neutral-400">Quick appreciation</p>
+						<p className="text-sm text-neutral-500 dark:text-neutral-400">
+							Quick appreciation
+						</p>
 					</div>
 
 					{/* Search + Send */}
@@ -149,16 +154,16 @@ return (
 				{/* Balance + stats */}
 				<div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
 					<div className="flex items-center gap-4">
-						<div
-							className="rounded-lg flex items-center justify-center border border-neutral-200/40 dark:border-neutral-700/40 shadow-sm dark:shadow-black/20 transition-all"
-						>
+						<div className="rounded-lg flex items-center justify-center border border-neutral-200/40 dark:border-neutral-700/40 shadow-sm dark:shadow-black/20 transition-all">
 							<RiCoinsLine className="w-10 h-10 text-yellow-500 dark:text-yellow-400" />
 						</div>
 						<div>
 							<div className="text-3xl font-semibold text-neutral-900 dark:text-neutral-100">
 								{currentUser.kudos}
 							</div>
-							<div className="text-sm text-neutral-500 dark:text-neutral-400">Your balance</div>
+							<div className="text-sm text-neutral-500 dark:text-neutral-400">
+								Your balance
+							</div>
 						</div>
 					</div>
 
@@ -181,12 +186,16 @@ return (
 				{/* People list */}
 				<div className="mb-6">
 					<div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-3 gap-2 sm:gap-0">
-						<div className="text-sm text-neutral-500 dark:text-neutral-400 hidden sm:block">Quick-send badges</div>
+						<div className="text-sm text-neutral-500 dark:text-neutral-400 hidden sm:block">
+							Quick-send badges
+						</div>
 					</div>
 
 					<div className="mb-8">
 						<div className="flex items-center justify-between mb-4">
-							<h2 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100">People</h2>
+							<h2 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100">
+								People
+							</h2>
 							<div className="text-sm text-neutral-500 dark:text-neutral-400">
 								{filtered.length} user{filtered.length !== 1 ? 's' : ''}
 							</div>
@@ -217,7 +226,9 @@ return (
 					{/* Recent history */}
 					<div>
 						<div className="flex items-center justify-between mb-3">
-							<h3 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">Recent activity</h3>
+							<h3 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">
+								Recent activity
+							</h3>
 							<div className="flex items-center gap-2 text-sm text-neutral-500 dark:text-neutral-400">
 								<FiClock />
 								<span>Latest {recentLimit}</span>

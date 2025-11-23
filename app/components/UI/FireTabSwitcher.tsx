@@ -103,9 +103,10 @@ export const FireTabSwitcher = <T extends string = string>({
 								font-medium
 								transition-all duration-200 z-10
 
-								${isActive 
-									? 'text-neutral-900 dark:text-neutral-100' 
-									: 'text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200'
+								${
+									isActive
+										? 'text-neutral-900 dark:text-neutral-100'
+										: 'text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200'
 								}
 
 								${isDisabled ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer'}

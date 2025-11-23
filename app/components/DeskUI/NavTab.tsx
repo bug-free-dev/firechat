@@ -48,8 +48,8 @@ export const NavTabs: React.FC<DeskTabsProps> = ({ activeTab, onTabChange }) => 
 		activeTab === 'profile'
 			? 'bg-orange-100 dark:bg-orange-600/40'
 			: activeTab === 'kudos'
-			? 'bg-yellow-100 dark:bg-yellow-500/30'
-			: 'bg-lime-100 dark:bg-lime-600/30';
+				? 'bg-yellow-100 dark:bg-yellow-500/30'
+				: 'bg-lime-100 dark:bg-lime-600/30';
 
 	const indicatorStyle = useMemo(() => {
 		if (activeIndex === -1) return { opacity: 0 };

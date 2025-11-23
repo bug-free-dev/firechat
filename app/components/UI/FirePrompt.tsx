@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useCallback,useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { toast } from 'react-hot-toast';
-import { RiKey2Line,RiLockPasswordLine } from 'react-icons/ri';
+import { RiKey2Line, RiLockPasswordLine } from 'react-icons/ri';
 
 import { FireButton, FireInput, FireSlide, type FireSlideProps } from '@/app/components/UI';
 
@@ -61,7 +61,7 @@ export const FirePrompt: React.FC<FirePromptProps> = ({
 			open={open}
 			onClose={onClose}
 			size={size}
-         header="Prove your identity!"
+			header="Prove your identity!"
 			backdropStatic={backdropStatic}
 			id={id}
 			footer={

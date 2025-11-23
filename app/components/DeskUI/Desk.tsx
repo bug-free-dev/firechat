@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 
-import { confirm,FireButton, FireHeader, FireInput, FireSlide } from '@/app/components/UI';
+import { confirm, FireButton, FireHeader, FireInput, FireSlide } from '@/app/components/UI';
 import { FirePicker as InvitePicker } from '@/app/components/UI';
 import * as sessionAPI from '@/app/lib/api/sessionAPI';
 import { useFireInbox } from '@/app/lib/hooks/useFireInbox';
@@ -407,119 +407,119 @@ export default function Desk() {
 	};
 
 	return (
-  <div
-         className="flex flex-col min-h-screen bg-neutral-50 dark:bg-neutral-900 transition-colors duration-300"
-         
-    onTouchStart={handleTouchStart}
-    onTouchEnd={handleTouchEnd}
-  >
-    {/* Header */}
-    <FireHeader />
+		<div
+			className="flex flex-col min-h-screen bg-neutral-50 dark:bg-neutral-900 transition-colors duration-300"
+			onTouchStart={handleTouchStart}
+			onTouchEnd={handleTouchEnd}
+		>
+			{/* Header */}
+			<FireHeader />
 
-    {/* Main Content */}
-    <main className="flex-1 pb-24">{renderActivePanel()}</main>
+			{/* Main Content */}
+			<main className="flex-1 pb-24">{renderActivePanel()}</main>
 
-    {/* Bottom Navigation */}
-    <NavTabs activeTab={activeTab} onTabChange={setActiveTab} />
+			{/* Bottom Navigation */}
+			<NavTabs activeTab={activeTab} onTabChange={setActiveTab} />
 
-    {/* Create Session Slide */}
-    <FireSlide
-      open={createOpen}
-      onClose={() => setCreateOpen(false)}
-      size="md"
-      className="dark:bg-neutral-900 dark:border-neutral-700"
-      header="Spark a chat"
-      footer={
-        <div className="flex gap-3 justify-end">
-          <FireButton variant="outline" onClick={() => setCreateOpen(false)}>
-            Cancel
-          </FireButton>
-          <FireButton
-            onClick={handleCreateSubmit}
-            disabled={creating}
-            variant="default"
-            loading={creating}
-          >
-            Create
-          </FireButton>
-        </div>
-      }
-    >
-      <div className="space-y-4 text-neutral-800 dark:text-neutral-100">
-        {/* Title */}
-        <div>
-          <label className="text-sm block mb-1">Title</label>
-          <FireInput
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="Session name (optional)"
-          />
-        </div>
+			{/* Create Session Slide */}
+			<FireSlide
+				open={createOpen}
+				onClose={() => setCreateOpen(false)}
+				size="md"
+				className="dark:bg-neutral-900 dark:border-neutral-700"
+				header="Spark a chat"
+				footer={
+					<div className="flex gap-3 justify-end">
+						<FireButton variant="outline" onClick={() => setCreateOpen(false)}>
+							Cancel
+						</FireButton>
+						<FireButton
+							onClick={handleCreateSubmit}
+							disabled={creating}
+							variant="default"
+							loading={creating}
+						>
+							Create
+						</FireButton>
+					</div>
+				}
+			>
+				<div className="space-y-4 text-neutral-800 dark:text-neutral-100">
+					{/* Title */}
+					<div>
+						<label className="text-sm block mb-1">Title</label>
+						<FireInput
+							value={title}
+							onChange={(e) => setTitle(e.target.value)}
+							placeholder="Session name (optional)"
+						/>
+					</div>
 
-        {/* Identifier */}
-        <div className="flex items-center gap-2">
-          <input
-            id="identifierRequired"
-            type="checkbox"
-            checked={identifierRequired}
-            onChange={(e) => setIdentifierRequired(e.target.checked)}
-            className="w-4 h-4 accent-yellow-400"
-          />
-          <label htmlFor="identifierRequired" className="text-sm">
-            Require identifier key to join?
-          </label>
-        </div>
+					{/* Identifier */}
+					<div className="flex items-center gap-2">
+						<input
+							id="identifierRequired"
+							type="checkbox"
+							checked={identifierRequired}
+							onChange={(e) => setIdentifierRequired(e.target.checked)}
+							className="w-4 h-4 accent-yellow-400"
+						/>
+						<label htmlFor="identifierRequired" className="text-sm">
+							Require identifier key to join?
+						</label>
+					</div>
 
-        {/* Invite Contacts */}
-        <div>
-          <label className="text-sm block mb-1">Invite contacts</label>
-          <div className="flex gap-2 items-center">
-            <div className="flex-1 text-xs">
-              {createInvited.length === 0 ? (
-                <span className="text-neutral-500 dark:text-neutral-400 mt-2">
-                  No contacts chosen yet — pick from Frequent or search.
-                </span>
-              ) : (
-                <span className="text-neutral-700 dark:text-neutral-300 mt-2">
-                  {createInvited.length} contact(s) selected
-                </span>
-              )}
-            </div>
+					{/* Invite Contacts */}
+					<div>
+						<label className="text-sm block mb-1">Invite contacts</label>
+						<div className="flex gap-2 items-center">
+							<div className="flex-1 text-xs">
+								{createInvited.length === 0 ? (
+									<span className="text-neutral-500 dark:text-neutral-400 mt-2">
+										No contacts chosen yet — pick from Frequent or search.
+									</span>
+								) : (
+									<span className="text-neutral-700 dark:text-neutral-300 mt-2">
+										{createInvited.length} contact(s) selected
+									</span>
+								)}
+							</div>
 
-            <FireButton onClick={() => setCreateInviteOpen(true)} variant="secondary">
-              Pick contacts
-            </FireButton>
-          </div>
-        </div>
-      </div>
-    </FireSlide>
+							<FireButton onClick={() => setCreateInviteOpen(true)} variant="secondary">
+								Pick contacts
+							</FireButton>
+						</div>
+					</div>
+				</div>
+			</FireSlide>
 
-    {/* Invite Picker */}
-    <InvitePicker
-      open={createInviteOpen}
-      onClose={() => setCreateInviteOpen(false)}
-      frequentUsers={frequentUsers}
-      session={{
-        id: 'create-temp',
-        creator: profile?.uid ?? 'unknown',
-        participants: [],
-        isActive: true,
-        isLocked: false,
-        identifierRequired,
-        createdAt: new Date().toISOString(),
-        meta: {},
-      } as SessionDoc}
-      onConfirm={(users) => {
-        setCreateInvited((prev) => {
-          const map = new Map(prev.map((u) => [u.uid, u]));
-          for (const u of users) map.set(u.uid, u);
-          return Array.from(map.values()).slice(0, 50);
-        });
-        setCreateInviteOpen(false);
-        toast.success(`Added ${users.length} contact(s)`);
-      }}
-    />
-  </div>
-);
-
+			{/* Invite Picker */}
+			<InvitePicker
+				open={createInviteOpen}
+				onClose={() => setCreateInviteOpen(false)}
+				frequentUsers={frequentUsers}
+				session={
+					{
+						id: 'create-temp',
+						creator: profile?.uid ?? 'unknown',
+						participants: [],
+						isActive: true,
+						isLocked: false,
+						identifierRequired,
+						createdAt: new Date().toISOString(),
+						meta: {},
+					} as SessionDoc
+				}
+				onConfirm={(users) => {
+					setCreateInvited((prev) => {
+						const map = new Map(prev.map((u) => [u.uid, u]));
+						for (const u of users) map.set(u.uid, u);
+						return Array.from(map.values()).slice(0, 50);
+					});
+					setCreateInviteOpen(false);
+					toast.success(`Added ${users.length} contact(s)`);
+				}}
+			/>
+		</div>
+	);
 }

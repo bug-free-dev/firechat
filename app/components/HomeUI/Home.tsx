@@ -6,9 +6,9 @@ import { useEffect, useState } from 'react';
 import Confetti from 'react-confetti';
 import toast from 'react-hot-toast';
 import { HiArrowRight } from 'react-icons/hi';
-import { 
+import {
 	PiAt,
-	PiChat, 
+	PiChat,
 	PiChatCircle,
 	PiClock,
 	PiCode,
@@ -16,18 +16,19 @@ import {
 	PiHeart,
 	PiLightning,
 	PiLink,
-	PiLock, 
+	PiLock,
 	PiMagicWand,
 	PiMoon,
 	PiPalette,
-	PiRocketBold, 
+	PiRocketBold,
 	PiShield,
-	PiSparkle, 
+	PiSparkle,
 	PiSun,
 	PiTag,
 	PiTrendUp,
 	PiUserCircle,
-	PiUsers} from 'react-icons/pi';
+	PiUsers,
+} from 'react-icons/pi';
 
 import { FireHeader } from '@/app/components/UI';
 import { useAuthState } from '@/app/lib/routing/context/AuthStateContext';
@@ -82,17 +83,40 @@ export default function Home() {
 	};
 
 	const icons = [
-		PiChat, PiUsers, PiLock, PiSparkle, PiLightning, PiHeart, 
-		PiShield, PiMagicWand, PiGlobe, PiLink, PiCode,
-		PiPalette, PiClock, PiTrendUp, PiMoon, PiSun,
-		PiChatCircle, PiUserCircle, PiTag, PiAt
+		PiChat,
+		PiUsers,
+		PiLock,
+		PiSparkle,
+		PiLightning,
+		PiHeart,
+		PiShield,
+		PiMagicWand,
+		PiGlobe,
+		PiLink,
+		PiCode,
+		PiPalette,
+		PiClock,
+		PiTrendUp,
+		PiMoon,
+		PiSun,
+		PiChatCircle,
+		PiUserCircle,
+		PiTag,
+		PiAt,
 	];
 
 	return (
 		<div className="relative min-h-screen bg-white">
-			{showConfetti && <Confetti width={windowSize.width} height={windowSize.height} recycle={false} numberOfPieces={200} />}
+			{showConfetti && (
+				<Confetti
+					width={windowSize.width}
+					height={windowSize.height}
+					recycle={false}
+					numberOfPieces={200}
+				/>
+			)}
 
-		<FireHeader/>
+			<FireHeader />
 
 			{/* Main Content */}
 			<main className="relative z-10">
@@ -101,12 +125,7 @@ export default function Home() {
 					<div className="max-w-4xl mx-auto text-center">
 						{/* Logo */}
 						<div className="mb-8 inline-block">
-							<Image
-								src="/Firechat.svg"
-								alt="Firechat"
-								width={150}
-								height={150}
-							/>
+							<Image src="/Firechat.svg" alt="Firechat" width={150} height={150} />
 						</div>
 
 						{/* Headline */}
@@ -155,7 +174,7 @@ export default function Home() {
 									style={{
 										animation: 'fadeIn 0.5s ease-out',
 										animationDelay: `${idx * 30}ms`,
-										animationFillMode: 'both'
+										animationFillMode: 'both',
 									}}
 								>
 									<div className="relative group">
@@ -187,7 +206,8 @@ export default function Home() {
 										Threaded conversations
 									</h3>
 									<p className="text-neutral-600 text-sm leading-relaxed">
-										Keep discussions organized with clean, nested threads that make following conversations effortless.
+										Keep discussions organized with clean, nested threads that make
+										following conversations effortless.
 									</p>
 								</div>
 							</div>
@@ -202,7 +222,8 @@ export default function Home() {
 										Private rooms
 									</h3>
 									<p className="text-neutral-600 text-sm leading-relaxed">
-										Your conversations, your circle. Everything stays completely private and secure.
+										Your conversations, your circle. Everything stays completely private
+										and secure.
 									</p>
 								</div>
 							</div>
@@ -217,7 +238,8 @@ export default function Home() {
 										Playful reactions
 									</h3>
 									<p className="text-neutral-600 text-sm leading-relaxed">
-										Express yourself naturally with intuitive reactions that add personality to every message.
+										Express yourself naturally with intuitive reactions that add
+										personality to every message.
 									</p>
 								</div>
 							</div>
@@ -232,7 +254,8 @@ export default function Home() {
 										Small circles
 									</h3>
 									<p className="text-neutral-600 text-sm leading-relaxed">
-										Focused groups that feel intimate and human, not overwhelming broadcast channels.
+										Focused groups that feel intimate and human, not overwhelming
+										broadcast channels.
 									</p>
 								</div>
 							</div>

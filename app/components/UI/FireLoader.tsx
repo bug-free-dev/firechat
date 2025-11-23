@@ -46,7 +46,9 @@ export const FireLoader: React.FC<LoaderProps> = ({ size = 150, message, compact
 
 				{/* Message */}
 				{message && (
-					<div className={`${compact ? 'text-sm' : 'text-base'} text-gray-700 dark:text-neutral-100`}>
+					<div
+						className={`${compact ? 'text-sm' : 'text-base'} text-gray-700 dark:text-neutral-100`}
+					>
 						<span>{message}</span>
 					</div>
 				)}

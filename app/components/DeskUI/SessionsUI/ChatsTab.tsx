@@ -92,9 +92,7 @@ export const ChatsTab: React.FC<ChatsTabProps> = ({
 						Fire up your first session and start a conversation!
 					</p>
 					{onCreateSession && (
-						<FireButton
-							onClick={onCreateSession}
-						>
+						<FireButton onClick={onCreateSession}>
 							<IoAddOutline className="w-5 h-5" />
 							Fire Up a Session
 						</FireButton>

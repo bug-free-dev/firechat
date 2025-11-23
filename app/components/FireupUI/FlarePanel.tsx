@@ -7,30 +7,22 @@ import { FiGift, FiLock, FiStar, FiUsers } from 'react-icons/fi';
 export default function FlarePanel() {
 	const features = [
 		{
-			icon: (
-				<FiGift className="text-yellow-500/70 dark:text-yellow-300/70 w-6 h-6" />
-			),
+			icon: <FiGift className="text-yellow-500/70 dark:text-yellow-300/70 w-6 h-6" />,
 			title: 'Kudos',
 			desc: 'Earn & spend playful perks',
 		},
 		{
-			icon: (
-				<FiUsers className="text-orange-500/70 dark:text-orange-300/70 w-6 h-6" />
-			),
+			icon: <FiUsers className="text-orange-500/70 dark:text-orange-300/70 w-6 h-6" />,
 			title: 'Invite-only',
 			desc: 'Join rooms using secret codes',
 		},
 		{
-			icon: (
-				<FiStar className="text-pink-500/70 dark:text-pink-300/70 w-6 h-6" />
-			),
+			icon: <FiStar className="text-pink-500/70 dark:text-pink-300/70 w-6 h-6" />,
 			title: 'Fun & Safe',
 			desc: 'Playful rules, zero toxicity',
 		},
 		{
-			icon: (
-				<FiLock className="text-purple-500/70 dark:text-purple-300/70 w-6 h-6" />
-			),
+			icon: <FiLock className="text-purple-500/70 dark:text-purple-300/70 w-6 h-6" />,
 			title: 'Identifier',
 			desc: 'A secret ID only you know',
 		},

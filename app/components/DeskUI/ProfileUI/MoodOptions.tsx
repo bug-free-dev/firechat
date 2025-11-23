@@ -34,10 +34,10 @@ export const MoodOptions: React.FC<MoodOptionProps> = ({ value, onChange }) => {
                 flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg 
                 text-sm font-medium transition-all duration-200 ring-2
                 ${
-									isSelected
-										? `${mood.activeBg} ${mood.activeRing} ${mood.color} dark:${mood.activeBg} dark:${mood.activeRing}`
-										: `bg-white dark:bg-neutral-900 ${mood.ringColor} dark:ring-neutral-700/40 ${mood.color} ${mood.hoverRing} dark:hover:ring-neutral-600/60 dark:hover:bg-neutral-800/50`
-								}
+							isSelected
+								? `${mood.activeBg} ${mood.activeRing} ${mood.color} dark:${mood.activeBg} dark:${mood.activeRing}`
+								: `bg-white dark:bg-neutral-900 ${mood.ringColor} dark:ring-neutral-700/40 ${mood.color} ${mood.hoverRing} dark:hover:ring-neutral-600/60 dark:hover:bg-neutral-800/50`
+						}
               `}
 						>
 							<Icon className="w-4 h-4" />

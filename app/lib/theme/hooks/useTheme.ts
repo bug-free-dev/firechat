@@ -2,17 +2,18 @@
 
 import { useTheme as useNextTheme } from 'next-themes';
 
-import { getNextTheme,Theme } from '../utils';
+import { getNextTheme, Theme } from '../utils';
 
 export function useTheme() {
-  const { theme: rawTheme, setTheme, systemTheme } = useNextTheme();
+	const { theme: rawTheme, setTheme, systemTheme } = useNextTheme();
 
-  const effectiveTheme: Theme = (rawTheme === 'system' ? (systemTheme as Theme) : (rawTheme as Theme)) || 'dark';
+	const effectiveTheme: Theme =
+		(rawTheme === 'system' ? (systemTheme as Theme) : (rawTheme as Theme)) || 'dark';
 
-  const toggleTheme = () => {
-    if (!rawTheme) return;
-    setTheme(getNextTheme(rawTheme as Theme));
-  };
+	const toggleTheme = () => {
+		if (!rawTheme) return;
+		setTheme(getNextTheme(rawTheme as Theme));
+	};
 
-  return { theme: effectiveTheme, toggleTheme, rawTheme, setTheme };
+	return { theme: effectiveTheme, toggleTheme, rawTheme, setTheme };
 }

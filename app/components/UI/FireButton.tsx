@@ -31,7 +31,6 @@ export const FireButton: React.FC<FireButtonProps> = ({
 	focus:ring-offset-neutral-100 dark:focus:ring-offset-neutral-900
 `;
 
-
 	const sizeMap: Record<string, string> = {
 		sm: 'h-9 px-3 text-sm',
 		md: 'h-10 px-4 text-sm',

@@ -1,17 +1,11 @@
 'use client';
 
-import React, {
-	forwardRef,
-	TextareaHTMLAttributes,
-	useId,
-	useMemo,
-} from 'react';
+import React, { forwardRef, TextareaHTMLAttributes, useId, useMemo } from 'react';
 
 type Firesize = 'sm' | 'md' | 'lg';
 type FireAreaVariant = 'default' | 'custom';
 
-interface FireAreaProps
-	extends Omit<TextareaHTMLAttributes<HTMLTextAreaElement>, 'size'> {
+interface FireAreaProps extends Omit<TextareaHTMLAttributes<HTMLTextAreaElement>, 'size'> {
 	label?: string;
 	helperText?: string;
 	icon?: React.ReactNode;
@@ -60,8 +54,7 @@ const variantClasses: Record<FireAreaVariant, string> = {
 	`,
 };
 
-const labelBase =
-	'text-sm font-medium text-neutral-700 dark:text-neutral-300';
+const labelBase = 'text-sm font-medium text-neutral-700 dark:text-neutral-300';
 
 export const FireArea = forwardRef<HTMLTextAreaElement, FireAreaProps>(
 	(
@@ -129,9 +122,7 @@ export const FireArea = forwardRef<HTMLTextAreaElement, FireAreaProps>(
 				</div>
 
 				{helperText && (
-					<p className="text-xs text-neutral-500 dark:text-neutral-400">
-						{helperText}
-					</p>
+					<p className="text-xs text-neutral-500 dark:text-neutral-400">{helperText}</p>
 				)}
 			</div>
 		);
