@@ -299,8 +299,8 @@ export default function AuthForm({ activeTab, onTabChange }: Props) {
 								type="button"
 								onClick={handleForgot}
 								disabled={isLoading}
-								size="sm"
-								variant="outline"
+								size="xs"
+								variant="ghost"
 							>
 								Forgot?
 							</FireButton>

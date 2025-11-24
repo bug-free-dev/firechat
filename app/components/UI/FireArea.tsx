@@ -39,15 +39,16 @@ const variantClasses: Record<FireAreaVariant, string> = {
 	`,
 	custom: `
 		rounded-t-lg
-		border-b-3 border-neutral-200/50 dark:border-neutral-700
+		border-neutral-200/50 dark:border-neutral-700/40
 
-		bg-neutral-100/30 dark:bg-neutral-800/70
+      hover:bg-neutral-100/80 dark:hover:bg-neutral-800/80
+
+		bg-neutral-100/40 dark:bg-neutral-800/70
 		backdrop-blur-sm
 		transition-colors duration-200
 
 		focus:bg-white dark:focus:bg-neutral-900
-		focus:border-indigo-500/60
-		focus:ring-2 focus:ring-indigo-400/20
+		focus:ring-2 focus:ring-indigo-400/30
 
 		focus:ring-offset-2 focus:ring-offset-white
 		dark:focus:ring-offset-neutral-900

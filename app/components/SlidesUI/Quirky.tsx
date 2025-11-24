@@ -40,28 +40,27 @@ export function Quirky({ value, onChange, step = 3, total = 7 }: QuirkyProps) {
 	};
 
 	return (
-		<div className="relative w-full h-full min-h-[700px] flex items-center justify-center overflow-hidden bg-gradient-to-br from-slate-50 via-indigo-50/20 to-pink-50/20">
-			{/* Floating Icons */}
+		<div className="relative w-full h-full min-h-[700px] flex items-center justify-center overflow-hidden bg-white dark:from-neutral-900">
 			<div className="absolute inset-0 pointer-events-none overflow-hidden">
-				<div className="absolute top-[10%] right-[10%] text-pink-400/40">
+				<div className="absolute top-[10%] right-[10%] text-pink-400/40 dark:text-pink-400/20">
 					<RiMagicLine className="w-11 h-11 animate-drift" />
 				</div>
-				<div className="absolute top-[27%] left-[9%] text-amber-400/35">
+				<div className="absolute top-[27%] left-[9%] text-amber-400/35 dark:text-amber-400/15">
 					<PiPizza className="w-9 h-9 animate-float-elegant" />
 				</div>
-				<div className="absolute top-[50%] left-[5%] -translate-y-1/2 text-emerald-400/40">
+				<div className="absolute top-[50%] left-[5%] -translate-y-1/2 text-emerald-400/40 dark:text-emerald-400/20">
 					<RiMusic2Line
 						className="w-12 h-12 animate-pulse-soft"
 						style={{ animationDelay: '0.5s' }}
 					/>
 				</div>
-				<div className="absolute top-[50%] right-[6%] -translate-y-1/2 text-violet-400/35">
+				<div className="absolute top-[50%] right-[6%] -translate-y-1/2 text-violet-400/35 dark:text-violet-400/15">
 					<RiGamepadLine
 						className="w-10 h-10 animate-drift"
 						style={{ animationDelay: '1s' }}
 					/>
 				</div>
-				<div className="absolute bottom-[12%] left-[10%] text-red-400/40">
+				<div className="absolute bottom-[12%] left-[10%] text-red-400/40 dark:text-red-400/20">
 					<RiCameraLine
 						className="w-11 h-11 animate-pulse-soft"
 						style={{ animationDelay: '1.5s' }}
@@ -71,20 +70,20 @@ export function Quirky({ value, onChange, step = 3, total = 7 }: QuirkyProps) {
 
 			<div className="mt-3 relative z-10 max-w-3xl w-full mx-auto px-6 text-center animate-fade-in-up">
 				<div className="mb-14">
-					<h1 className="font-bubblegum text-5xl lg:text-6xl text-slate-900 inline-flex items-center justify-center gap-3 mb-4">
-						<RiSparklingLine className="text-indigo-500 w-12 h-12 animate-pulse-soft" />
+					<h1 className="font-bubblegum text-5xl lg:text-6xl text-zinc-900 dark:text-neutral-100 inline-flex items-center justify-center gap-3 mb-4">
+						<RiSparklingLine className="text-indigo-500 dark:text-indigo-400 w-12 h-12 animate-pulse-soft" />
 						Quirky
 					</h1>
-					<p className="font-righteous text-base text-slate-500">
+					<p className="font-righteous text-base text-zinc-500 dark:text-neutral-400">
 						Show off your unique personality
 					</p>
 				</div>
 
 				<div className="mb-12">
-					<h2 className="text-3xl lg:text-4xl font-bold text-slate-900 mb-5">
+					<h2 className="text-3xl lg:text-4xl font-bold text-zinc-900 dark:text-neutral-100 mb-5">
 						What makes you quirky?
 					</h2>
-					<p className="text-base text-slate-600">
+					<p className="text-base text-zinc-600 dark:text-neutral-400">
 						Pick up to 3 things that describe your awesome self.
 					</p>
 				</div>
@@ -104,21 +103,21 @@ export function Quirky({ value, onChange, step = 3, total = 7 }: QuirkyProps) {
                     p-5 rounded-xl border-2 transition-all duration-300 hover:-translate-y-0.5 group
                     ${
 								isSelected
-									? 'border-current shadow-lg shadow-current/10 scale-105'
+									? 'border-current scale-105'
 									: value.length >= 3
-										? 'border-slate-200 opacity-50 cursor-not-allowed'
-										: 'border-slate-200 hover:border-slate-300 hover:shadow-sm'
+										? 'border-zinc-200 dark:border-neutral-700/40 opacity-50 cursor-not-allowed'
+										: 'border-zinc-200 dark:border-neutral-700/40 hover:border-zinc-300 dark:hover:border-neutral-600/60'
 							}
                   `}
 									style={{
 										color: isSelected ? quirk.color : '#64748b',
-										backgroundColor: isSelected
-											? `${quirk.color}08`
-											: 'rgba(255, 255, 255, 0.8)',
+										backgroundColor: isSelected ? `${quirk.color}08` : 'transparent',
 									}}
 								>
 									<IconComponent className="w-9 h-9 mx-auto mb-2.5" />
-									<div className="text-sm font-medium">{quirk.label}</div>
+									<div className="text-sm font-medium dark:text-neutral-200">
+										{quirk.label}
+									</div>
 								</button>
 							);
 						})}
@@ -126,7 +125,7 @@ export function Quirky({ value, onChange, step = 3, total = 7 }: QuirkyProps) {
 				</div>
 
 				<div
-					className="flex items-center justify-center gap-3 text-base text-slate-500 mb-10 "
+					className="flex items-center justify-center gap-3 text-base text-zinc-500 dark:text-neutral-400 mb-10 "
 					style={{ animationDelay: '0.2s' }}
 				>
 					<span>Pro tip: be yourself — quirky is cool! ({value.length}/3 selected)</span>
@@ -136,8 +135,8 @@ export function Quirky({ value, onChange, step = 3, total = 7 }: QuirkyProps) {
 					className="flex items-center justify-center mb-5 gap-3 "
 					style={{ animationDelay: '0.3s' }}
 				>
-					<div className="w-2.5 h-2.5 rounded-full bg-indigo-500 animate-pulse-soft" />
-					<span className="text-sm text-slate-500 font-medium">
+					<div className="w-2.5 h-2.5 rounded-full bg-indigo-500 dark:bg-indigo-400 animate-pulse-soft" />
+					<span className="text-sm text-zinc-500 dark:text-neutral-400 font-medium">
 						Step {step} of {total}
 					</span>
 				</div>

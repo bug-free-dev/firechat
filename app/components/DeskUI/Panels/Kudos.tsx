@@ -154,7 +154,7 @@ export const KudosPanel: React.FC<KudosPanelProps> = ({
 				{/* Balance + stats */}
 				<div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
 					<div className="flex items-center gap-4">
-						<div className="rounded-lg flex items-center justify-center border border-neutral-200/40 dark:border-neutral-700/40 shadow-sm dark:shadow-black/20 transition-all">
+						<div className="rounded-lg flex items-center justify-center transition-all">
 							<RiCoinsLine className="w-10 h-10 text-yellow-500 dark:text-yellow-400" />
 						</div>
 						<div>
@@ -197,7 +197,7 @@ export const KudosPanel: React.FC<KudosPanelProps> = ({
 								People
 							</h2>
 							<div className="text-sm text-neutral-500 dark:text-neutral-400">
-								{filtered.length} user{filtered.length !== 1 ? 's' : ''}
+								{filtered.length} member{filtered.length !== 1 ? 's' : ''}
 							</div>
 						</div>
 
@@ -218,7 +218,7 @@ export const KudosPanel: React.FC<KudosPanelProps> = ({
 						{filtered.length === 0 && (
 							<div className="text-center py-12 text-neutral-400 dark:text-neutral-500">
 								<FiSearch className="w-12 h-12 mx-auto mb-3 opacity-50" />
-								<div>No users found</div>
+								<div>No members found</div>
 							</div>
 						)}
 					</div>

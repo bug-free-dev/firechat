@@ -10,23 +10,38 @@
 	--font-quicksand: 'Quicksand', -apple-system, system-ui, BlinkMacSystemFont, sans-serif;
 	--font-main: var(--font-quicksand);
 
-	/* Brand / UI */
-	--monokai-yellow: #f7df07;
+	/* Theme */
 	--fc-bg: #ffffff;
+	--fc-text: #111827;
 	--fc-muted: #f3f4f6;
 	--fc-border: #e6e7ea;
-	--fc-text: #111827;
-	--fc-accent: #202022;
-	--fc-accent-press: #262527;
+	--fc-surface: #ffffff;
 
-	/* animation tokens */
-	--transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-	--transition-fast: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+	--fc-accent: #52525b;
+	--fc-accent-press: #3f3f46;
+	--fc-ring: rgba(82, 82, 91, 0.12);
 
 	/* scroll */
-	--scroll-bg: rgba(0, 0, 0, 0.05);
 	--scroll-thumb: rgba(0, 0, 0, 0.096);
-	--scroll-thumb-hover: rgba(0, 0, 0, 0.25);
+	--scroll-thumb-hover: rgba(0, 0, 0, 0.22);
+
+	/* motion */
+	--transition: all 0.16s cubic-bezier(0.4, 0, 0.2, 1);
+	--transition-fast: all 0.08s cubic-bezier(0.4, 0, 0.2, 1);
+}
+:root.dark {
+	--fc-bg: #18181b;
+	--fc-text: #e6e6e6;
+	--fc-muted: #0f1113;
+	--fc-border: #27272a;
+	--fc-surface: #121214;
+
+	--fc-accent: #a1a1aa;
+	--fc-accent-press: #7c7c86;
+	--fc-ring: rgba(161, 161, 170, 0.12);
+
+	--scroll-thumb: rgba(255, 255, 255, 0.06);
+	--scroll-thumb-hover: rgba(255, 255, 255, 0.14);
 }
 
 .font-knewave {

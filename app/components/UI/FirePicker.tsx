@@ -123,7 +123,7 @@ export const FirePicker: React.FC<PickerProps> = ({
 	}, [frequentUsers, currentParticipants]);
 
 	const headerTitle = useMemo(
-		() => title || (session ? `Invite to ${session.title ?? 'session'}` : 'Invite Users'),
+		() => title || (session ? `Invite to ${session.title ?? 'session'}` : 'Invite Members'),
 		[title, session]
 	);
 
@@ -179,7 +179,7 @@ export const FirePicker: React.FC<PickerProps> = ({
 				<div className="animate-slide-in">
 					<div className="flex items-center gap-2 mb-2">
 						<div className="text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wide">
-							Search Users
+							Search Members
 						</div>
 						<div className="h-px flex-1 bg-neutral-200 dark:bg-neutral-700/40" />
 					</div>

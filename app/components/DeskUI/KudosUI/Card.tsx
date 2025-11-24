@@ -15,7 +15,7 @@ export const KudosCard: React.FC<KudosCardProps> = ({
 	onOpenDetailed,
 }) => {
 	return (
-		<div className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-700/50 p-4 transition-all duration-200">
+		<div className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-300/40 dark:border-neutral-700/50 p-4 transition-all duration-200">
 			{/* User Info */}
 			<div className="flex items-center gap-3 mb-4">
 				<FireAvatar src={user.avatarUrl} seed={user.uid} size={40} />
@@ -39,10 +39,10 @@ export const KudosCard: React.FC<KudosCardProps> = ({
 						key={a}
 						onClick={() => onQuickSend(user, a)}
 						disabled={loading || a > currentUserKudos}
-						className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-neutral-700/40 ${
+						className={`flex-1 py-1.5 rounded-lg text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-neutral-800 focus:ring-offset-2 ${
 							a > currentUserKudos
 								? 'bg-neutral-200 dark:bg-neutral-700/40 text-neutral-500 dark:text-neutral-400 cursor-not-allowed'
-								: 'bg-neutral-50 dark:bg-neutral-800/50 text-neutral-900 dark:text-neutral-100 hover:bg-neutral-100 dark:hover:bg-neutral-700/60'
+								: 'bg-neutral-800 dark:bg-neutral-800/50 text-neutral-50 dark:text-neutral-100 hover:bg-neutral-700 dark:hover:bg-neutral-700/60'
 						}`}
 					>
 						+{a}
@@ -50,7 +50,7 @@ export const KudosCard: React.FC<KudosCardProps> = ({
 				))}
 				<button
 					onClick={() => onOpenDetailed(user)}
-					className="px-3 py-2 bg-yellow-50 dark:bg-yellow-600 hover:bg-yellow-100 dark:hover:bg-yellow-500 text-yellow-600 dark:text-yellow-100 rounded-lg transition-colors flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-yellow-400 dark:focus:ring-yellow-400"
+					className="px-3 py-1.5 bg-yellow-50 dark:bg-yellow-600 hover:bg-yellow-100 dark:hover:bg-yellow-500 text-yellow-600 dark:text-yellow-100 rounded-lg transition-colors flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-yellow-400 dark:focus:ring-yellow-400"
 					aria-label={`Send custom amount to ${user.usernamey}`}
 				>
 					<FiSend className="w-4 h-4" />

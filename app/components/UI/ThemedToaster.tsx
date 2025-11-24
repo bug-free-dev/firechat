@@ -3,11 +3,11 @@
 import { useEffect, useState } from 'react';
 import { Toaster } from 'react-hot-toast';
 
-import { useThemedToast } from '@/app/lib/theme/hooks/useThemedToast';
+import { useThemedToast } from '@/app/lib/theme/hook/useThemedToast';
 
 export function ThemedToaster() {
 	const [mounted, setMounted] = useState(false);
-	const style = useThemedToast();
+	const toastStyle = useThemedToast();
 
 	useEffect(() => setMounted(true), []);
 
@@ -17,7 +17,8 @@ export function ThemedToaster() {
 		<Toaster
 			position="bottom-left"
 			toastOptions={{
-				style,
+				style: toastStyle,
+				duration: 2000,
 			}}
 		/>
 	);

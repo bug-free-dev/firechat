@@ -56,12 +56,7 @@ export const MoodOptions: React.FC<MoodOptionProps> = ({ value, onChange }) => {
 					className="flex-1"
 					size="sm"
 				/>
-				<FireButton
-					variant="secondary"
-					onClick={handleSetCustom}
-					disabled={!custom.trim()}
-					size="sm"
-				>
+				<FireButton variant="secondary" onClick={handleSetCustom} disabled={!custom.trim()}>
 					Set
 				</FireButton>
 			</div>

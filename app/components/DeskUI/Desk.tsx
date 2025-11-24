@@ -56,7 +56,7 @@ export default function Desk() {
 		userUid: profile?.uid ?? null,
 		services,
 		enableRealtime: true,
-		pollingInterval: 600000,
+		pollingInterval: 10000,
 		autoRefresh: true,
 	});
 

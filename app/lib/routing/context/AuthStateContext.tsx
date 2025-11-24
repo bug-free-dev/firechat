@@ -168,12 +168,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
 				return normalized;
 			} catch (err) {
-				// Don't retry aborted requests
 				if (err instanceof Error && err.name === 'AbortError') {
 					return null;
 				}
 
-				// Retry logic with exponential backoff
 				if (retries > 0 && mountedRef.current) {
 					await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY));
 					return fetchProfile(fbUser, forceRefresh, retries - 1);
@@ -249,34 +247,46 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 		};
 	}, [fetchProfile]);
 
-	// Compute auth state
 	useEffect(() => {
 		if (isLoading) return;
 
 		const newState = computeAuthState(firebaseUser, profile, false, false);
 
-		// Only update if changed (prevents unnecessary re-renders)
 		if (newState !== lastAuthStateRef.current) {
 			lastAuthStateRef.current = newState;
 			setAuthState(newState);
 		}
 	}, [firebaseUser, profile, isLoading]);
 
-	// Handle navigation
 	useEffect(() => {
 		if (authState === AuthState.LOADING) return;
 
 		const pathname = typeof window !== 'undefined' ? window.location.pathname : '/';
 
-		// Home page handles its own redirect
 		if (pathname === '/') return;
+
+		if (
+			pathname === '/fireup' &&
+			(authState === AuthState.UNAUTHENTICATED || authState === AuthState.UNVERIFIED)
+		) {
+			return;
+		}
+
+		if (
+			pathname === '/onboarding' &&
+			(authState === AuthState.NEW_USER || authState === AuthState.NOT_ONBOARDED)
+		) {
+			return;
+		}
 
 		let targetPath: string | null = null;
 
 		switch (authState) {
 			case AuthState.UNAUTHENTICATED:
 			case AuthState.UNVERIFIED:
-				targetPath = '/fireup';
+				if (pathname !== '/fireup') {
+					targetPath = '/fireup';
+				}
 				break;
 
 			case AuthState.BANNED:
@@ -298,7 +308,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 		}
 
 		if (targetPath) {
-			router.push(targetPath);
+			const timeoutId = setTimeout(() => {
+				router.push(targetPath);
+			}, 50);
+
+			return () => clearTimeout(timeoutId);
 		}
 	}, [authState, router]);
 
@@ -527,7 +541,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 		}
 	}, []);
 
-	// Memoize methods separately to prevent context re-creation
 	const staticMethods = useMemo(
 		() => ({
 			signUp,

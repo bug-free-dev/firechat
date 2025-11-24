@@ -40,8 +40,8 @@ export const VALIDATION_RULES = {
 		MAX_LENGTH: 15,
 	},
 	SECRET: {
-		REGEX: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/,
-		MIN_LENGTH: 6,
+		REGEX: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{5,}$/,
+		MIN_LENGTH: 5,
 	},
 	QUIRKS: {
 		MIN: 1,

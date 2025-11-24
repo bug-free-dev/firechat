@@ -161,7 +161,7 @@ export const FireSlide: React.FC<FireSlideProps> = ({
 
 					{/* Footer */}
 					{footer && (
-						<div className="flex-shrink-0 px-5 py-4 border-t border-neutral-200/80 dark:border-neutral-700/50 bg-white dark:bg-neutral-900">
+						<div className="flex-shrink-0 px-5 py-4 border-t border-neutral-200/40 dark:border-neutral-700/50 bg-white dark:bg-neutral-900">
 							{footer}
 						</div>
 					)}

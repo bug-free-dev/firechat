@@ -1,5 +1,3 @@
-/* Optimized keyframes — GPU-friendly, rapid, elegant --------------------------------- */
-/* small slide in util for buttons preserved (kept name fc-slide-in-left) */
 @keyframes fc-slide-in-left {
 	from {
 		transform: translateX(12px);

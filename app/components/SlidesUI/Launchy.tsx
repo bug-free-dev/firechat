@@ -69,15 +69,14 @@ export function Launchy({
 	};
 
 	return (
-		<div className="relative w-full min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-slate-50 via-orange-50/30 to-rose-50/30 p-4">
+		<div className="relative w-full min-h-screen flex items-center justify-center overflow-hidden bg-white dark:bg-neutral-900">
 			{showConfetti && <Confetti recycle={false} numberOfPieces={300} gravity={0.08} />}
 
-			{/* Floating Icons */}
 			<div className="absolute inset-0 pointer-events-none overflow-hidden">
 				{[...Array(10)].map((_, i) => (
 					<RiStarLine
 						key={i}
-						className="absolute text-amber-400/40 animate-float-elegant"
+						className="absolute text-amber-400/40 dark:text-amber-400/20 animate-float-elegant"
 						style={{
 							width: `${12 + (i % 3) * 2}px`,
 							height: `${12 + (i % 3) * 2}px`,
@@ -90,24 +89,22 @@ export function Launchy({
 				))}
 			</div>
 
-			{/* Main Content */}
 			<div className="mt-1 relative z-10 max-w-4xl w-full mx-auto px-6 text-center animate-fade-in-up">
-				<h1 className="font-bubblegum text-5xl lg:text-4xl text-rose-500 mb-5 flex items-center justify-center gap-4 drop-shadow-sm">
+				<h1 className="font-bubblegum text-5xl lg:text-4xl text-rose-500 dark:text-rose-400 mb-5 flex items-center justify-center gap-4 drop-shadow-sm">
 					<TbRocket className="animate-float-elegant w-16 h-16" />
 					Launch!
 				</h1>
 
 				<p
-					className="font-righteous text-lg text-slate-700 mb-10"
+					className="font-righteous text-lg text-zinc-700 dark:text-neutral-300 mb-10"
 					style={{ animationDelay: '0.1s' }}
 				>
 					Your profile is ready for takeoff. Fire up the chat!
 				</p>
 
-				{/* Enhanced Preview Card */}
 				{preview && (
 					<div
-						className="mb-10 text-left mx-auto max-w-lg bg-white/90 backdrop-blur-sm p-7 rounded-2xl shadow-md border border-slate-200/80 "
+						className="mb-10 text-left mx-auto max-w-lg bg-white/90 dark:bg-neutral-900/90 backdrop-blur-sm p-7 rounded-2xl border border-zinc-200/80 dark:border-neutral-700/40 "
 						style={{ animationDelay: '0.2s' }}
 					>
 						<div className="flex items-start gap-5">
@@ -115,13 +112,12 @@ export function Launchy({
 								seed={preview.displayName || 'Firechat'}
 								src={preview?.avatarUrl ?? undefined}
 								size={64}
-								className="shadow-sm"
 							/>
 							<div className="flex-1">
-								<h2 className="text-2xl font-bold text-slate-900">
+								<h2 className="text-2xl font-bold text-zinc-900 dark:text-neutral-100">
 									{preview?.displayName ?? 'firechat_user'}
 								</h2>
-								<p className="text-base text-orange-600 font-mono">
+								<p className="text-base text-orange-600 dark:text-orange-400 font-mono">
 									@{preview.usernamey || 'new_user'}
 								</p>
 							</div>
@@ -129,27 +125,27 @@ export function Launchy({
 
 						<div className="mt-7 space-y-4">
 							{preview.mood && (
-								<div className="flex items-center gap-3 text-slate-700">
-									<RiEmotionHappyLine className="w-5 h-5 text-amber-500" />
+								<div className="flex items-center gap-3 text-zinc-700 dark:text-neutral-300">
+									<RiEmotionHappyLine className="w-5 h-5 text-amber-500 dark:text-amber-400" />
 									<span className="font-medium">Feeling {preview.mood}</span>
 								</div>
 							)}
 
 							{preview.about && (
-								<div className="flex items-start gap-3 text-slate-700">
-									<RiSparklingLine className="w-4 h-4 text-slate-400 mt-1 flex-shrink-0" />
+								<div className="flex items-start gap-3 text-zinc-700 dark:text-neutral-300">
+									<RiSparklingLine className="w-4 h-4 text-zinc-400 dark:text-neutral-500 mt-1 flex-shrink-0" />
 									<p>&quot;{preview.about}&ldquo;</p>
 								</div>
 							)}
 
 							{preview.quirks && preview.quirks.length > 0 && (
 								<div className="flex items-start gap-3">
-									<RiLightbulbLine className="w-5 h-5 text-indigo-500 mt-1" />
+									<RiLightbulbLine className="w-5 h-5 text-indigo-500 dark:text-indigo-400 mt-1" />
 									<div className="flex flex-wrap gap-2">
 										{preview.quirks.map((q) => (
 											<span
 												key={q}
-												className="px-3 py-1.5 text-sm bg-indigo-50 text-indigo-700 rounded-full font-medium"
+												className="px-3 py-1.5 text-sm bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 rounded-full font-medium"
 											>
 												{q}
 											</span>
@@ -160,12 +156,12 @@ export function Launchy({
 
 							{preview.tags && preview.tags.length > 0 && (
 								<div className="flex items-start gap-3">
-									<RiPriceTag3Line className="w-5 h-5 text-emerald-500 mt-1" />
+									<RiPriceTag3Line className="w-5 h-5 text-emerald-500 dark:text-emerald-400 mt-1" />
 									<div className="flex flex-wrap gap-2">
 										{preview.tags.map((t) => (
 											<span
 												key={t}
-												className="px-3 py-1.5 text-sm bg-emerald-50 text-emerald-700 rounded-full font-medium"
+												className="px-3 py-1.5 text-sm bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 rounded-full font-medium"
 											>
 												{t}
 											</span>
@@ -176,7 +172,7 @@ export function Launchy({
 						</div>
 
 						<div className="mt-8 space-y-3 overflow-hidden">
-							<div className="text-xs text-slate-500 flex items-center gap-2 justify-center bg-slate-50/70 p-2 rounded-lg">
+							<div className="text-xs text-zinc-500 dark:text-neutral-400 flex items-center gap-2 justify-center bg-zinc-50/70 dark:bg-neutral-800/50 p-2 rounded-lg">
 								<RiInformationLine className="w-4 h-4" />
 								<span>This is a preview of your public profile.</span>
 							</div>
@@ -184,37 +180,37 @@ export function Launchy({
 							<div className="flex items-start gap-2">
 								<div className="flex-1">
 									<div className="flex items-center justify-between gap-2">
-										<div className="text-sm text-slate-700 font-medium flex gap-1">
+										<div className="text-sm text-zinc-700 dark:text-neutral-300 font-medium flex gap-1">
 											Identifier
-											<RiLockLine className="w-4 h-4 text-purple-400 animate-pulse-soft" />
+											<RiLockLine className="w-4 h-4 text-purple-400 dark:text-purple-500 animate-pulse-soft" />
 										</div>
 
 										<button
 											type="button"
 											onClick={() => setShowIdentifier((s) => !s)}
 											aria-pressed={showIdentifier}
-											className="px-2 py-0.5 rounded-md text-xs font-semibold bg-white border border-slate-200 hover:bg-slate-100 transition"
+											className="px-2 py-0.5 rounded-md text-xs font-semibold bg-white dark:bg-neutral-800 border border-zinc-200 dark:border-neutral-700/40 hover:bg-zinc-100 dark:hover:bg-neutral-700 transition dark:text-neutral-200"
 										>
 											{showIdentifier ? 'Hide' : 'Reveal'}
 										</button>
 									</div>
 
 									<div className="relative mt-2 max-w-xs">
-										<div className="rounded-md bg-slate-50 border border-slate-200 px-2 py-1">
-											<span className="font-mono text-xs text-slate-500">
+										<div className="rounded-md bg-zinc-50 dark:bg-neutral-800 border border-zinc-200 dark:border-neutral-700/40 px-2 py-1">
+											<span className="font-mono text-xs text-zinc-500 dark:text-neutral-400">
 												{preview?.identifierKey ? '••••••••••' : 'No identifier set'}
 											</span>
 										</div>
 
 										<div
 											aria-hidden={!showIdentifier}
-											className={`absolute inset-0 rounded-md px-2 py-1 bg-white border border-slate-200 transition-transform duration-300 ease-out overflow-hidden ${
+											className={`absolute inset-0 rounded-md px-2 py-1 bg-white dark:bg-neutral-900 border border-zinc-200 dark:border-neutral-700/40 transition-transform duration-300 ease-out overflow-hidden ${
 												showIdentifier
 													? 'translate-x-0 opacity-100'
 													: '-translate-x-full opacity-0'
 											}`}
 										>
-											<span className="font-mono text-xs text-slate-800 select-all">
+											<span className="font-mono text-xs text-zinc-800 dark:text-neutral-200 select-all">
 												{preview?.identifierKey ?? '—'}
 											</span>
 										</div>
@@ -222,7 +218,7 @@ export function Launchy({
 								</div>
 							</div>
 
-							<div className="text-xs text-slate-400 flex items-center gap-2 justify-center bg-transparent p-0 rounded-lg">
+							<div className="text-xs text-zinc-400 dark:text-neutral-500 flex items-center gap-2 justify-center bg-transparent p-0 rounded-lg">
 								<span>Cannot show identifier due to privacy reasons.</span>
 							</div>
 						</div>
@@ -236,19 +232,18 @@ export function Launchy({
 						loading={isLoading}
 						className={`px-10 py-4 text-lg flex items-center justify-center gap-3 ${
 							isLoading ? 'opacity-60 cursor-wait' : 'hover:scale-105 hover:-translate-y-0.5'
-						} bg-gradient-to-r from-rose-500 to-orange-500 text-white font-bold rounded-full shadow-lg transition-all duration-300 transform-gpu`}
+						} bg-gradient-to-r from-rose-500 to-orange-500 dark:from-rose-600 dark:to-orange-600 text-white font-bold rounded-full transition-all duration-300 transform-gpu`}
 					>
 						{isLoading ? 'Launching...' : 'Take me to my Desk!'}
 					</FireButton>
 				</div>
 
-				{/* Step Indicator */}
 				<div
 					className="flex items-center justify-center gap-3 mt-10 "
 					style={{ animationDelay: '0.4s' }}
 				>
-					<div className="w-2.5 h-2.5 rounded-full bg-rose-500 animate-pulse-soft" />
-					<span className="text-sm text-slate-500 font-medium">
+					<div className="w-2.5 h-2.5 rounded-full bg-rose-500 dark:bg-rose-400 animate-pulse-soft" />
+					<span className="text-sm text-zinc-500 dark:text-neutral-400 font-medium">
 						Step {step} of {total}
 					</span>
 				</div>

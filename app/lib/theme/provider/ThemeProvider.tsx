@@ -14,12 +14,7 @@ export const ThemeProvider: React.FC<Props> = ({ children }) => {
 
 	if (!mounted) return null;
 	return (
-		<NextThemeProvider
-			attribute="class"
-			defaultTheme="system"
-			enableSystem
-			disableTransitionOnChange
-		>
+		<NextThemeProvider attribute="class" defaultTheme="system" enableSystem>
 			{children}
 		</NextThemeProvider>
 	);

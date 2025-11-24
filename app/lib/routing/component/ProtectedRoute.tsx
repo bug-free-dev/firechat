@@ -34,20 +34,15 @@ export function ProtectedRoute({
 }: ProtectedRouteProps) {
 	const { authState, isLoading } = useAuthState();
 
-	// Show loading state while auth is resolving
 	if (isLoading) {
 		return fallback || <FireLoader />;
 	}
 
-	// Check if current authState is allowed
 	const isAllowed = allowedStates.includes(authState);
 
-	// If not allowed, AuthProvider will handle redirect.
-	// Show loading state while redirect processes.
 	if (!isAllowed) {
 		return fallback || <FireLoader />;
 	}
 
-	// Auth state matches; render children
 	return <>{children}</>;
 }

@@ -37,7 +37,7 @@ export const DiceAvatarPicker: React.FC<Props> = ({ displayName = '', onSelect, 
 
 				<div className="flex items-center justify-between px-4 border-b border-neutral-100 dark:border-neutral-700/50">
 					<div className="min-w-0">
-						<h3 className="text-lg font-semibold text-slate-900 dark:text-neutral-100 truncate">
+						<h3 className="text-lg font-semibold text-zinc-900 dark:text-neutral-100 truncate">
 							Choose Avatar
 						</h3>
 						<p className="text-xs text-zinc-500 dark:text-neutral-400 mt-0.5">

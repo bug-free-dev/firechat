@@ -273,22 +273,22 @@ export default function Slidy() {
 	/* <------- RENDER -------> */
 
 	return (
-		<div className="min-h-screen flex flex-col bg-white">
+		<div className="min-h-screen flex flex-col bg-neutral-50 dark:bg-neutral-900">
 			<FireHeader />
 
 			<main className="flex-1 flex items-center justify-center">{renderSlide()}</main>
 
-			<footer className="w-full flex justify-center items-center gap-6 py-4 border-t border-neutral-200 bg-white">
+			<footer className="w-full flex justify-center items-center gap-6 py-4 border-t bg-white dark:bg-neutral-900 border-neutral-200 dark:border-neutral-700">
 				<button
 					onClick={goBack}
 					disabled={isBackDisabled}
-					className="flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-full bg-white border border-neutral-200 shadow-sm hover:-translate-y-1 transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
+					className="flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-full bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-sm hover:-translate-y-1 transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
 					aria-label="Previous step"
 				>
-					<FaArrowLeft className="w-4 h-4 md:w-5 md:h-5 text-neutral-600" />
+					<FaArrowLeft className="w-4 h-4 md:w-5 md:h-5 text-neutral-600 dark:text-neutral-300" />
 				</button>
 
-				<span className="text-sm md:text-base text-neutral-500 font-medium select-none">
+				<span className="text-sm md:text-base text-neutral-500 dark:text-neutral-400 font-medium select-none">
 					{current + 1} / {STEPS.length}
 				</span>
 
@@ -296,7 +296,7 @@ export default function Slidy() {
 					<button
 						onClick={goNext}
 						disabled={isNextDisabled}
-						className="flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-full bg-slate-600 shadow-lg hover:scale-105 transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
+						className="flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-full bg-zinc-600 dark:bg-zinc-500 shadow-lg hover:scale-105 transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
 						aria-label="Next step"
 					>
 						<FaArrowRight className="w-4 h-4 md:w-5 md:h-5 text-white" />

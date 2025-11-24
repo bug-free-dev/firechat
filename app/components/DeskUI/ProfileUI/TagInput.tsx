@@ -106,12 +106,10 @@ export const TagInput: React.FC<TagInputProps> = ({
 						<FireButton
 							onClick={handleAdd}
 							disabled={!input.trim() || value.length >= max}
-							variant="default"
-							size="sm"
+							variant="outline"
 							className="mt-2"
 						>
-							<IoAdd className="w-4 h-4 mr-1" />
-							Add
+							<IoAdd className="w-5 h-5" />
 						</FireButton>
 					</div>
 

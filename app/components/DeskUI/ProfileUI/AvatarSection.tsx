@@ -110,7 +110,7 @@ export const ProfileAvatarSection: React.FC<ProfileAvatarSectionProps> = ({
 
 							<button
 								type="button"
-								className="fc-btn bg-gradient-to-r from-purple-500 to-blue-500 text-white hover:from-purple-600 hover:to-blue-600 dark:from-purple-600 dark:to-blue-600 dark:hover:from-purple-700 dark:hover:to-blue-700 shadow-md dark:shadow-lg dark:shadow-purple-900/20"
+								className="fc-btn fc-btn--secondary"
 								title="Choose AI Avatar"
 								aria-label="Choose AI Avatar"
 								data-i={2}

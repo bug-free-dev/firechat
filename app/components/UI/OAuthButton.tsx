@@ -32,7 +32,7 @@ export const OAuthButton: React.FC<OAuthButtonProps> = ({
     transition-colors duration-200 ease-in-out
     hover:bg-neutral-50
     active:bg-neutral-100/10
-    focus:outline-none focus:ring-2 focus:ring-slate-400/30
+    focus:outline-none focus:ring-2 focus:ring-zinc-400/30
   focus:ring-offset-2 focus:ring-offset-white
 
   dark:bg-neutral-800/30

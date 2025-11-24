@@ -3,7 +3,7 @@
 import React, { forwardRef, useId, useMemo, useState } from 'react';
 import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
 
-type Firesize = 'sm' | 'md' | 'lg';
+type Firesize = 'xs' | 'sm' | 'md' | 'lg';
 type FireInputVariant = 'default' | 'custom';
 
 interface FireInputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'size'> {
@@ -13,9 +13,11 @@ interface FireInputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement
 	variant?: FireInputVariant;
 	inputClassName?: string;
 	containerClassName?: string;
+	helpText?: string;
 }
 
 const sizeMap: Record<Firesize, string> = {
+	xs: 'py-1.5 text-xs px-2',
 	sm: 'py-2 text-sm px-2',
 	md: 'py-2.5 text-[15px] px-3',
 	lg: 'py-3.5 text-lg px-4',
@@ -37,22 +39,25 @@ const variantClasses: Record<FireInputVariant, string> = {
 
     focus:border-neutral-300/80 dark:focus:border-neutral-600/80
   `,
-
 	custom: `
-    rounded-t-lg border-neutral-200/50 dark:border-neutral-700
+    rounded-t-lg border-neutral-200/50 dark:border-neutral-700/60
 
-    bg-neutral-100/30 dark:bg-neutral-800/70
+    bg-neutral-100/40 dark:bg-neutral-800/70
     transition-colors duration-200
+    focus:bg-white
 
-    focus:bg-white dark:focus:bg-neutral-900
+    hover:bg-neutral-100/80 dark:hover:bg-neutral-800/80
 
-    focus:ring-2 focus:ring-indigo-400
+    focus:outline-none
+    focus:ring-2 focus:ring-indigo-400/30
     focus:ring-offset-2 focus:ring-offset-white
     dark:focus:ring-offset-neutral-900
+    dark:focus:bg-neutral-900
   `,
 };
 
 const labelBase = 'text-sm font-medium text-neutral-700 dark:text-neutral-300';
+const helpTextBase = 'text-xs text-neutral-500 dark:text-neutral-400 mt-1';
 
 export const FireInput = forwardRef<HTMLInputElement, FireInputProps>(
 	(
@@ -64,6 +69,7 @@ export const FireInput = forwardRef<HTMLInputElement, FireInputProps>(
 			className = '',
 			inputClassName = '',
 			containerClassName = '',
+			helpText,
 			type = 'text',
 			...props
 		},
@@ -79,34 +85,35 @@ export const FireInput = forwardRef<HTMLInputElement, FireInputProps>(
 		const sizeClasses = sizeMap[size];
 		const variantClass = variantClasses[variant];
 
-		const baseInput = useMemo(
-			() =>
-				[
-					'w-full',
-					'outline-none',
-					'appearance-none',
-					'placeholder-neutral-400 dark:placeholder-neutral-500',
-					'text-neutral-900 dark:text-neutral-100',
-					'bg-white dark:bg-neutral-900',
-					'border-neutral-200 dark:border-neutral-700',
-					'transition-colors duration-180',
-					sizeClasses,
-					variantClass,
-					inputClassName,
-					className,
-					'pr-5',
-				]
-					.filter(Boolean)
-					.join(' '),
-			[sizeClasses, variantClass, inputClassName, className]
-		);
+		/* Compose classes: basic -> size -> user supplied -> ensure right padding for toggle -> variant LAST (authoritative) */
+		const baseInput = useMemo(() => {
+			const parts = [
+				'w-full',
+				'appearance-none',
+				'placeholder-neutral-400 dark:placeholder-neutral-500',
+				'text-neutral-900 dark:text-neutral-100',
+				'transition-colors duration-180',
+				sizeClasses,
+				inputClassName,
+				className,
+				// ensure room for toggle / icons
+				shouldShowToggle ? 'pr-10' : 'pr-3',
+				// variant last so it overrides where necessary
+				variantClass,
+			]
+				.filter(Boolean)
+				.join(' ');
+			return parts;
+		}, [sizeClasses, variantClass, inputClassName, className, shouldShowToggle]);
 
 		return (
 			<div className={`w-full flex flex-col gap-1 select-none ${containerClassName}`}>
 				{label && (
 					<label htmlFor={id} className={labelBase}>
-						{label}
-						{props.required && <span className="ml-1 text-red-500">*</span>}
+						<div className="flex items-center gap-2">
+							<span>{label}</span>
+							{props.required && <span className="ml-1 text-red-500">*</span>}
+						</div>
 					</label>
 				)}
 
@@ -117,6 +124,8 @@ export const FireInput = forwardRef<HTMLInputElement, FireInputProps>(
 						id={id}
 						type={inputType}
 						className={baseInput}
+						aria-invalid={props['aria-invalid'] ?? undefined}
+						aria-describedby={helpText ? `${id}-help` : undefined}
 						style={{ WebkitTapHighlightColor: 'transparent' }}
 					/>
 
@@ -136,7 +145,15 @@ export const FireInput = forwardRef<HTMLInputElement, FireInputProps>(
 						</button>
 					)}
 				</div>
+
+				{helpText && (
+					<div id={`${id}-help`} className={helpTextBase}>
+						{helpText}
+					</div>
+				)}
 			</div>
 		);
 	}
 );
+
+FireInput.displayName = 'FireInput';

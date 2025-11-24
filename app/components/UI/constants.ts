@@ -117,12 +117,12 @@ export const MOODS = [
 	{
 		label: 'Spooky',
 		icon: RiGhostSmileLine,
-		color: 'text-slate-500 dark:text-slate-400',
-		ringColor: 'ring-slate-200/30 dark:ring-slate-700/40',
-		bgColor: 'bg-slate-50/50 dark:bg-slate-900/20',
-		hoverRing: 'hover:ring-slate-300/40 dark:hover:ring-slate-600/50',
-		activeRing: 'ring-slate-300/50 dark:ring-slate-600/60',
-		activeBg: 'bg-slate-50 dark:bg-slate-900/30',
+		color: 'text-zinc-500 dark:text-zinc-400',
+		ringColor: 'ring-zinc-200/30 dark:ring-zinc-700/40',
+		bgColor: 'bg-zinc-50/50 dark:bg-zinc-900/20',
+		hoverRing: 'hover:ring-zinc-300/40 dark:hover:ring-zinc-600/50',
+		activeRing: 'ring-zinc-300/50 dark:ring-zinc-600/60',
+		activeBg: 'bg-zinc-50 dark:bg-zinc-900/30',
 	},
 	{
 		label: 'Motivated',

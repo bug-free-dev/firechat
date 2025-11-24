@@ -9,8 +9,10 @@ interface FireButtonProps {
 	loading?: boolean;
 	disabled?: boolean;
 	variant?: 'default' | 'secondary' | 'outline' | 'ghost' | 'destructive';
-	size?: 'sm' | 'md' | 'lg';
+	size?: 'xs' | 'sm' | 'md' | 'lg';
 	className?: string;
+	icon?: React.ReactNode;
+	iconPosition?: 'left' | 'right';
 }
 
 export const FireButton: React.FC<FireButtonProps> = ({
@@ -22,61 +24,75 @@ export const FireButton: React.FC<FireButtonProps> = ({
 	variant = 'default',
 	size = 'md',
 	className = '',
+	icon,
+	iconPosition = 'left',
 }) => {
 	const base = `
-	inline-flex items-center justify-center font-medium rounded-lg
-	transition-all duration-200
-	focus:outline-none focus:ring-2 focus:ring-offset-2
-	disabled:pointer-events-none disabled:opacity-50
-	focus:ring-offset-neutral-100 dark:focus:ring-offset-neutral-900
-`;
+		group relative inline-flex items-center justify-center 
+		font-medium rounded-lg
+		transition-all duration-200 ease-out
+		focus:outline-none focus:ring-2
+
+		disabled:pointer-events-none disabled:opacity-50
+		active:scale-[0.98]
+		select-none
+	`;
 
 	const sizeMap: Record<string, string> = {
-		sm: 'h-9 px-3 text-sm',
-		md: 'h-10 px-4 text-sm',
-		lg: 'h-11 px-8 text-base',
+		xs: 'h-7 px-2.5 text-xs gap-1.5',
+		sm: 'h-8 px-3 text-sm gap-2',
+		md: 'h-9 px-4 text-sm gap-2',
+		lg: 'h-10 px-5 text-base gap-2.5',
 	};
 
 	const variantMap: Record<string, string> = {
 		default: `
-			bg-neutral-100 text-neutral-900 dark:bg-neutral-800/80 dark:text-neutral-100
-			hover:bg-neutral-200 dark:hover:bg-neutral-600/90
-			focus:ring-neutral-700/40
+			bg-neutral-100 dark:bg-neutral-800
+			text-neutral-900 dark:text-neutral-100
+			hover:bg-neutral-200 dark:hover:bg-neutral-700
+			focus:ring-neutral-300 dark:focus:ring-neutral-700
+			focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-neutral-900
 		`,
 		secondary: `
-			bg-neutral-200 text-neutral-900 dark:bg-neutral-700/80 dark:text-neutral-200
-			hover:bg-neutral-300 dark:hover:bg-neutral-500/90
-			focus:ring-neutral-600/40
+			bg-neutral-50 dark:bg-neutral-900/50
+			text-neutral-700 dark:text-neutral-300
+			border border-neutral-200 dark:border-neutral-800
+			hover:bg-neutral-100 dark:hover:bg-neutral-800/80
+			hover:border-neutral-300 dark:hover:border-neutral-700/40
+			focus:ring-neutral-300 dark:focus:ring-neutral-700
+			focus:ring-offset-2 focus:ring-offset-neutral-50 dark:focus:ring-offset-neutral-900
 		`,
 		outline: `
-			bg-transparent text-neutral-900 dark:text-neutral-100
-			border border-neutral-300 dark:border-neutral-600/50
-			backdrop-blur-sm
-			hover:bg-neutral-100/50 dark:hover:bg-neutral-700/50
-			focus:ring-neutral-600/40
+			bg-transparent
+			text-neutral-700 dark:text-neutral-300
+			border border-neutral-300 dark:border-neutral-700/50
+			hover:bg-neutral-50 dark:hover:bg-neutral-900/50
+			hover:border-neutral-400 dark:hover:border-neutral-700
+			focus:ring-neutral-300 dark:focus:ring-neutral-700
+			focus:ring-offset-2 focus:ring-offset-neutral-100 dark:focus:ring-offset-neutral-900
 		`,
 		ghost: `
-			bg-transparent text-neutral-900 dark:text-neutral-100
-			hover:bg-neutral-100/40 dark:hover:bg-neutral-700/40
-			focus:ring-neutral-600/30
+			bg-transparent
+			text-neutral-700 dark:text-neutral-300
+			hover:bg-neutral-100 dark:hover:bg-neutral-800/50
+			focus:ring-neutral-300 dark:focus:ring-neutral-700
+			focus:ring-offset-2 focus:ring-offset-neutral-50 dark:focus:ring-offset-neutral-900
 		`,
 		destructive: `
-			bg-red-600 text-white hover:bg-red-700 focus:ring-red-600/30
+			bg-red-600 dark:bg-red-600
+			text-white dark:text-white
+			hover:bg-red-700 dark:hover:bg-red-700
+			focus:ring-red-400 dark:focus:ring-red-500
+			focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-neutral-900
 		`,
 	};
 
 	const isDisabled = disabled || loading;
 
-	return (
-		<button
-			type={type}
-			onClick={onClick}
-			disabled={isDisabled}
-			className={`${base} ${sizeMap[size]} ${variantMap[variant]} ${className}`}
-			aria-busy={loading}
-		>
-			{loading ? (
-				<span className="flex items-center gap-2">
+	const renderContent = () => {
+		if (loading) {
+			return (
+				<>
 					<svg
 						className="w-4 h-4 animate-spin"
 						xmlns="http://www.w3.org/2000/svg"
@@ -89,7 +105,7 @@ export const FireButton: React.FC<FireButtonProps> = ({
 							cy="12"
 							r="10"
 							stroke="currentColor"
-							strokeWidth="4"
+							strokeWidth="3"
 						/>
 						<path
 							className="opacity-75"
@@ -97,10 +113,37 @@ export const FireButton: React.FC<FireButtonProps> = ({
 							d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
 						/>
 					</svg>
-				</span>
-			) : (
-				children
-			)}
+				</>
+			);
+		}
+
+		return (
+			<>
+				{icon && iconPosition === 'left' && (
+					<span className="flex-shrink-0 transition-transform duration-200 group-hover:scale-110">
+						{icon}
+					</span>
+				)}
+				{children}
+				{icon && iconPosition === 'right' && (
+					<span className="flex-shrink-0 transition-transform duration-200 group-hover:scale-110">
+						{icon}
+					</span>
+				)}
+			</>
+		);
+	};
+
+	return (
+		<button
+			type={type}
+			onClick={onClick}
+			disabled={isDisabled}
+			className={`${base} ${sizeMap[size]} ${variantMap[variant]} ${className}`.trim()}
+			aria-busy={loading}
+			aria-disabled={isDisabled}
+		>
+			{renderContent()}
 		</button>
 	);
 };
