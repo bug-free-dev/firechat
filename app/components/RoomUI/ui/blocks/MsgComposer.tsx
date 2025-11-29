@@ -125,7 +125,7 @@ const MessageComposer: React.FC<MessageComposerProps> = memo(
 		);
 
 		return (
-			<div className="sticky bottom-0 z-50 bg-white">
+			<div className="sticky bottom-0 z-50 bg-white dark:bg-neutral-900">
 				<div className="max-w-4xl mx-auto px-4 sm:px-6 py-3">
 					{replyingTo && (
 						<div className="mb-2">
@@ -139,7 +139,17 @@ const MessageComposer: React.FC<MessageComposerProps> = memo(
 					)}
 
 					<div className="flex items-end gap-3">
-						<div className="flex-1 relative rounded-2xl overflow-hidden border border-neutral-200 bg-white focus-within:ring focus-within:ring-neutral-800/10 transition-colors">
+						{/* Input surface: adapts to light/dark, subtle border in light, muted in dark */}
+						<div
+							className="
+								flex-1 relative rounded-2xl overflow-hidden
+								border border-neutral-200 bg-white
+								dark:border-neutral-700 dark:bg-neutral-800
+								focus-within:ring focus-within:ring-neutral-800/10
+								dark:focus-within:ring-neutral-200/10
+								transition-colors
+							"
+						>
 							<textarea
 								ref={textareaRef}
 								value={text}
@@ -149,7 +159,12 @@ const MessageComposer: React.FC<MessageComposerProps> = memo(
 								rows={1}
 								autoFocus
 								disabled={disabled}
-								className="w-full resize-none scroll bg-transparent px-4 py-2 text-sm placeholder:text-neutral-400 outline-none border-0 disabled:opacity-50 disabled:cursor-not-allowed"
+								className="
+									w-full resize-none bg-transparent px-4 py-2 text-sm
+									placeholder:text-neutral-400 dark:placeholder:text-neutral-500
+									outline-none border-0 disabled:opacity-50 disabled:cursor-not-allowed
+									text-neutral-900 dark:text-neutral-50
+								"
 								style={{
 									height: 'auto',
 								}}
@@ -161,13 +176,22 @@ const MessageComposer: React.FC<MessageComposerProps> = memo(
 							type="button"
 							disabled={!hasContent || disabled || isPending}
 							aria-label="Send message"
-							className="h-[44px] w-[44px] shrink-0 flex items-center justify-center bg-neutral-900 hover:bg-neutral-800 active:scale-95 disabled:bg-neutral-200 disabled:cursor-not-allowed text-white rounded-2xl transition-transform duration-100"
+							className={`
+								h-[44px] w-[44px] shrink-0 flex items-center justify-center
+								rounded-2xl transition-transform duration-100 active:scale-95
+								
+								bg-neutral-900 text-white hover:bg-neutral-800
+								disabled:bg-neutral-200 disabled:text-neutral-400 disabled:cursor-not-allowed
+
+								dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-100
+								dark:disabled:bg-neutral-700 dark:disabled:text-neutral-400
+							`}
 						>
 							<FaPaperPlane className="w-4 h-4" />
 						</button>
 					</div>
 
-					<div className="mt-2 text-xs text-neutral-400">
+					<div className="mt-2 text-xs text-neutral-400 dark:text-neutral-500">
 						Press Enter to send, Shift+Enter for new line.
 					</div>
 				</div>

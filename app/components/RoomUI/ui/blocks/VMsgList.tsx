@@ -51,8 +51,12 @@ const VMsgList = memo(
 				<div className="flex items-center justify-center h-full">
 					<div className="text-center space-y-3">
 						<div className="text-5xl opacity-20">💬</div>
-						<div className="text-sm font-medium text-neutral-500">No messages yet</div>
-						<div className="text-xs text-neutral-400">Start the conversation</div>
+						<div className="text-sm font-medium text-neutral-500 dark:text-neutral-400">
+							No messages yet
+						</div>
+						<div className="text-xs text-neutral-400 dark:text-neutral-500">
+							Start the conversation
+						</div>
 					</div>
 				</div>
 			);
@@ -67,7 +71,7 @@ const VMsgList = memo(
 					<div className="max-w-4xl mx-auto space-y-1">
 						{isFetching && hasMore && (
 							<div className="flex items-center justify-center py-4">
-								<div className="animate-spin rounded-full h-4 w-4 border-2 border-neutral-300 border-t-yellow-500" />
+								<div className="animate-spin rounded-full h-4 w-4 border-2 border-neutral-300 border-t-yellow-500 dark:border-neutral-600 dark:border-t-yellow-400" />
 							</div>
 						)}
 

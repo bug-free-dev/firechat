@@ -152,7 +152,7 @@ export const createMarkdownComponents = (): Components => ({
 
 	a: ({ children, href, ...props }: AnchorHTMLAttributes<HTMLAnchorElement>) => (
 		<a
-			className="underline underline-offset-2 hover:opacity-70 transition-opacity font-medium text-sky"
+			className="underline underline-offset-2 hover:opacity-70 transition-opacity font-medium text-sky-500"
 			href={href}
 			target={href?.startsWith('http') ? '_blank' : undefined}
 			rel={href?.startsWith('http') ? 'noopener noreferrer' : undefined}
@@ -187,7 +187,7 @@ export const createMarkdownComponents = (): Components => ({
 		if (isInline) {
 			return (
 				<code
-					className="px-1.5 py-0.5 rounded font-mono text-sm bg-neutral-100 text-neutral-700"
+					className="px-1.5 py-0.5 rounded font-mono text-sm bg-neutral-100/40 text-neutral-900 font-italic"
 					{...props}
 				>
 					{children}

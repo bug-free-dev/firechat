@@ -6,7 +6,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
 
 import Orchestra from '@/app/components/RoomUI/ui/main/Orchestra';
-import { FireLoader, FirePrompt } from '@/app/components/UI';
+import { FireButton,FireLoader, FirePrompt } from '@/app/components/UI';
 import * as messageAPI from '@/app/lib/api/messageAPI';
 import * as sessionAPI from '@/app/lib/api/sessionAPI';
 import { rtdb } from '@/app/lib/firebase/FireClient';
@@ -442,28 +442,26 @@ const Room: React.FC = React.memo(() => {
 
 	if (accessState === 'denied' || error) {
 		return (
-			<div className="flex flex-col items-center justify-center h-screen bg-neutral-50 gap-4 px-4">
+			<div className="flex flex-col items-center justify-center h-screen bg-neutral-50 gap-4 px-4 dark:bg-neutral-900">
 				<p className="text-neutral-700 font-medium text-center max-w-md">{error}</p>
-				<button
+				<FireButton
 					onClick={() => router.push('/desk')}
-					className="px-6 py-2 bg-neutral-800 text-white rounded-lg hover:bg-neutral-700 transition"
 				>
 					Back to Desk
-				</button>
+				</FireButton>
 			</div>
 		);
 	}
 
 	if (!session || !profile) {
 		return (
-			<div className="flex flex-col items-center justify-center h-screen bg-neutral-50 gap-4">
-				<p className="text-neutral-600">Session unavailable</p>
-				<button
+			<div className="flex flex-col items-center justify-center h-screen bg-neutral-50 gap-4 px-4 dark:bg-neutral-900">
+				<p className="text-neutral-700 font-medium text-center max-w-md">{error}</p>
+				<FireButton
 					onClick={() => router.push('/desk')}
-					className="px-6 py-2 bg-neutral-800 text-white rounded-lg hover:bg-neutral-700 transition"
 				>
 					Back to Desk
-				</button>
+				</FireButton>
 			</div>
 		);
 	}

@@ -51,7 +51,7 @@ const storage = {
 		try {
 			localStorage.setItem(key, value);
 		} catch {
-			// Ignore storage errors (quota exceeded, etc.)
+			// Ignore storage errors
 		}
 	},
 	removeItem: (key: string): void => {
@@ -202,7 +202,6 @@ export const Memory = (() => {
 		return result;
 	};
 
-	// Initialize cleanup only in browser
 	if (isBrowser) {
 		scheduleCleanup();
 	}

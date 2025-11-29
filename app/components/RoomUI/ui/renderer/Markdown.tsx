@@ -24,6 +24,7 @@ export interface MarkdownProps {
 	className?: string;
 	initialTheme?: string;
 	showThemeSelector?: boolean;
+	isDark?: boolean;
 }
 
 const Markdown: React.FC<MarkdownProps> = memo(function Markdown({
@@ -31,6 +32,7 @@ const Markdown: React.FC<MarkdownProps> = memo(function Markdown({
 	className = '',
 	initialTheme = 'atom-one-dark',
 	showThemeSelector = false,
+	isDark = false,
 }) {
 	const [expanded, setExpanded] = useState(false);
 	const [theme, setTheme] = useState(initialTheme);
@@ -63,7 +65,7 @@ const Markdown: React.FC<MarkdownProps> = memo(function Markdown({
 
 	return (
 		<div className={`markdown-renderer relative ${className}`}>
-			<div className="break-words overflow-hidden z-0">
+			<div className="break-words overflow-hidden w-full">
 				<ReactMarkdown
 					remarkPlugins={remarkPlugins}
 					rehypePlugins={rehypePlugins}
@@ -76,7 +78,9 @@ const Markdown: React.FC<MarkdownProps> = memo(function Markdown({
 			{needsTruncate && (
 				<button
 					onClick={() => setExpanded((prev) => !prev)}
-					className="mt-3 text-xs hover:text-neutral-500 font-medium transition-colors"
+					className={`mt-3 text-xs font-medium transition-colors underline decoration-dashed underline-offset-4 md:no-underline md:hover:underline md:decoration-solid ${
+						isDark ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-500'
+					}`}
 					type="button"
 					aria-expanded={expanded}
 					aria-label={expanded ? 'Show less content' : 'Show more content'}
@@ -85,16 +89,19 @@ const Markdown: React.FC<MarkdownProps> = memo(function Markdown({
 				</button>
 			)}
 
-			{/* Theme picker at the bottom */}
-			{showThemeSelector && (
-				<div className="mt-4 w-full flex justify-center">
+			<div
+				className={`overflow-hidden transition-all duration-300 ease-in-out ${
+					showThemeSelector ? 'max-h-96 opacity-100 mt-4' : 'max-h-0 opacity-0 mt-0'
+				}`}
+			>
+				<div className="w-full flex justify-center">
 					<InlineMdThemePicker
 						activeTheme={theme}
 						onChange={handleThemeChange}
 						isVisible={showThemeSelector}
 					/>
 				</div>
-			)}
+			</div>
 		</div>
 	);
 });

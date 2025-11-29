@@ -1,5 +1,3 @@
-import type { CSSProperties } from 'react';
-
 export const LONG_PRESS_DURATION = 500;
 export const ACTION_AUTO_HIDE_MS = 3000;
 export const MAX_MESSAGE_LENGTH = 500;
@@ -10,26 +8,6 @@ export const AUTO_SCROLL_THRESHOLD = 60;
 export const GROUP_TIME_MS = 120_000;
 
 export const DEFAULT_WIDTH = 220;
-
-export const STYLE: CSSProperties = {
-	gap: 4,
-	left: 5,
-	width: DEFAULT_WIDTH,
-	display: 'flex',
-	border: '1px solid rgba(0,0,0,0.08)',
-	bottom: '1.5rem',
-	zIndex: 100000,
-	padding: 5,
-	position: 'absolute',
-	maxWidth: DEFAULT_WIDTH,
-	background: 'white',
-	visibility: 'hidden',
-	borderRadius: 15,
-	flexWrap: 'wrap',
-	justifyContent: 'center',
-	alignItems: 'center',
-	boxShadow: '0 6px 18px rgba(0,0,0,0.12)',
-};
 
 export const MAX_LENGTH = 500;
 export const HIGHLIGHT_LINK_ID = 'highlight-theme';

@@ -113,7 +113,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 			const now = Date.now();
 			const uid = fbUser.uid;
 
-			// Fast path: return cached profile if valid
 			if (!forceRefresh) {
 				const cached = profileCache.get(uid);
 				if (cached && now - cached.timestamp < PROFILE_CACHE_TTL) {
@@ -190,7 +189,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 		[]
 	);
 
-	// Sync refs immediately for fast access
 	useEffect(() => {
 		profileRef.current = profile;
 	}, [profile]);
@@ -199,7 +197,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 		firebaseUserRef.current = firebaseUser;
 	}, [firebaseUser]);
 
-	// Main auth state listener
 	useEffect(() => {
 		mountedRef.current = true;
 
@@ -220,7 +217,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 			try {
 				const fetchedProfile = await fetchProfile(fbUser);
 
-				// Double-check user hasn't changed during fetch
 				if (!mountedRef.current || firebaseUserRef.current?.uid !== fbUser.uid) {
 					return;
 				}

@@ -3,31 +3,28 @@
 		transform: translateX(12px);
 		opacity: 0;
 	}
-
 	to {
 		transform: translateX(0);
 		opacity: 1;
 	}
 }
 
-/* Slide-out to right */
 @keyframes fc-slide-out-right {
 	from {
 		transform: translateX(0);
 		opacity: 1;
 	}
-
 	to {
 		transform: translateX(12px);
 		opacity: 0;
 	}
 }
+
 @keyframes fade-in {
 	from {
 		opacity: 0;
 		transform: translate3d(0, 3px, 0);
 	}
-
 	to {
 		opacity: 1;
 		transform: translate3d(0, 0, 0);
@@ -39,7 +36,6 @@
 		opacity: 0;
 		transform: translate3d(0, 10px, 0);
 	}
-
 	to {
 		opacity: 1;
 		transform: translate3d(0, 0, 0);
@@ -51,7 +47,6 @@
 		opacity: 0;
 		transform: translate3d(0, 8px, 0);
 	}
-
 	to {
 		opacity: 1;
 		transform: translate3d(0, 0, 0);
@@ -63,7 +58,6 @@
 		opacity: 0;
 		transform: translate3d(0, -8px, 0);
 	}
-
 	to {
 		opacity: 1;
 		transform: translate3d(0, 0, 0);
@@ -75,7 +69,6 @@
 	100% {
 		transform: translate3d(0, 0, 0) rotate(0deg);
 	}
-
 	50% {
 		transform: translate3d(0, -8px, 0) rotate(1.5deg);
 	}
@@ -86,11 +79,9 @@
 	100% {
 		transform: translate3d(0, 0, 0) rotate(0deg);
 	}
-
 	33% {
 		transform: translate3d(6px, -6px, 0) rotate(2deg);
 	}
-
 	66% {
 		transform: translate3d(-6px, 6px, 0) rotate(-2deg);
 	}
@@ -102,7 +93,6 @@
 		opacity: 1;
 		transform: scale(1);
 	}
-
 	50% {
 		opacity: 0.8;
 		transform: scale(1.04);
@@ -114,7 +104,6 @@
 		opacity: 0;
 		transform: scale(0.96);
 	}
-
 	to {
 		opacity: 1;
 		transform: scale(1);
@@ -125,7 +114,6 @@
 	0% {
 		background-position: -1000px 0;
 	}
-
 	100% {
 		background-position: 1000px 0;
 	}
@@ -136,7 +124,6 @@
 	100% {
 		background-position: 0% 50%;
 	}
-
 	50% {
 		background-position: 100% 50%;
 	}
@@ -148,7 +135,6 @@
 	100% {
 		transform: translate3d(0, 0, 0);
 	}
-
 	30% {
 		transform: translate3d(0, -4px, 0);
 	}
@@ -158,77 +144,112 @@
 	0% {
 		transform: rotate(0deg);
 	}
-
 	100% {
 		transform: rotate(360deg);
 	}
 }
 
-/* Tailwind utility class for the wave animation */
-.animate-wave {
-	display: inline-block;
-	animation: wave 0.8s infinite ease-in-out;
-}
+@layer utilities {
+	.anim-will-change {
+		will-change: transform, opacity;
+		backface-visibility: hidden;
+	}
 
-/* Optional: staggered delay for multiple dots */
-.dot:nth-child(1) {
-	animation-delay: 0s;
-}
+	/* fc slide in / out — matches original name used in components */
+	.fc-slide-in-left {
+		animation: fc-slide-in-left 200ms cubic-bezier(0.16, 1, 0.3, 1) both;
+	}
 
-.dot:nth-child(2) {
-	animation-delay: 0.15s;
-}
+	.fc-slide-out-right {
+		animation: fc-slide-out-right 200ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+	}
 
-.dot:nth-child(3) {
-	animation-delay: 0.3s;
-}
+	/* Fade & slide utilities (for mount/unmount feel) */
+	.animate-fade-in {
+		animation: fade-in 350ms cubic-bezier(0.16, 1, 0.3, 1) both;
+	}
 
-/* Animate utility classes (names preserved exactly) */
+	.animate-fade-in-up {
+		animation: fade-in-up 400ms cubic-bezier(0.16, 1, 0.3, 1) both;
+	}
 
-.animate-fade-in {
-	animation: fade-in 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
+	.animate-slide-up {
+		animation: slide-up 300ms cubic-bezier(0.16, 1, 0.3, 1) both;
+	}
 
-.animate-fade-in-up {
-	animation: fade-in-up 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
+	.animate-slide-down {
+		animation: slide-down 300ms cubic-bezier(0.16, 1, 0.3, 1) both;
+	}
 
-.animate-slide-up {
-	animation: slide-up 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
+	.animate-scale-in {
+		animation: scale-in 250ms cubic-bezier(0.16, 1, 0.3, 1) both;
+	}
 
-.animate-slide-down {
-	animation: slide-down 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
+	/* continuous / looping animations */
+	.animate-float-elegant {
+		animation: float-elegant 2500ms ease-in-out infinite;
+	}
 
-.animate-float-elegant {
-	animation: float-elegant 2.5s ease-in-out infinite;
-}
+	.animate-drift {
+		animation: drift 4000ms ease-in-out infinite;
+	}
 
-.animate-drift {
-	animation: drift 4s ease-in-out infinite;
-}
+	.animate-pulse-soft {
+		animation: pulse-soft 2000ms ease-in-out infinite;
+	}
 
-.animate-pulse-soft {
-	animation: pulse-soft 2s ease-in-out infinite;
-}
+	.animate-gradient {
+		background-size: 200% 200%;
+		animation: gradient-shift 4000ms ease infinite;
+	}
 
-.animate-scale-in {
-	animation: scale-in 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
+	.animate-shimmer {
+		background-size: 200% 100%;
+		animation: shimmer 1200ms linear infinite;
+	}
 
-.animate-gradient {
-	background-size: 200% 200%;
-	animation: gradient-shift 4s ease infinite;
-}
+	.animate-wave {
+		display: inline-block;
+		animation: wave 800ms ease-in-out infinite;
+	}
 
-/* Reduced motion support */
-@media (prefers-reduced-motion: reduce) {
-	*,
-	*::before,
-	*::after {
-		animation-duration: 0.01ms !important;
-		animation-iteration-count: 1 !important;
-		transition-duration: 0.01ms !important;
+	.animate-border-spin {
+		display: inline-block;
+		animation: border-spin 1200ms linear infinite;
+	}
+
+	/* helper: small, subtle defaults for clickable icon/btn animations */
+	.anim-subtle {
+		transition:
+			transform 140ms cubic-bezier(0.4, 0, 0.2, 1),
+			opacity 140ms;
+	}
+
+	/* dot staggering (preserve original behaviour) */
+	.dot:nth-child(1) {
+		animation-delay: 0s;
+	}
+	.dot:nth-child(2) {
+		animation-delay: 0.15s;
+	}
+	.dot:nth-child(3) {
+		animation-delay: 0.3s;
+	}
+
+	/* keep original animate-* names (redundant but explicit) */
+	.animate-fade-in-up,
+	.animate-fade-in,
+	.animate-slide-up,
+	.animate-slide-down,
+	.animate-scale-in,
+	.animate-gradient,
+	.animate-wave,
+	.animate-shimmer,
+	.animate-float-elegant,
+	.animate-drift,
+	.animate-pulse-soft,
+	.animate-border-spin {
+		/* ensure we hint to the browser these will change visual properties */
+		will-change: transform, opacity, background-position;
 	}
 }

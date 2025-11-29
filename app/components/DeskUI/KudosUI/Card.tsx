@@ -39,7 +39,7 @@ export const KudosCard: React.FC<KudosCardProps> = ({
 						key={a}
 						onClick={() => onQuickSend(user, a)}
 						disabled={loading || a > currentUserKudos}
-						className={`flex-1 py-1.5 rounded-lg text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-neutral-800 focus:ring-offset-2 ${
+						className={`flex-1 py-1.5 rounded-lg text-sm font-medium transition-colors focus:outline-none dark:focus:ring-offset-neutral-900 focus:ring-2 focus:ring-neutral-800 focus:ring-offset-2 ${
 							a > currentUserKudos
 								? 'bg-neutral-200 dark:bg-neutral-700/40 text-neutral-500 dark:text-neutral-400 cursor-not-allowed'
 								: 'bg-neutral-800 dark:bg-neutral-800/50 text-neutral-50 dark:text-neutral-100 hover:bg-neutral-700 dark:hover:bg-neutral-700/60'

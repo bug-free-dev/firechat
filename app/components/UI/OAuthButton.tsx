@@ -34,6 +34,7 @@ export const OAuthButton: React.FC<OAuthButtonProps> = ({
     active:bg-neutral-100/10
     focus:outline-none focus:ring-2 focus:ring-zinc-400/30
   focus:ring-offset-2 focus:ring-offset-white
+  active:scale-[0.98]
 
   dark:bg-neutral-800/30
   dark:text-neutral-200

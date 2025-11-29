@@ -146,16 +146,13 @@ export default function Slidy() {
 				avatarUrl: finalAvatarUrl,
 			};
 
-			// Submit to server
 			const response = await launchUserProfile(firebaseUser.uid, payload);
 
 			if (response.success) {
 				toast.success(MESSAGES.SUCCESS.LAUNCH);
 
-				// Clear cached data
 				Memory.clearAll();
 
-				// Refresh profile to trigger redirect
 				await refreshProfile();
 			} else {
 				if (response.reason === 'USERNAME_TAKEN') {

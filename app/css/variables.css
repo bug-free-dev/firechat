@@ -10,7 +10,7 @@
 	--font-quicksand: 'Quicksand', -apple-system, system-ui, BlinkMacSystemFont, sans-serif;
 	--font-main: var(--font-quicksand);
 
-	/* Theme */
+	/* Theme colors (light) */
 	--fc-bg: #ffffff;
 	--fc-text: #111827;
 	--fc-muted: #f3f4f6;
@@ -29,6 +29,8 @@
 	--transition: all 0.16s cubic-bezier(0.4, 0, 0.2, 1);
 	--transition-fast: all 0.08s cubic-bezier(0.4, 0, 0.2, 1);
 }
+
+/* dark tokens — we keep the same shape so components can use vars */
 :root.dark {
 	--fc-bg: #18181b;
 	--fc-text: #e6e6e6;
@@ -44,6 +46,7 @@
 	--scroll-thumb-hover: rgba(255, 255, 255, 0.14);
 }
 
+/* small font helper classes (kept as simple helpers) */
 .font-knewave {
 	font-family: var(--font-knewave);
 }

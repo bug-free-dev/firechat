@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { Toaster } from 'react-hot-toast';
 
-import { useThemedToast } from '@/app/lib/theme/hook/useThemedToast';
+import { useThemedToast } from '@/app/lib/theme/hooks/useThemedToast';
 
 export function ThemedToaster() {
 	const [mounted, setMounted] = useState(false);

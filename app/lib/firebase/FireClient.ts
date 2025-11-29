@@ -16,16 +16,11 @@ const firebaseConfig = {
 
 const app: FirebaseApp = getApps().length ? getApp() : initializeApp(firebaseConfig);
 
-// Auth (bound to app)
 export const auth: Auth = getAuth(app);
 
-// Providers
 export const googleProvider = new GoogleAuthProvider();
 export const githubProvider = new GithubAuthProvider();
 
-// Realtime DB
-const rtdbUrl = process.env.NEXT_PUBLIC_FIREBASE_RTDB_URL;
-export const rtdb = getDatabase(app, rtdbUrl);
+export const rtdb = getDatabase(app);
 
-// Export app if you need it elsewhere
 export { app };

@@ -123,7 +123,7 @@ export const FireSlide: React.FC<FireSlideProps> = ({
 				{/* Main content */}
 				<div className="flex flex-col h-full bg-white dark:bg-neutral-900 shadow-xl overflow-hidden">
 					{/* Header */}
-					<div className="flex-shrink-0 border-b border-neutral-200/60 dark:border-neutral-700/40 bg-white dark:bg-neutral-900">
+					<div className="flex-shrink-0 border-b border-neutral-200/40 dark:border-neutral-700/40 bg-white dark:bg-neutral-900">
 						{showBranding && (
 							<div className="px-4 pt-4 pb-2 border-b border-neutral-100 dark:border-neutral-700">
 								<FireHeader showSubtitle={false} size="sm" className="mb-0" />

@@ -1,5 +1,6 @@
 'use client';
 
+import { useTheme } from 'next-themes';
 import React, { memo, useEffect, useRef, useState } from 'react';
 
 import { THEMES } from '@/app/components/RoomUI/constants';
@@ -16,6 +17,9 @@ const InlineThemePicker: React.FC<InlineThemePickerProps> = memo(
 		const [isDragging, setIsDragging] = useState(false);
 		const [startX, setStartX] = useState(0);
 		const [scrollLeft, setScrollLeft] = useState(0);
+		const { theme, systemTheme } = useTheme();
+		const currentTheme = theme === 'system' ? systemTheme : theme;
+		const isDark = currentTheme === 'dark';
 
 		useEffect(() => {
 			if (isVisible && scrollRef.current) {
@@ -27,95 +31,56 @@ const InlineThemePicker: React.FC<InlineThemePickerProps> = memo(
 			}
 		}, [isVisible, activeTheme]);
 
-		const handleMouseDown = (e: React.MouseEvent) => {
+		const handleDragStart = (pageX: number) => {
 			if (!scrollRef.current) return;
 			setIsDragging(true);
-			setStartX(e.pageX - scrollRef.current.offsetLeft);
+			setStartX(pageX - scrollRef.current.offsetLeft);
 			setScrollLeft(scrollRef.current.scrollLeft);
 		};
 
-		const handleMouseMove = (e: React.MouseEvent) => {
+		const handleDragMove = (pageX: number) => {
 			if (!isDragging || !scrollRef.current) return;
-			e.preventDefault();
-			const x = e.pageX - scrollRef.current.offsetLeft;
-			const walk = (x - startX) * 2;
+			const walk = (pageX - startX) * 2;
 			scrollRef.current.scrollLeft = scrollLeft - walk;
-		};
-
-		const handleMouseUp = () => {
-			setIsDragging(false);
-		};
-
-		const handleMouseLeave = () => {
-			setIsDragging(false);
-		};
-
-		const handleTouchStart = (e: React.TouchEvent) => {
-			if (!scrollRef.current) return;
-			setIsDragging(true);
-			setStartX(e.touches[0].pageX - scrollRef.current.offsetLeft);
-			setScrollLeft(scrollRef.current.scrollLeft);
-		};
-
-		const handleTouchMove = (e: React.TouchEvent) => {
-			if (!isDragging || !scrollRef.current) return;
-			const x = e.touches[0].pageX - scrollRef.current.offsetLeft;
-			const walk = (x - startX) * 2;
-			scrollRef.current.scrollLeft = scrollLeft - walk;
-		};
-
-		const handleTouchEnd = () => {
-			setIsDragging(false);
 		};
 
 		if (!isVisible) return null;
 
 		return (
-			<div
-				className={`
-      mt-2 mb-1 overflow-hidden rounded-lg`}
-			>
+			<div className="mt-2 mb-1 overflow-hidden rounded-xl backdrop-blur-sm shadow-lg p-1">
 				<div
 					ref={scrollRef}
-					className={`
-          flex gap-2 overflow-x-auto px-2 py-2
-          scrollbar-hide cursor-grab active:cursor-grabbing
-          ${isDragging ? 'select-none' : ''}
-        `}
-					onMouseDown={handleMouseDown}
-					onMouseMove={handleMouseMove}
-					onMouseUp={handleMouseUp}
-					onMouseLeave={handleMouseLeave}
-					onTouchStart={handleTouchStart}
-					onTouchMove={handleTouchMove}
-					onTouchEnd={handleTouchEnd}
-					style={{
-						scrollbarWidth: 'none',
-						msOverflowStyle: 'none',
-					}}
+					className={`flex gap-2 overflow-x-auto px-2 py-2 scrollbar-hide cursor-grab active:cursor-grabbing ${
+						isDragging ? 'select-none' : ''
+					}`}
+					onMouseDown={(e) => handleDragStart(e.pageX)}
+					onMouseMove={(e) => handleDragMove(e.pageX)}
+					onMouseUp={() => setIsDragging(false)}
+					onMouseLeave={() => setIsDragging(false)}
+					onTouchStart={(e) => handleDragStart(e.touches[0].pageX)}
+					onTouchMove={(e) => handleDragMove(e.touches[0].pageX)}
+					onTouchEnd={() => setIsDragging(false)}
+					style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
 				>
 					{THEMES.map((theme) => {
 						const isActive = activeTheme === theme.id;
+						const activeBg = isDark
+							? 'bg-zinc-700/60 ring-1 ring-zinc-400 text-white'
+							: 'bg-neutral-200 ring-1 ring-neutral-400 text-black';
+						const inactiveBg = isDark
+							? 'bg-zinc-800/40 ring-1 ring-zinc-600 text-zinc-300'
+							: 'bg-neutral-50 ring-1 ring-neutral-300 text-neutral-800';
 
 						return (
 							<button
 								key={theme.id}
 								onClick={(e) => {
 									e.stopPropagation();
-									if (!isDragging) {
-										onChange(theme.id);
-									}
+									if (!isDragging) onChange(theme.id);
 								}}
-								className={`
-                flex-shrink-0 px-3 py-1.5 rounded-md
-                text-[10px] font-medium whitespace-nowrap
-                transition-all duration-150
-                ${
-							isActive
-								? 'bg-neutral-500/20 ring-2 ring-neutral-400 text-neutral-300'
-								: 'bg-neutral-50 ring-2 ring-neutral-400 text-neutral-900'
-						}
-              `}
+								className={`flex-shrink-0 px-3 py-1.5 rounded-md text-[10px] font-medium whitespace-nowrap transition-all duration-150 ${
+									isActive ? activeBg : inactiveBg
+								} hover:scale-105`}
 								type="button"
 							>
 								{theme.name}

@@ -40,7 +40,7 @@ export function Quirky({ value, onChange, step = 3, total = 7 }: QuirkyProps) {
 	};
 
 	return (
-		<div className="relative w-full h-full min-h-[700px] flex items-center justify-center overflow-hidden bg-white dark:from-neutral-900">
+		<div className="relative w-full h-full min-h-[700px] flex items-center justify-center overflow-hidden bg-white dark:bg-neutral-900">
 			<div className="absolute inset-0 pointer-events-none overflow-hidden">
 				<div className="absolute top-[10%] right-[10%] text-pink-400/40 dark:text-pink-400/20">
 					<RiMagicLine className="w-11 h-11 animate-drift" />

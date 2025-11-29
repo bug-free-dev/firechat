@@ -3,38 +3,34 @@
 		width: 6px;
 		height: 6px;
 	}
-
 	.scroll::-webkit-scrollbar-track {
 		background: transparent;
 	}
-
 	.scroll::-webkit-scrollbar-thumb {
-		background-color: var(--scroll-thumb);
 		border-radius: 999px;
 		transition: background-color 160ms ease;
+		background-color: var(--scroll-thumb);
 	}
-
 	.scroll::-webkit-scrollbar-thumb:hover {
 		background-color: var(--scroll-thumb-hover);
 	}
 
 	.fc-btn {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
+		@apply inline-flex items-center justify-center font-medium rounded-full;
 		width: 36px;
 		height: 36px;
 		padding: 0;
 		border-radius: 9999px;
-		border: 1px solid var(--fc-border);
+
 		background: var(--fc-bg);
 		color: var(--fc-text);
+		border: 1px solid var(--fc-border);
+
 		font-size: 18px;
 		line-height: 1;
 		cursor: pointer;
 		user-select: none;
 
-		/* micro interactions */
 		transition:
 			transform 120ms ease,
 			background-color 120ms ease,
@@ -46,18 +42,17 @@
 	}
 
 	.fc-btn--primary {
+		@apply rounded-full;
 		background: var(--fc-accent);
 		color: var(--fc-accent-foreground, #fff);
 		border-color: transparent;
 		box-shadow: 0 8px 20px rgba(16, 24, 40, 0.06);
 		transform-origin: center;
 	}
-
 	.fc-btn--primary:hover {
 		filter: brightness(0.98);
 		transform: translateY(-1px);
 	}
-
 	.fc-btn--primary:active {
 		background: var(--fc-accent-press);
 		transform: scale(0.98);
@@ -69,17 +64,14 @@
 		color: var(--fc-text);
 		border-color: var(--fc-border);
 	}
-
 	.fc-btn--ghost {
 		background: transparent;
 		border-color: transparent;
 		color: var(--fc-text);
 	}
-
 	.fc-btn--ghost:hover {
 		background: color-mix(in srgb, var(--fc-text) 6%, transparent);
 	}
-
 	.fc-btn--muted {
 		background: var(--fc-muted);
 		color: var(--fc-text);
@@ -89,29 +81,23 @@
 	.fc-btn:focus {
 		outline: none;
 	}
-
 	.fc-btn:focus-visible {
 		box-shadow: 0 0 0 4px var(--fc-ring);
 		border-radius: 9999px;
 	}
 
-	/* Disabled */
 	.fc-btn[disabled] {
+		@apply pointer-events-none;
 		opacity: var(--fc-disabled-opacity, 0.56);
-		cursor: not-allowed;
 		transform: none;
-		pointer-events: none;
 		filter: grayscale(0.12) opacity(0.9);
 	}
-
 	.fc-btn:active {
 		transform: scale(0.96);
 	}
 
 	.fc-btn-group {
-		display: inline-flex;
-		gap: 8px;
-		align-items: center;
+		@apply inline-flex gap-2 items-center;
 	}
 	.fc-btn[data-i] {
 		animation-delay: calc(var(--i, 0) * 70ms);

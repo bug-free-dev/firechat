@@ -24,14 +24,17 @@ const TypingIndicator: React.FC<TypingIndicatorProps> = memo(({ typingUsers }) =
 		<div
 			role="status"
 			aria-live="polite"
-			className="ml-2 relative inline-flex items-center gap-2 px-4 rounded-3xl 
-        bg-white/80 backdrop-blur-md border border-neutral-200/40
-        text-neutral-800 text-sm select-none z-50"
+			className="
+        ml-2 inline-flex items-center gap-2 px-3 py-1 rounded-2xl
+        text-sm font-medium truncate max-w-[14rem] select-none z-50
+        backdrop-blur-md border bg-white/80 border-neutral-200 text-neutral-800
+        dark:bg-neutral-800/70 dark:border-neutral-700 dark:text-neutral-100
+      "
 		>
 			<div className="flex items-center justify-center">
 				<WaveLoader size={2} gap={1} />
 			</div>
-			<span className="truncate max-w-[14rem] font-medium">{label}</span>
+			<span className="truncate">{label}</span>
 		</div>
 	);
 });

@@ -336,7 +336,7 @@ const Orchestra: React.FC<OrchestraProps> = memo(
 		const memoizedProfiles = useMemo(() => profiles, [profiles]);
 
 		return (
-			<div className="flex flex-col h-screen bg-neutral-50 overflow-hidden">
+			<div className="flex flex-col h-screen bg-neutral-50 dark:bg-neutral-900 overflow-hidden">
 				{/* Top Bar with Tabs */}
 				<div className="flex-none">
 					<RoomTopBar
@@ -354,7 +354,7 @@ const Orchestra: React.FC<OrchestraProps> = memo(
 				</div>
 
 				{/* Content Area */}
-				<div className="flex-1 flex flex-col min-h-0 bg-white">
+				<div className="flex-1 flex flex-col min-h-0 bg-white dark:bg-neutral-900">
 					{activeTab === 'chats' ? (
 						<>
 							<div className="flex-1 min-h-0 relative">
@@ -374,15 +374,15 @@ const Orchestra: React.FC<OrchestraProps> = memo(
 							</div>
 
 							{typingUsers.length > 0 && (
-								<div className="flex-none m-1">
+								<div className="flex-none my-1">
 									<div className="max-w-4xl mx-auto">
 										<TypingIndicator typingUsers={typingUsers} />
 									</div>
 								</div>
 							)}
 
-							<div className="flex-none bg-white border-t border-neutral-200">
-								<div className="max-w-4xl mx-auto px-2">
+							<div className="flex-none border-t border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900">
+								<div className="max-w-4xl mx-auto">
 									<MsgComposer
 										onSend={handleSend}
 										disabled={!isSessionActive || sending}
@@ -397,7 +397,7 @@ const Orchestra: React.FC<OrchestraProps> = memo(
 							</div>
 						</>
 					) : (
-						<div className="flex-1 overflow-y-auto">
+						<div className="flex-1 overflow-y-auto bg-white dark:bg-neutral-900">
 							<ParticipantsPanel
 								participants={session.participants}
 								profiles={memoizedProfiles}

@@ -1,9 +1,3 @@
-/**
- * useMessageFetch.ts
- * Handles fetching older messages with lazy loading
- * Separate hook for clean pagination logic
- */
-
 'use client';
 
 import { useCallback, useRef, useState } from 'react';

@@ -75,7 +75,7 @@ export const NavTabs: React.FC<DeskTabsProps> = ({ activeTab, onTabChange }) => 
 
 	return (
 		<div
-			className={`fixed bottom-3 left-1/2 -translate-x-1/2 z-50 transition-all duration-700 ease-[cubic-bezier(0.25,0.1,0.25,1)] ${
+			className={`fixed bottom-3 left-1/2 -translate-x-1/2 z-50 transition-all duration-200 ease-[cubic-bezier(0.25,0.1,0.25,1)] ${
 				visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12 pointer-events-none'
 			}`}
 			onMouseEnter={() => setVisible(true)}
@@ -84,7 +84,7 @@ export const NavTabs: React.FC<DeskTabsProps> = ({ activeTab, onTabChange }) => 
 			<div className={containerBase}>
 				{/* Sliding background highlight */}
 				<div
-					className={`absolute inset-y-1 left-0 ${highlightColor} rounded-2xl transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)]`}
+					className={`absolute inset-y-1 left-0 ${highlightColor} rounded-2xl transition-all duration-200 ease-[cubic-bezier(0.4,0,0.2,1)]`}
 					style={indicatorStyle}
 				/>
 

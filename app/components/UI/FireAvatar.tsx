@@ -23,7 +23,7 @@ export const FireAvatar: React.FC<FireAvatarProps> = ({
 	background = '#ffffff00',
 	radius = 50,
 	className,
-	altText = `FireAvatar of ${seed}`,
+	altText = ``,
 }: FireAvatarProps) => {
 	const url = getSvgUrl({
 		seed,

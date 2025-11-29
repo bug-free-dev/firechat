@@ -172,7 +172,11 @@ const MsgItem: React.FC<MsgItemProps> = memo(
 					>
 						<FiCornerUpLeft
 							size={20}
-							className={swipeOffset >= 70 ? 'text-blue-400' : 'text-neutral-400'}
+							className={
+								swipeOffset >= 70
+									? 'text-blue-400'
+									: 'text-neutral-400 dark:text-neutral-500'
+							}
 						/>
 					</div>
 				)}
@@ -183,9 +187,9 @@ const MsgItem: React.FC<MsgItemProps> = memo(
 					<div className="w-7 flex-shrink-0" />
 				)}
 
-				<div className={`flex flex-col max-w-[75%] ${isMine ? 'items-end' : 'items-start'}`}>
+				<div className={`flex flex-col max-w-70 ${isMine ? 'items-end' : 'items-start'}`}>
 					{!isMine && displayName && showAvatar && (
-						<div className="text-xs text-neutral-500 mb-1 px-1 font-medium">
+						<div className="text-xs text-neutral-500 dark:text-neutral-400 mb-1 px-1 font-medium">
 							{displayName}
 						</div>
 					)}
@@ -220,7 +224,9 @@ const MsgItem: React.FC<MsgItemProps> = memo(
 
 							<Markdown
 								content={message.text}
-								className={`text-sm sm:text-base z-0 ${isMine ? 'text-white' : 'text-neutral-800'}`}
+								className={`text-sm sm:text-base z-0 ${
+									isMine ? 'text-white' : 'text-neutral-800 dark:text-neutral-200'
+								}`}
 								showThemeSelector={showThemeSelector}
 							/>
 						</MsgBubble>

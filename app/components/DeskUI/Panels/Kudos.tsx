@@ -145,7 +145,7 @@ export const KudosPanel: React.FC<KudosPanelProps> = ({
 							onClick={() => openDetailed()}
 							className="flex items-center justify-center gap-2 w-full sm:w-auto transition-colors"
 						>
-							<FiSend className="text-neutral-900 dark:text-neutral-100" />
+							<FiSend className="text-neutral-50 dark:text-neutral-900" />
 							<span className="text-sm">Send</span>
 						</FireButton>
 					</div>

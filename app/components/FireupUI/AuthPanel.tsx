@@ -289,7 +289,7 @@ export default function AuthForm({ activeTab, onTabChange }: Props) {
 							loading={isLoading}
 							className="flex-1"
 							disabled={isLoading}
-							variant="secondary"
+							variant="default"
 						>
 							{activeTab === 'login' ? 'Sign In' : 'Create Account'}
 						</FireButton>

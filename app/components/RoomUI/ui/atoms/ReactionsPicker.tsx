@@ -1,10 +1,10 @@
 'use client';
 
-import type { CSSProperties } from 'react';
 import React, { useEffect, useRef } from 'react';
 
-import { DEFAULT_WIDTH, STYLE as baseStyle } from '@/app/components/RoomUI/constants';
 import { REACTION_EMOJIS } from '@/app/lib/types';
+
+import { useReactionPickerStyle } from '../../hooks/usePickerStyle';
 
 export interface ReactionPickerProps {
 	anchorRect: DOMRect | null;
@@ -17,9 +17,10 @@ const ReactionsPicker: React.FC<ReactionPickerProps> = ({
 	anchorRect,
 	onSelect,
 	onClose,
-	maxWidth = DEFAULT_WIDTH,
+	maxWidth = 240,
 }) => {
 	const nodeRef = useRef<HTMLDivElement | null>(null);
+	const style = useReactionPickerStyle(anchorRect, maxWidth);
 
 	useEffect(() => {
 		const handlePointerDown = (e: PointerEvent) => {
@@ -29,31 +30,13 @@ const ReactionsPicker: React.FC<ReactionPickerProps> = ({
 		return () => document.removeEventListener('pointerdown', handlePointerDown);
 	}, [onClose]);
 
-	let positionedStyle: CSSProperties = { ...baseStyle };
-
-	if (anchorRect) {
-		const vw = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
-		const width = Math.min(maxWidth, vw - 16);
-		const centerX = anchorRect.left + anchorRect.width / 2;
-		let left = Math.round(centerX - width / 2);
-		left = Math.max(8, Math.min(left, vw - width - 8));
-
-		positionedStyle = {
-			...baseStyle,
-			left,
-			width,
-			maxWidth: width - 15,
-			visibility: 'visible',
-		};
-	}
-
 	return (
 		<div
 			ref={nodeRef}
-			style={positionedStyle}
+			style={style}
 			role="dialog"
 			aria-label="Reaction picker"
-			className="fc-slide-in-left"
+			className="fc-slide-in-left rounded-lg"
 		>
 			{REACTION_EMOJIS.map((emoji) => (
 				<button
@@ -65,9 +48,9 @@ const ReactionsPicker: React.FC<ReactionPickerProps> = ({
 						onSelect(emoji);
 						onClose();
 					}}
-					className="rounded-md p-1.5 text-md leading-none select-none"
-					aria-label={`React ${emoji}`}
+					className="rounded-md p-2 text-lg leading-none select-none hover:scale-110 transition-transform"
 					style={{ background: 'transparent', border: 'none', cursor: 'pointer' }}
+					aria-label={`React ${emoji}`}
 				>
 					{emoji}
 				</button>

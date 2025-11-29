@@ -32,7 +32,7 @@ const variantClasses: Record<FireAreaVariant, string> = {
 
 		focus:outline-none
 		focus:ring-2 focus:ring-neutral-400/20 dark:focus:ring-neutral-700/30
-		focus:ring-offset-1 focus:ring-offset-white
+	   focus:ring-offset-white
 		dark:focus:ring-offset-neutral-900
 
 		focus:border-neutral-300/80 dark:focus:border-neutral-600/80

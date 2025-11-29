@@ -198,26 +198,19 @@ export const SessionCard: React.FC<SessionCardProps> = ({
 				{/* Menu for creator */}
 				{isCreator && !isInvited && (
 					<div className="relative">
-						<button
+						<FireButton
 							onClick={(e) => {
 								e.preventDefault();
 								e.stopPropagation();
 								setMenuOpen(!menuOpen);
 							}}
 							aria-label="Session options"
-							className="
-		p-1 rounded-md
-		bg-transparent text-neutral-700 dark:text-neutral-200
-		hover:bg-neutral-100/40 dark:hover:bg-neutral-700/40
-		focus:outline-none 
-		focus:ring-2 
-		focus:ring-offset-2 focus:ring-offset-neutral-100 dark:focus:ring-offset-neutral-900
-		focus:ring-neutral-600/30
-		transition-colors
-	"
+                     variant="ghost"
+                     size="xs"
+							
 						>
 							<FiMoreVertical className="w-5 h-5 drop-shadow-sm" />
-						</button>
+						</FireButton>
 
 						{menuOpen && (
 							<div className="absolute right-0 mt-2 w-45 bg-white dark:bg-neutral-900 rounded-lg shadow-lg dark:shadow-sm border border-neutral-200 dark:border-neutral-700/40 z-20 p-1.5">
@@ -230,8 +223,8 @@ export const SessionCard: React.FC<SessionCardProps> = ({
 											setMenuOpen(false);
 										}}
 										variant="ghost"
-										size="sm"
-										className="w-full justify-start gap-2 text-neutral-700 dark:text-neutral-200"
+										size="xs"
+										className="w-full justify-start gap-2"
 									>
 										<FiXCircle className="w-4 h-4" />
 										End Session
@@ -247,7 +240,7 @@ export const SessionCard: React.FC<SessionCardProps> = ({
 											setMenuOpen(false);
 										}}
 										variant="ghost"
-										size="sm"
+										size="xs"
 										className="w-full justify-start gap-2 text-neutral-700 dark:text-neutral-200"
 									>
 										<FiLock className="w-4 h-4" />
@@ -264,7 +257,7 @@ export const SessionCard: React.FC<SessionCardProps> = ({
 											setMenuOpen(false);
 										}}
 										variant="ghost"
-										size="sm"
+										size="xs"
 										className="w-full justify-start gap-2 text-neutral-700 dark:text-neutral-200"
 									>
 										<FiShare2 className="w-4 h-4" />
@@ -341,7 +334,8 @@ export const SessionCard: React.FC<SessionCardProps> = ({
 							e.stopPropagation();
 							onEndSession(session.id || '');
 						}}
-						variant="destructive"
+						variant="default"
+						destructive={true}
 						size="sm"
 						className="flex-1 gap-2"
 					>
@@ -360,7 +354,8 @@ export const SessionCard: React.FC<SessionCardProps> = ({
 						}}
 						variant="outline"
 						size="sm"
-						className="flex-1 gap-2 text-red-600 border-red-200 dark:text-red-400 dark:border-red-600 dark:hover:bg-red-900"
+						destructive={true}
+						className="flex-1 gap-2"
 					>
 						<FiLogOut className="w-5 h-5" />
 						Leave
@@ -371,7 +366,7 @@ export const SessionCard: React.FC<SessionCardProps> = ({
 				{!isParticipant && !isInvited && session.isActive && onJoinSession && (
 					<FireButton
 						onClick={handleJoinClick}
-						variant="default"
+						variant="secondary"
 						size="sm"
 						className="flex-1 gap-2"
 					>
@@ -388,9 +383,8 @@ export const SessionCard: React.FC<SessionCardProps> = ({
 							e.stopPropagation();
 							if (session.id) router.push(`/room/${session.id}`);
 						}}
-						variant="outline"
 						size="sm"
-						className="flex-1 gap-2 text-neutral-700 dark:text-neutral-200"
+						className="flex-1 gap-2"
 					>
 						Open Room
 					</FireButton>

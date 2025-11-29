@@ -7,7 +7,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Comic+Relief:wght@400;700&display=swap');
 
 @import 'tailwindcss';
-@import './css/variables.css';
 @import './css/animations.css';
+@import './css/variables.css';
 @import './css/base.css';
 @import './css/components.css';
+
+@custom-variant dark (&:where(.dark, .dark *));

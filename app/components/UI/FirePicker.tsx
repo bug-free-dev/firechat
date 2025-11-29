@@ -195,12 +195,12 @@ export const FirePicker: React.FC<PickerProps> = ({
 
 					{loading && (
 						<div className="flex items-center justify-center py-4">
-							<div className="animate-spin rounded-full h-5 w-5 border-2 border-neutral-300 dark:border-neutral-600 border-t-yellow-500" />
+							<div className="animate-spin rounded-full h-5 w-5 border-2 border-neutral-300/40 dark:border-neutral-600 border-t-yellow-500" />
 						</div>
 					)}
 
 					{!loading && results.length > 0 && (
-						<div className="mt-2 grid grid-cols-2 gap-2 max-h-[300px] overflow-y-auto">
+						<div className="mt-2 grid p-4 grid-cols-2 gap-4 max-h-[300px] overflow-y-auto">
 							{results.map((u) => {
 								const active = selected.has(u.uid);
 								return (
