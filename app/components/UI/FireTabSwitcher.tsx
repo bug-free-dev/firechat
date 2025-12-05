@@ -136,7 +136,7 @@ export const FireTabSwitcher = <T extends string = string>({
 
 										${
 											isActive
-												? 'bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900'
+												? 'bg-neutral-950 dark:bg-neutral-100 text-white dark:text-neutral-900'
 												: 'bg-neutral-200 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300'
 										}
 									`}

@@ -37,7 +37,7 @@ export const FrequentUsers: React.FC<FrequentUsersProps> = ({ users, currentUser
 
 	return (
 		<>
-			<div className="mb-4 bg-white dark:bg-neutral-900 rounded-xl p-3 ring-2 ring-neutral-200/30 dark:ring-neutral-700/40 transition-colors">
+			<div className="mb-4 bg-white dark:bg-neutral-950 rounded-xl p-3 ring-2 ring-neutral-200/30 dark:ring-neutral-700/40 transition-colors">
 				{/* Header */}
 				<div className="flex items-center justify-between mb-3">
 					<div className="flex items-center gap-2">

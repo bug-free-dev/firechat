@@ -114,7 +114,7 @@ export const KudosPanel: React.FC<KudosPanelProps> = ({
 	};
 	return (
 		<div
-			className={`w-full px-4 py-6 bg-white dark:bg-neutral-900 transition-colors ${className}`}
+			className={`w-full px-4 py-6 bg-white dark:bg-neutral-950 transition-colors ${className}`}
 		>
 			<div className="max-w-5xl mx-auto">
 				{/* Header */}
@@ -143,9 +143,11 @@ export const KudosPanel: React.FC<KudosPanelProps> = ({
 
 						<FireButton
 							onClick={() => openDetailed()}
+							variant="secondary"
+							size="sm"
 							className="flex items-center justify-center gap-2 w-full sm:w-auto transition-colors"
 						>
-							<FiSend className="text-neutral-50 dark:text-neutral-900" />
+							<FiSend className="dark:text-neutral-50 text-neutral-900" />
 							<span className="text-sm">Send</span>
 						</FireButton>
 					</div>

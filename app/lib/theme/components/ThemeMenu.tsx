@@ -59,8 +59,8 @@ export const ThemeMenu: React.FC<ThemeMenuProps> = ({ isOpen, activeTheme, onSel
 								? 'text-neutral-900 dark:text-neutral-100 font-medium'
 								: 'text-neutral-600 dark:text-neutral-400 font-normal'
 						}
-                hover:bg-neutral-50 dark:hover:bg-neutral-900/50
-                focus:bg-neutral-50 dark:focus:bg-neutral-900/50
+                hover:bg-neutral-50 dark:hover:bg-neutral-950/50
+                focus:bg-neutral-50 dark:focus:bg-neutral-950/50
                 focus:outline-none
                 transition-colors duration-150
               `}

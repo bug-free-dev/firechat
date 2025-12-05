@@ -93,7 +93,7 @@ const RoomTopBar: React.FC<RoomTopBarProps> = ({
 	};
 
 	return (
-		<header className="w-full bg-white border-b border-neutral-200 dark:bg-neutral-900 dark:border-neutral-700">
+		<header className="w-full bg-white border-b border-neutral-200 dark:bg-neutral-950 dark:border-neutral-700">
 			{/* Top Section: Title & Actions */}
 			<div className="max-w-screen-xl mx-auto px-3 sm:px-4 lg:px-6 py-3">
 				<div className="flex items-center justify-between gap-3">
@@ -244,7 +244,7 @@ const RoomTopBar: React.FC<RoomTopBarProps> = ({
 
 						{/* Animated underline */}
 						<div
-							className="absolute -bottom-[1px] h-0.5 bg-neutral-900 dark:bg-neutral-100 transition-all duration-300 ease-out"
+							className="absolute -bottom-[1px] h-0.5 bg-neutral-950 dark:bg-neutral-100 transition-all duration-300 ease-out"
 							style={{
 								left: `${underlineStyle.left}px`,
 								width: `${underlineStyle.width}px`,

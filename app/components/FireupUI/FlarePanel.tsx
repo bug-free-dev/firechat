@@ -55,7 +55,7 @@ export default function FlarePanel() {
 				{features.map((feature) => (
 					<div
 						key={feature.title}
-						className="p-3 rounded-lg bg-white dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-700/40 text-left group transition duration-300 ease-in-out hover:bg-neutral-50 dark:hover:bg-neutral-700/50"
+						className="p-3 rounded-lg bg-white dark:bg-neutral-950 border border-neutral-100 dark:border-neutral-700/40 text-left group transition duration-300 ease-in-out hover:bg-neutral-50 dark:hover:bg-neutral-700/50"
 					>
 						<div className="flex flex-col sm:flex-row items-center gap-3 justify-center">
 							<div className="p-2 rounded-lg transition-colors duration-300 group-hover:bg-white/10 dark:group-hover:bg-neutral-700/10">
@@ -84,7 +84,7 @@ export default function FlarePanel() {
 
 				<p className="text-xs text-neutral-700 dark:text-neutral-200">
 					A short identifier (like{' '}
-					<span className="font-semibold text-neutral-700 dark:text-neutral-200 bg-white/80 dark:bg-neutral-900/40 px-2 py-0.5 rounded-md shadow-sm">
+					<span className="font-semibold text-neutral-700 dark:text-neutral-200 bg-white/80 dark:bg-neutral-950/40 px-2 py-0.5 rounded-md shadow-sm">
 						You@Firechat69
 					</span>
 					) makes joining faster.

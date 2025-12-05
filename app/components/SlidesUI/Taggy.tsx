@@ -53,7 +53,7 @@ export function Taggy({ value, onChange, step = 5, total = 7 }: TaggyProps) {
 	];
 
 	return (
-		<div className="relative w-full h-full min-h-[710px] flex items-center justify-center overflow-hidden bg-white dark:bg-neutral-900">
+		<div className="relative w-full h-full min-h-[710px] flex items-center justify-center overflow-hidden bg-white dark:bg-neutral-950">
 			<div className="absolute inset-0 pointer-events-none overflow-hidden">
 				<div className="absolute top-[5%] left-[5%] text-lime-400/40 dark:text-lime-400/20">
 					<RiHashtag className="w-12 h-12 animate-shimmer" />
@@ -135,7 +135,7 @@ export function Taggy({ value, onChange, step = 5, total = 7 }: TaggyProps) {
 								className={`px-4 py-2 rounded-full border-2 text-sm font-medium transition-all duration-200 hover:-translate-y-0.5 ${
 									value.includes(tag)
 										? 'bg-zinc-100 dark:bg-neutral-800 text-zinc-400 dark:text-neutral-500 border-zinc-200 dark:border-neutral-700/40 cursor-not-allowed'
-										: 'bg-white dark:bg-neutral-900 text-zinc-700 dark:text-neutral-300 border-zinc-200 dark:border-neutral-700/40 hover:border-lime-300 dark:hover:border-lime-600/60'
+										: 'bg-white dark:bg-neutral-950 text-zinc-700 dark:text-neutral-300 border-zinc-200 dark:border-neutral-700/40 hover:border-lime-300 dark:hover:border-lime-600/60'
 								}`}
 							>
 								{tag}

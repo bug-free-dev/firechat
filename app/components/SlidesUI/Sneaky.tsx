@@ -20,7 +20,7 @@ type SneakyProps = {
 
 export function Sneaky({ value, onChange, step = 2, total = 7 }: SneakyProps) {
 	return (
-		<div className="relative w-full h-full min-h-[700px] flex items-center justify-center overflow-hidden bg-white dark:bg-neutral-900">
+		<div className="relative w-full h-full min-h-[700px] flex items-center justify-center overflow-hidden bg-white dark:bg-neutral-950">
 			<div className="absolute inset-0 pointer-events-none overflow-hidden">
 				<div className="absolute top-[10%] right-[8%] text-purple-400/40 dark:text-purple-400/20">
 					<RiSpyLine className="w-11 h-11 animate-float-elegant" />

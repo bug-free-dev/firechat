@@ -270,12 +270,12 @@ export default function Slidy() {
 	/* <------- RENDER -------> */
 
 	return (
-		<div className="min-h-screen flex flex-col bg-neutral-50 dark:bg-neutral-900">
+		<div className="min-h-screen flex flex-col bg-neutral-50 dark:bg-neutral-950">
 			<FireHeader />
 
 			<main className="flex-1 flex items-center justify-center">{renderSlide()}</main>
 
-			<footer className="w-full flex justify-center items-center gap-6 py-4 border-t bg-white dark:bg-neutral-900 border-neutral-200 dark:border-neutral-700">
+			<footer className="w-full flex justify-center items-center gap-6 py-4 border-t bg-white dark:bg-neutral-950 border-neutral-200 dark:border-neutral-700">
 				<button
 					onClick={goBack}
 					disabled={isBackDisabled}

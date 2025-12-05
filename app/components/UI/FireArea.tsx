@@ -23,7 +23,7 @@ const sizeMap: Record<Firesize, string> = {
 
 const variantClasses: Record<FireAreaVariant, string> = {
 	default: `
-		bg-white dark:bg-neutral-900
+		bg-white dark:bg-neutral-950
 		border border-neutral-200 dark:border-neutral-700/40
 		rounded-lg
 		transition-colors duration-200
@@ -47,7 +47,7 @@ const variantClasses: Record<FireAreaVariant, string> = {
 		backdrop-blur-sm
 		transition-colors duration-200
 
-		focus:bg-white dark:focus:bg-neutral-900
+		focus:bg-white dark:focus:bg-neutral-950
 		focus:ring-2 focus:ring-indigo-400/30
 
 		focus:ring-offset-2 focus:ring-offset-white

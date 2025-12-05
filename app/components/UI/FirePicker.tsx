@@ -189,7 +189,6 @@ export const FirePicker: React.FC<PickerProps> = ({
 							value={query}
 							onChange={(e) => setQuery(e.target.value)}
 							placeholder="Search by username or display name..."
-							className="bg-transparent dark:bg-transparent focus:ring-2 focus:ring-yellow-400/30"
 						/>
 					</div>
 
@@ -200,7 +199,7 @@ export const FirePicker: React.FC<PickerProps> = ({
 					)}
 
 					{!loading && results.length > 0 && (
-						<div className="mt-2 grid p-4 grid-cols-2 gap-4 max-h-[300px] overflow-y-auto">
+						<div className="mt-2 grid p-4 grid-cols-1 sm:grid-cols-2 gap-4 overflow-y-auto">
 							{results.map((u) => {
 								const active = selected.has(u.uid);
 								return (
@@ -252,7 +251,7 @@ export const FirePicker: React.FC<PickerProps> = ({
 							<div className="h-px flex-1 bg-neutral-300/20 dark:bg-neutral-700/30" />
 						</div>
 
-						<div className="flex items-center gap-1 flex-wrap bg-neutral-100/50 dark:bg-neutral-900/30 rounded-xl p-2 backdrop-blur-sm">
+						<div className="flex items-center gap-1 flex-wrap bg-neutral-100/50 dark:bg-neutral-950/30 rounded-xl p-2 backdrop-blur-sm">
 							{selectedArray.map((u) => (
 								<div
 									key={u.uid}

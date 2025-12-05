@@ -56,12 +56,12 @@ export const FireHeader: React.FC<FireHeaderProps> = ({
 			className={`relative flex flex-col items-center py-2 ${currentSize.container} ${className}`}
 		>
 			{/* Theme Toggle on extreme left */}
-			<div className="absolute top-4 left-2">
+			<div className="absolute top-2 left-1">
 				<ThemeToggle />
 			</div>
 
 			{/* Centered Logo + Title */}
-			<div className="flex items-center gap-3">
+			<div className="flex items-center gap-2">
 				{/* Logo */}
 				<div className={`${currentSize.logo} relative flex-shrink-0`}>
 					<Image

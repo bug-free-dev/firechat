@@ -10,7 +10,7 @@ export default function Page() {
 	const [activeTab, setActiveTab] = useState<'login' | 'signup'>('login');
 
 	return (
-		<main className="animate-slide-up min-h-screen relative overflow-hidden duration-200 bg-white dark:bg-neutral-900">
+		<main className="animate-slide-up min-h-screen relative overflow-hidden duration-200 bg-white dark:bg-neutral-950">
 			<FireHeader variant="default" />
 
 			<div className="max-w-7xl mx-auto px-6 py-12 relative z-10">

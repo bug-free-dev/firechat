@@ -122,7 +122,7 @@ export const SessionCard: React.FC<SessionCardProps> = ({
 					icon: FiXCircle,
 					text: 'Ended',
 					color: 'text-neutral-500 dark:text-neutral-400',
-					bg: 'bg-neutral-50/60 dark:bg-neutral-900/40',
+					bg: 'bg-neutral-50/60 dark:bg-neutral-950/40',
 					border: 'border-neutral-200/40 dark:border-neutral-700/40',
 				};
 
@@ -147,7 +147,7 @@ export const SessionCard: React.FC<SessionCardProps> = ({
 
 	return (
 		<div
-			className={`group relative bg-white/10 dark:bg-neutral-900 rounded-2xl p-4 transition-all duration-200 hover:shadow dark:hover:shadow-lg ${borderClass}`}
+			className={`group relative bg-white/10 dark:bg-neutral-950 rounded-2xl p-4 transition-all duration-200 hover:shadow dark:hover:shadow-lg ${borderClass}`}
 			onClick={() => {
 				if (isParticipant && !isInvited && session.isActive && session.id) {
 					router.push(`/room/${session.id}`);
@@ -205,15 +205,14 @@ export const SessionCard: React.FC<SessionCardProps> = ({
 								setMenuOpen(!menuOpen);
 							}}
 							aria-label="Session options"
-                     variant="ghost"
-                     size="xs"
-							
+							variant="ghost"
+							size="xs"
 						>
 							<FiMoreVertical className="w-5 h-5 drop-shadow-sm" />
 						</FireButton>
 
 						{menuOpen && (
-							<div className="absolute right-0 mt-2 w-45 bg-white dark:bg-neutral-900 rounded-lg shadow-lg dark:shadow-sm border border-neutral-200 dark:border-neutral-700/40 z-20 p-1.5">
+							<div className="absolute right-0 mt-2 w-45 bg-white dark:bg-neutral-950 rounded-lg shadow-lg dark:shadow-sm border border-neutral-200 dark:border-neutral-700/40 z-20 p-1.5">
 								{onEndSession && session.isActive && (
 									<FireButton
 										onClick={(e) => {

@@ -125,7 +125,7 @@ const MessageComposer: React.FC<MessageComposerProps> = memo(
 		);
 
 		return (
-			<div className="sticky bottom-0 z-50 bg-white dark:bg-neutral-900">
+			<div className="sticky bottom-0 z-50 bg-white dark:bg-neutral-950">
 				<div className="max-w-4xl mx-auto px-4 sm:px-6 py-3">
 					{replyingTo && (
 						<div className="mb-2">
@@ -180,7 +180,7 @@ const MessageComposer: React.FC<MessageComposerProps> = memo(
 								h-[44px] w-[44px] shrink-0 flex items-center justify-center
 								rounded-2xl transition-transform duration-100 active:scale-95
 								
-								bg-neutral-900 text-white hover:bg-neutral-800
+								bg-neutral-950 text-white hover:bg-neutral-800
 								disabled:bg-neutral-200 disabled:text-neutral-400 disabled:cursor-not-allowed
 
 								dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-100

@@ -32,7 +32,7 @@ export const FireButton = React.forwardRef<HTMLButtonElement, FireButtonProps>(
 	) => {
 		const base = `
 			group relative inline-flex items-center justify-center
-			font-medium rounded-md
+			font-medium rounded-lg
 			transition-all duration-150
 			focus:outline-none focus:ring-2 focus:ring-offset-2
 			disabled:pointer-events-none disabled:opacity-50
@@ -90,7 +90,6 @@ export const FireButton = React.forwardRef<HTMLButtonElement, FireButtonProps>(
 				`,
 				secondary: `
 					bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-neutral-50
-					border border-neutral-200 dark:border-neutral-700
 					hover:bg-neutral-200 dark:hover:bg-neutral-700
 					focus:ring-neutral-400 dark:focus:ring-neutral-600
 					focus:ring-offset-white dark:focus:ring-offset-neutral-950

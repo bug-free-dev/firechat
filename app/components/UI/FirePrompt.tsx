@@ -77,7 +77,7 @@ export const FirePrompt: React.FC<FirePromptProps> = ({
 				</div>
 			}
 		>
-			<div className="flex flex-col items-center justify-center w-full min-h-[400px] px-6 py-8 gap-6 text-center bg-white dark:bg-neutral-900 rounded-lg">
+			<div className="flex flex-col items-center justify-center w-full min-h-[400px] px-6 py-8 gap-6 text-center bg-white dark:bg-neutral-950 rounded-lg">
 				{/* Header */}
 				<h1 className="flex items-center justify-center gap-3 text-4xl font-semibold text-neutral-900 dark:text-neutral-100">
 					<RiLockPasswordLine className="text-lime-500 w-10 h-10" />

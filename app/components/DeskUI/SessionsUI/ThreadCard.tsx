@@ -66,7 +66,7 @@ export function InboxThreadCard({ thread, currentUser, onOpenInbox }: InboxThrea
 				${
 					hasUnread
 						? 'bg-orange-50/50 border-orange-200/40 hover:border-orange-300/50 dark:bg-orange-900/20 dark:border-orange-700/40 dark:hover:border-orange-600/50'
-						: 'bg-white border-neutral-200/40 hover:border-neutral-300/50 dark:bg-neutral-900/20 dark:border-neutral-700/40 dark:hover:border-neutral-600/50'
+						: 'bg-white border-neutral-200/40 hover:border-neutral-300/50 dark:bg-neutral-950/20 dark:border-neutral-700/40 dark:hover:border-neutral-600/50'
 				}`}
 		>
 			<div className="flex items-start gap-4">

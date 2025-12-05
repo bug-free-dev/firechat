@@ -15,10 +15,11 @@
 		background-color: var(--scroll-thumb-hover);
 	}
 
+	/* Base FC Button - Compact & Round */
 	.fc-btn {
-		@apply inline-flex items-center justify-center font-medium rounded-full;
-		width: 36px;
-		height: 36px;
+		@apply inline-flex items-center justify-center font-medium;
+		width: 32px;
+		height: 32px;
 		padding: 0;
 		border-radius: 9999px;
 
@@ -26,80 +27,97 @@
 		color: var(--fc-text);
 		border: 1px solid var(--fc-border);
 
-		font-size: 18px;
+		font-size: 16px;
 		line-height: 1;
 		cursor: pointer;
 		user-select: none;
 
 		transition:
-			transform 120ms ease,
-			background-color 120ms ease,
-			box-shadow 120ms ease,
-			border-color 120ms ease,
-			color 120ms ease;
-		box-shadow: 0 1px 0 rgba(0, 0, 0, 0.03);
+			transform 150ms cubic-bezier(0.4, 0, 0.2, 1),
+			background-color 150ms ease,
+			box-shadow 150ms ease,
+			border-color 150ms ease,
+			color 150ms ease;
 		-webkit-tap-highlight-color: transparent;
 	}
 
+	/* Primary Button */
 	.fc-btn--primary {
-		@apply rounded-full;
 		background: var(--fc-accent);
 		color: var(--fc-accent-foreground, #fff);
 		border-color: transparent;
-		box-shadow: 0 8px 20px rgba(16, 24, 40, 0.06);
-		transform-origin: center;
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 	}
 	.fc-btn--primary:hover {
-		filter: brightness(0.98);
+		filter: brightness(1.05);
 		transform: translateY(-1px);
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
 	}
 	.fc-btn--primary:active {
-		background: var(--fc-accent-press);
-		transform: scale(0.98);
-		box-shadow: 0 6px 14px rgba(16, 24, 40, 0.04);
+		transform: scale(0.96);
+		box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
 	}
 
+	/* Outline Button */
 	.fc-btn--outline {
 		background: var(--fc-bg);
 		color: var(--fc-text);
 		border-color: var(--fc-border);
 	}
+	.fc-btn--outline:hover {
+		background: color-mix(in srgb, var(--fc-text) 4%, var(--fc-bg));
+		border-color: var(--fc-text);
+	}
+
+	/* Ghost Button - Perfect for Theme Toggle */
 	.fc-btn--ghost {
 		background: transparent;
 		border-color: transparent;
 		color: var(--fc-text);
 	}
 	.fc-btn--ghost:hover {
-		background: color-mix(in srgb, var(--fc-text) 6%, transparent);
+		background: color-mix(in srgb, var(--fc-text) 8%, transparent);
 	}
+	.fc-btn--ghost:active {
+		background: color-mix(in srgb, var(--fc-text) 12%, transparent);
+	}
+
+	/* Muted Button */
 	.fc-btn--muted {
 		background: var(--fc-muted);
 		color: var(--fc-text);
-		border-color: var(--fc-border);
+		border-color: transparent;
+	}
+	.fc-btn--muted:hover {
+		background: color-mix(in srgb, var(--fc-text) 12%, var(--fc-muted));
 	}
 
-	.fc-btn:focus {
-		outline: none;
-	}
+	/* Focus Ring Effect - Beautiful & Accessible */
 	.fc-btn:focus-visible {
-		box-shadow: 0 0 0 4px var(--fc-ring);
-		border-radius: 9999px;
+		outline: none;
+		box-shadow: 0 0 0 3px var(--fc-ring, rgba(59, 130, 246, 0.3));
 	}
 
+	/* Disabled State */
 	.fc-btn[disabled] {
 		@apply pointer-events-none;
-		opacity: var(--fc-disabled-opacity, 0.56);
-		transform: none;
-		filter: grayscale(0.12) opacity(0.9);
-	}
-	.fc-btn:active {
-		transform: scale(0.96);
+		opacity: 0.5;
+		filter: grayscale(0.2);
+		transform: none !important;
 	}
 
-	.fc-btn-group {
-		@apply inline-flex gap-2 items-center;
+	/* Active State */
+	.fc-btn:active:not([disabled]) {
+		transform: scale(0.94);
 	}
+
+	/* Button Group */
+	.fc-btn-group {
+		@apply inline-flex gap-1.5 items-center;
+	}
+
+	/* Stagger Animation Support */
 	.fc-btn[data-i] {
-		animation-delay: calc(var(--i, 0) * 70ms);
+		animation-delay: calc(var(--i, 0) * 60ms);
 	}
 }

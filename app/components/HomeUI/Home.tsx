@@ -91,7 +91,7 @@ export default function Home() {
 	}, [authState, authLoading, hasCheckedAuth, router]);
 
 	return (
-		<div className="bg-white dark:bg-neutral-900 transition-colors duration-300">
+		<div className="bg-white dark:bg-neutral-950 transition-colors duration-300">
 			{showConfetti && (
 				<Confetti
 					width={windowSize.width}

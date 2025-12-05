@@ -107,7 +107,7 @@ export const FireSlide: React.FC<FireSlideProps> = ({
 			{/* Backdrop */}
 			<div
 				onClick={handleBackdropClick}
-				className={`absolute inset-0 bg-neutral-800/20 dark:bg-neutral-900/20 backdrop-blur-md transition-all duration-300 ease-out ${
+				className={`absolute inset-0 bg-neutral-800/20 dark:bg-neutral-950/20 backdrop-blur-md transition-all duration-300 ease-out ${
 					open ? 'opacity-100' : 'opacity-0'
 				}`}
 			/>
@@ -121,9 +121,9 @@ export const FireSlide: React.FC<FireSlideProps> = ({
 				style={{ zIndex: 90 }}
 			>
 				{/* Main content */}
-				<div className="flex flex-col h-full bg-white dark:bg-neutral-900 shadow-xl overflow-hidden">
+				<div className="flex flex-col h-full bg-white dark:bg-neutral-950 shadow-xl overflow-hidden">
 					{/* Header */}
-					<div className="flex-shrink-0 border-b border-neutral-200/40 dark:border-neutral-700/40 bg-white dark:bg-neutral-900">
+					<div className="flex-shrink-0 border-b border-neutral-200/40 dark:border-neutral-700/40 bg-white dark:bg-neutral-950">
 						{showBranding && (
 							<div className="px-4 pt-4 pb-2 border-b border-neutral-100 dark:border-neutral-700">
 								<FireHeader showSubtitle={false} size="sm" className="mb-0" />
@@ -154,14 +154,14 @@ export const FireSlide: React.FC<FireSlideProps> = ({
 					<div
 						className={`flex-1 overflow-y-auto overscroll-contain px-5 py-4 ${SIZE_MAP[size]} ${
 							size === 'full' ? '' : 'min-h-0'
-						} bg-white dark:bg-neutral-900`}
+						} bg-white dark:bg-neutral-950`}
 					>
 						{children}
 					</div>
 
 					{/* Footer */}
 					{footer && (
-						<div className="flex-shrink-0 px-5 py-4 border-t border-neutral-200/40 dark:border-neutral-700/50 bg-white dark:bg-neutral-900">
+						<div className="flex-shrink-0 px-5 py-4 border-t border-neutral-200/40 dark:border-neutral-700/50 bg-white dark:bg-neutral-950">
 							{footer}
 						</div>
 					)}

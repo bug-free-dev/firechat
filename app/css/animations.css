@@ -155,7 +155,6 @@
 		backface-visibility: hidden;
 	}
 
-	/* fc slide in / out — matches original name used in components */
 	.fc-slide-in-left {
 		animation: fc-slide-in-left 200ms cubic-bezier(0.16, 1, 0.3, 1) both;
 	}
@@ -164,7 +163,6 @@
 		animation: fc-slide-out-right 200ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
 	}
 
-	/* Fade & slide utilities (for mount/unmount feel) */
 	.animate-fade-in {
 		animation: fade-in 350ms cubic-bezier(0.16, 1, 0.3, 1) both;
 	}
@@ -185,7 +183,6 @@
 		animation: scale-in 250ms cubic-bezier(0.16, 1, 0.3, 1) both;
 	}
 
-	/* continuous / looping animations */
 	.animate-float-elegant {
 		animation: float-elegant 2500ms ease-in-out infinite;
 	}
@@ -218,13 +215,6 @@
 		animation: border-spin 1200ms linear infinite;
 	}
 
-	/* helper: small, subtle defaults for clickable icon/btn animations */
-	.anim-subtle {
-		transition:
-			transform 140ms cubic-bezier(0.4, 0, 0.2, 1),
-			opacity 140ms;
-	}
-
 	/* dot staggering (preserve original behaviour) */
 	.dot:nth-child(1) {
 		animation-delay: 0s;
@@ -236,7 +226,6 @@
 		animation-delay: 0.3s;
 	}
 
-	/* keep original animate-* names (redundant but explicit) */
 	.animate-fade-in-up,
 	.animate-fade-in,
 	.animate-slide-up,
@@ -249,7 +238,6 @@
 	.animate-drift,
 	.animate-pulse-soft,
 	.animate-border-spin {
-		/* ensure we hint to the browser these will change visual properties */
 		will-change: transform, opacity, background-position;
 	}
 }

@@ -27,7 +27,7 @@ export const confirm = ({ title, message, actions }: FireConfirmProps) => {
 				aria-live="polite"
 				className={`
     max-w-xs w-full
-    bg-white/30 dark:bg-neutral-900
+    bg-white/30 dark:bg-neutral-950
     text-zinc-900 dark:text-neutral-50
     border border-neutral-300/40 dark:border-neutral-700/40
     backdrop-blur-2xl dark:backdrop-blur-sm

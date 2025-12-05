@@ -279,9 +279,8 @@ const Orchestra: React.FC<OrchestraProps> = memo(
 
 				try {
 					await onAddParticipant(sessionIdRef.current, uid);
-					toast.success('Participant added');
 				} catch {
-					toast.error('Failed to add participant');
+					// Parent handles
 				}
 			},
 			[onAddParticipant]
@@ -336,7 +335,7 @@ const Orchestra: React.FC<OrchestraProps> = memo(
 		const memoizedProfiles = useMemo(() => profiles, [profiles]);
 
 		return (
-			<div className="flex flex-col h-screen bg-neutral-50 dark:bg-neutral-900 overflow-hidden">
+			<div className="flex flex-col h-screen bg-neutral-50 dark:bg-neutral-950 overflow-hidden">
 				{/* Top Bar with Tabs */}
 				<div className="flex-none">
 					<RoomTopBar
@@ -354,7 +353,7 @@ const Orchestra: React.FC<OrchestraProps> = memo(
 				</div>
 
 				{/* Content Area */}
-				<div className="flex-1 flex flex-col min-h-0 bg-white dark:bg-neutral-900">
+				<div className="flex-1 flex flex-col min-h-0 bg-white dark:bg-neutral-950">
 					{activeTab === 'chats' ? (
 						<>
 							<div className="flex-1 min-h-0 relative">
@@ -381,7 +380,7 @@ const Orchestra: React.FC<OrchestraProps> = memo(
 								</div>
 							)}
 
-							<div className="flex-none border-t border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900">
+							<div className="flex-none border-t border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-950">
 								<div className="max-w-4xl mx-auto">
 									<MsgComposer
 										onSend={handleSend}
@@ -397,7 +396,7 @@ const Orchestra: React.FC<OrchestraProps> = memo(
 							</div>
 						</>
 					) : (
-						<div className="flex-1 overflow-y-auto bg-white dark:bg-neutral-900">
+						<div className="flex-1 overflow-y-auto bg-white dark:bg-neutral-950">
 							<ParticipantsPanel
 								participants={session.participants}
 								profiles={memoizedProfiles}

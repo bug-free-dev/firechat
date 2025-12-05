@@ -11,7 +11,7 @@ export const KudosTransactionItem: React.FC<KudosTransactionItemProps> = ({
 	const isOutgoing = transaction.from === currentUserId;
 
 	return (
-		<div className="flex items-center justify-between p-3 rounded-lg border border-neutral-300/50 dark:border-neutral-700/40 bg-white dark:bg-neutral-900  transition-all duration-200">
+		<div className="flex items-center justify-between p-3 rounded-lg border border-neutral-300/50 dark:border-neutral-700/40 bg-white dark:bg-neutral-950  transition-all duration-200">
 			<div className="flex items-center gap-3 min-w-0">
 				<div>{txnIcon(transaction.type)}</div>
 				<div className="min-w-0">

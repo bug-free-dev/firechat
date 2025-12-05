@@ -123,7 +123,7 @@ export const KudosSendSlide: React.FC<KudosSlideProps> = ({
 								onClick={() => onAmountChange(String(a))}
 								className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
 									selectedAmount
-										? 'bg-neutral-900 text-white dark:bg-neutral-800/60 dark:text-white'
+										? 'bg-neutral-950 text-white dark:bg-neutral-800/60 dark:text-white'
 										: 'bg-yellow-50 text-yellow-600 dark:bg-yellow-600/50 dark:text-yellow-200 hover:bg-yellow-100 dark:hover:bg-yellow-500/60'
 								}`}
 							>

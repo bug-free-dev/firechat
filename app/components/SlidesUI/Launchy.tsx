@@ -69,7 +69,7 @@ export function Launchy({
 	};
 
 	return (
-		<div className="relative w-full min-h-screen flex items-center justify-center overflow-hidden bg-white dark:bg-neutral-900">
+		<div className="relative w-full min-h-screen flex items-center justify-center overflow-hidden bg-white dark:bg-neutral-950">
 			{showConfetti && <Confetti recycle={false} numberOfPieces={300} gravity={0.08} />}
 
 			<div className="absolute inset-0 pointer-events-none overflow-hidden">
@@ -104,7 +104,7 @@ export function Launchy({
 
 				{preview && (
 					<div
-						className="mb-10 text-left mx-auto max-w-lg bg-white/90 dark:bg-neutral-900/90 backdrop-blur-sm p-7 rounded-2xl border border-zinc-200/80 dark:border-neutral-700/40 "
+						className="mb-10 text-left mx-auto max-w-lg bg-white/90 dark:bg-neutral-950/90 backdrop-blur-sm p-7 rounded-2xl border border-zinc-200/80 dark:border-neutral-700/40 "
 						style={{ animationDelay: '0.2s' }}
 					>
 						<div className="flex items-start gap-5">
@@ -204,7 +204,7 @@ export function Launchy({
 
 										<div
 											aria-hidden={!showIdentifier}
-											className={`absolute inset-0 rounded-md px-2 py-1 bg-white dark:bg-neutral-900 border border-zinc-200 dark:border-neutral-700/40 transition-transform duration-300 ease-out overflow-hidden ${
+											className={`absolute inset-0 rounded-md px-2 py-1 bg-white dark:bg-neutral-950 border border-zinc-200 dark:border-neutral-700/40 transition-transform duration-300 ease-out overflow-hidden ${
 												showIdentifier
 													? 'translate-x-0 opacity-100'
 													: '-translate-x-full opacity-0'

@@ -15,7 +15,7 @@ export function ThemedToaster() {
 
 	return (
 		<Toaster
-			position="bottom-left"
+			position="top-center"
 			toastOptions={{
 				style: toastStyle,
 				duration: 2000,

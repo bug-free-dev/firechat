@@ -28,7 +28,7 @@ export const DiceAvatarPicker: React.FC<Props> = ({ displayName = '', onSelect, 
 			onClick={onClose}
 		>
 			<div
-				className="bg-white dark:bg-neutral-900 rounded-xl max-w-2xl w-full overflow-hidden shadow-xl dark:shadow-black/30 transition-colors"
+				className="bg-white dark:bg-neutral-950 rounded-xl max-w-2xl w-full overflow-hidden shadow-xl dark:shadow-black/30 transition-colors"
 				onClick={(e) => e.stopPropagation()}
 				role="dialog"
 				aria-modal="true"

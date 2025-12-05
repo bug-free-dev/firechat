@@ -36,7 +36,7 @@ export const MoodOptions: React.FC<MoodOptionProps> = ({ value, onChange }) => {
                 ${
 							isSelected
 								? `${mood.activeBg} ${mood.activeRing} ${mood.color} dark:${mood.activeBg} dark:${mood.activeRing}`
-								: `bg-white dark:bg-neutral-900 ${mood.ringColor} dark:ring-neutral-700/40 ${mood.color} ${mood.hoverRing} dark:hover:ring-neutral-600/60 dark:hover:bg-neutral-800/50`
+								: `bg-white dark:bg-neutral-950 ${mood.ringColor} dark:ring-neutral-700/40 ${mood.color} ${mood.hoverRing} dark:hover:ring-neutral-600/60 dark:hover:bg-neutral-800/50`
 						}
               `}
 						>

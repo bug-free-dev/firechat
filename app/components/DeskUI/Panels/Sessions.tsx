@@ -187,7 +187,7 @@ export const SessionsPanel: React.FC<SessionsPanelProps> = ({
 	};
 
 	return (
-		<div className="relative w-full min-h-screen bg-white dark:bg-neutral-900 px-4 sm:px-6 py-8 overflow-hidden">
+		<div className="relative w-full min-h-screen bg-white dark:bg-neutral-950 px-4 sm:px-6 py-8 overflow-hidden">
 			<div className="max-w-5xl mx-auto relative z-10">
 				{/* Header with Kudos Balance */}
 				<div className="flex flex-col items-center justify-between gap-4 mb-6 text-center">

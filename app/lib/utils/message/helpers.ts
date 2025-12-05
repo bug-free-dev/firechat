@@ -137,13 +137,13 @@ export function parseTypingUserFromSnapshot(snap: DataSnapshot): CachedUser | nu
 
 export function compareMsgsAsc(a: ChatMessage, b: ChatMessage): number {
 	const timeCompare = compare.asc(a.createdAt, b.createdAt);
-	
+
 	if (timeCompare === 0) {
 		const aId = a.id ?? '';
 		const bId = b.id ?? '';
 		return aId.localeCompare(bId);
 	}
-	
+
 	return timeCompare;
 }
 

@@ -408,7 +408,7 @@ export default function Desk() {
 
 	return (
 		<div
-			className="flex flex-col min-h-screen bg-neutral-50 dark:bg-neutral-900 transition-colors duration-300"
+			className="flex flex-col min-h-screen bg-neutral-50 dark:bg-neutral-950 transition-colors duration-300"
 			onTouchStart={handleTouchStart}
 			onTouchEnd={handleTouchEnd}
 		>
@@ -426,7 +426,7 @@ export default function Desk() {
 				open={createOpen}
 				onClose={() => setCreateOpen(false)}
 				size="md"
-				className="dark:bg-neutral-900 dark:border-neutral-700"
+				className="dark:bg-neutral-950 dark:border-neutral-700"
 				header="Spark a chat"
 				footer={
 					<div className="flex gap-3 justify-end">

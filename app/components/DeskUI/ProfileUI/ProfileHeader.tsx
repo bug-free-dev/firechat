@@ -37,7 +37,7 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({ onLogout, onDelete
 	}, [menuOpen]);
 
 	return (
-		<div className="relative border-b border-neutral-100 dark:border-neutral-800/50 bg-white dark:bg-neutral-900 px-6 py-8">
+		<div className="relative border-b border-neutral-100 dark:border-neutral-800/50 bg-white dark:bg-neutral-950 px-6 py-8">
 			<button
 				ref={menuBtnRef}
 				onClick={() => setMenuOpen((s) => !s)}
@@ -69,7 +69,7 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({ onLogout, onDelete
 					ref={menuRef}
 					className="
             absolute top-16 right-6 w-48 
-            bg-white dark:bg-neutral-900 
+            bg-white dark:bg-neutral-950 
             border border-neutral-200 dark:border-neutral-700/40 
             rounded-lg shadow-lg dark:shadow-2xl dark:shadow-black/20 
             overflow-hidden z-50

@@ -31,7 +31,7 @@ export function Picky({ value, onChange, step = 1, total = 1 }: PickyProps) {
 	const { status = '', about = '' } = value || {};
 
 	return (
-		<div className="relative w-full flex flex-col items-center justify-center px-6 py-10 bg-white dark:bg-neutral-900 overflow-hidden">
+		<div className="relative w-full flex flex-col items-center justify-center px-6 py-10 bg-white dark:bg-neutral-950 overflow-hidden">
 			<div className="absolute inset-0 pointer-events-none overflow-hidden">
 				<RiStarLine className="absolute top-[12%] left-[8%] w-7 h-7 text-amber-400/40 dark:text-amber-400/20 animate-float-elegant" />
 				<RiHeart3Line className="absolute top-[25%] right-[12%] w-7 h-7 text-pink-400/40 dark:text-pink-400/20 animate-pulse-soft" />

@@ -22,7 +22,7 @@ const MsgBubble = forwardRef<HTMLDivElement, MsgBubbleProps>(
           rounded-xl py-1.5 px-2 break-words transition-all duration-150 z-0 max-w-70
           ${
 					isMine
-						? 'bg-neutral-900 text-white dark:bg-zinc-800/80 dark:text-white'
+						? 'bg-neutral-950 text-white dark:bg-zinc-800/80 dark:text-white'
 						: 'bg-white border-2 border-neutral-200 text-neutral-800 dark:bg-zinc-900 dark:border-neutral-700 dark:text-neutral-200'
 				}
           ${className}

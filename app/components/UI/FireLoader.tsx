@@ -12,7 +12,7 @@ type LoaderProps = {
 export const FireLoader: React.FC<LoaderProps> = ({ size = 150, message, compact, className }) => {
 	return (
 		<div
-			className={`fixed inset-0 z-50 flex items-center justify-center bg-white dark:bg-neutral-900 ${className || ''}`}
+			className={`fixed inset-0 z-50 flex items-center justify-center bg-white dark:bg-neutral-950 ${className || ''}`}
 			role="status"
 			aria-live="polite"
 		>

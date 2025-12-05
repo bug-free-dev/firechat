@@ -22,7 +22,7 @@ type NameyProps = {
 
 export function Namey({ value, onChange, step = 1, total = 7 }: NameyProps) {
 	return (
-		<div className="relative w-full h-full min-h-[700px] flex items-center justify-center overflow-hidden bg-white dark:bg-neutral-900">
+		<div className="relative w-full h-full min-h-[700px] flex items-center justify-center overflow-hidden bg-white dark:bg-neutral-950">
 			<div className="absolute inset-0 pointer-events-none overflow-hidden">
 				<div className="absolute top-[50%] left-[4%] text-blue-400/40 dark:text-blue-400/20">
 					<RiPaletteLine className="w-14 h-14 animate-float-elegant" />

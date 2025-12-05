@@ -69,7 +69,7 @@ export const NavTabs: React.FC<DeskTabsProps> = ({ activeTab, onTabChange }) => 
 
 	// Base classes
 	const containerBase =
-		'relative bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700/40 rounded-full px-2 flex gap-2 overflow-hidden';
+		'relative bg-white dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-700/40 rounded-full px-2 flex gap-2 overflow-hidden';
 	const buttonBase =
 		'relative z-10 flex-1 flex items-center justify-center gap-2 px-3 py-3 text-sm font-semibold rounded-full transition-colors duration-300';
 

@@ -219,7 +219,7 @@ export const ProfilePanel: React.FC<ProfilePanelProps> = ({ profile, onUpdate })
 	};
 
 	return (
-		<div className="w-full min-h-screen bg-white dark:bg-neutral-900">
+		<div className="w-full min-h-screen bg-white dark:bg-neutral-950">
 			<ProfileHeader onLogout={handleLogout} onDeleteAccount={handleDeleteAccount} />
 
 			<div className="max-w-5xl mx-auto px-6 py-12">
@@ -311,7 +311,7 @@ export const ProfilePanel: React.FC<ProfilePanelProps> = ({ profile, onUpdate })
 									rows={4}
 								/>
 							) : (
-								<div className="px-4 py-3 rounded-lg bg-neutral-50/50 dark:bg-neutral-900/50 ring-2 ring-neutral-100/50 dark:ring-neutral-800/50 text-sm text-neutral-700 dark:text-neutral-300">
+								<div className="px-4 py-3 rounded-lg bg-neutral-50/50 dark:bg-neutral-950/50 ring-2 ring-neutral-100/50 dark:ring-neutral-800/50 text-sm text-neutral-700 dark:text-neutral-300">
 									{profile.about || 'No bio yet'}
 								</div>
 							)}
@@ -330,7 +330,7 @@ export const ProfilePanel: React.FC<ProfilePanelProps> = ({ profile, onUpdate })
 										onChange={(val) => setEditData({ ...editData, mood: val })}
 									/>
 								) : (
-									<div className="px-4 py-3 rounded-lg bg-neutral-50/50 dark:bg-neutral-900/50 ring-2 ring-neutral-100/50 dark:ring-neutral-800/50 text-sm text-neutral-700 dark:text-neutral-300">
+									<div className="px-4 py-3 rounded-lg bg-neutral-50/50 dark:bg-neutral-950/50 ring-2 ring-neutral-100/50 dark:ring-neutral-800/50 text-sm text-neutral-700 dark:text-neutral-300">
 										{profile.mood || 'No mood set'}
 									</div>
 								)}
@@ -349,7 +349,7 @@ export const ProfilePanel: React.FC<ProfilePanelProps> = ({ profile, onUpdate })
 										className="w-full"
 									/>
 								) : (
-									<div className="px-4 py-3 rounded-lg bg-neutral-50/50 dark:bg-neutral-900/50 ring-2 ring-neutral-100/50 dark:ring-neutral-800/50 text-sm text-neutral-700 dark:text-neutral-300">
+									<div className="px-4 py-3 rounded-lg bg-neutral-50/50 dark:bg-neutral-950/50 ring-2 ring-neutral-100/50 dark:ring-neutral-800/50 text-sm text-neutral-700 dark:text-neutral-300">
 										{profile.status || 'No status'}
 									</div>
 								)}
