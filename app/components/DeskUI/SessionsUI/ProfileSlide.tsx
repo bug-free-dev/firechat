@@ -111,7 +111,7 @@ export default function ProfileSlide({ user, isOpen, onClose }: UserProfileSlide
 					{(metadata.mood || metadata.status) && (
 						<div className="grid grid-cols-2 gap-3">
 							{metadata.mood && (
-								<div className="p-3 rounded-lg bg-indigo-50/20 dark:bg-indigo-800/40">
+								<div className="p-3 rounded-xl bg-indigo-50/20 dark:bg-indigo-800/40">
 									<div className="flex items-center gap-2 mb-1.5">
 										<RiUserSmileLine className="w-4 h-4 text-indigo-600 dark:text-indigo-300" />
 										<span className="text-[12px] font-bold uppercase text-indigo-600 dark:text-indigo-300">
@@ -124,7 +124,7 @@ export default function ProfileSlide({ user, isOpen, onClose }: UserProfileSlide
 								</div>
 							)}
 							{metadata.status && (
-								<div className="p-3 rounded-lg bg-blue-50/20 dark:bg-blue-800/40">
+								<div className="p-3 rounded-xl bg-blue-50/20 dark:bg-blue-800/40">
 									<div className="flex items-center gap-2 mb-1.5">
 										<RiFlashlightLine className="w-4 h-4 text-blue-600 dark:text-blue-300" />
 										<span className="text-[12px] font-bold uppercase text-blue-600 dark:text-blue-300">
@@ -147,7 +147,7 @@ export default function ProfileSlide({ user, isOpen, onClose }: UserProfileSlide
 									About
 								</h3>
 							</div>
-							<p className="text-sm leading-relaxed text-neutral-700 dark:text-neutral-300 p-3 rounded-lg bg-neutral-50/50 dark:bg-neutral-800/50">
+							<p className="text-sm leading-relaxed text-neutral-700 dark:text-neutral-300 p-3 rounded-xl bg-neutral-50/50 dark:bg-neutral-800/50">
 								{metadata.about}
 							</p>
 						</div>
@@ -186,7 +186,7 @@ export default function ProfileSlide({ user, isOpen, onClose }: UserProfileSlide
 								{metadata.quirks.map((quirk, idx) => (
 									<div
 										key={idx}
-										className="flex items-start gap-2.5 p-2 rounded-lg bg-neutral-50/50 dark:bg-neutral-800/50"
+										className="flex items-start gap-2.5 p-2 rounded-xl bg-neutral-50/50 dark:bg-neutral-800/50"
 									>
 										<div className="w-5 h-5 rounded-md bg-neutral-100 dark:bg-neutral-700 flex items-center justify-center flex-shrink-0">
 											<span className="text-[12px] text-neutral-600 dark:text-neutral-300">

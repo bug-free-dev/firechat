@@ -30,7 +30,7 @@ export const ThemeMenu: React.FC<ThemeMenuProps> = ({ isOpen, activeTheme, onSel
 			className={`
         absolute left-0 mt-2 w-40
         origin-top-left
-        rounded-lg
+        rounded-xl
         bg-white dark:bg-neutral-950
         border border-neutral-200 dark:border-neutral-700/40
         shadow-lg dark:shadow-2xl
@@ -53,7 +53,7 @@ export const ThemeMenu: React.FC<ThemeMenuProps> = ({ isOpen, activeTheme, onSel
 							onClick={() => onSelect(value)}
 							className={`
                 w-full flex items-center gap-3 px-3 py-2
-                text-sm rounded-lg 
+                text-sm rounded-xl 
                 ${
 							isActive
 								? 'text-neutral-900 dark:text-neutral-100 font-medium'

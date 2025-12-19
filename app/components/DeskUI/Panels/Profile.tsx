@@ -9,10 +9,7 @@ import {
 	HiOutlineStar,
 	HiOutlineTag,
 } from 'react-icons/hi';
-import { IoSparkles } from 'react-icons/io5';
-import { RiPriceTag3Line } from 'react-icons/ri';
 
-import { TAG_COLORS } from '@/app/components/UI';
 import { FireArea, FireButton, FireInput } from '@/app/components/UI';
 import { confirm } from '@/app/components/UI';
 import { updateUserProfile } from '@/app/lib/api/userAPI';
@@ -24,6 +21,7 @@ import {
 	ProfileAvatarSection,
 	ProfileHeader,
 	ProfileStats,
+	QuirkInput,
 	TagInput,
 } from '../ProfileUI';
 
@@ -32,7 +30,7 @@ interface ProfilePanelProps {
 	onUpdate: (updates: Partial<FireProfile>) => void;
 }
 
-const MAX_IMAGE_SIZE = 100 * 1024; // 100KB for base64 strings
+const MAX_IMAGE_SIZE = 100 * 1024;
 
 export const ProfilePanel: React.FC<ProfilePanelProps> = ({ profile, onUpdate }) => {
 	const { logout, deleteAndLogout } = useAuthState();
@@ -219,29 +217,38 @@ export const ProfilePanel: React.FC<ProfilePanelProps> = ({ profile, onUpdate })
 	};
 
 	return (
-		<div className="w-full min-h-screen bg-white dark:bg-neutral-950">
+		<div className="min-h-screen bg-white dark:bg-zinc-950">
 			<ProfileHeader onLogout={handleLogout} onDeleteAccount={handleDeleteAccount} />
 
-			<div className="max-w-5xl mx-auto px-6 py-12">
-				<div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-					{/* Left Column - Avatar & Basic Info */}
-					<div className="lg:col-span-1 flex flex-col items-center lg:items-start gap-6">
-						<ProfileAvatarSection
-							displayName={profile.displayName}
-							avatarUrl={isEditing ? editData.avatarUrl : profile.avatarUrl}
-							isEditing={isEditing}
-							onEdit={() => setIsEditing(true)}
-							onCancel={handleCancelEdit}
-							onSave={handleSave}
-							onImageUpload={handleImageUpload}
-							onDicebearSelect={handleDicebearSelect}
-							saving={saving}
-						/>
+			{/* Hero Section */}
+			<div className="relative">
+				<div className="absolute inset-0 bg-gradient-to-br from-zinc-100/40 via-transparent to-zinc-100/40 dark:from-zinc-900/20 dark:to-zinc-900/20 pointer-events-none" />
 
-						<div className="w-full text-center lg:text-left space-y-1">
-							<p className="text-md text-neutral-500 dark:text-neutral-400">
+				<div className="relative max-w-5xl mx-auto px-6 pt-20 pb-16">
+					{/* Avatar & Identity */}
+					<div className="flex flex-col items-center">
+						<div className="relative">
+							<div className="absolute -inset-8 bg-gradient-to-r from-zinc-100 to-zinc-50 dark:from-zinc-900 dark:to-zinc-800/50 rounded-full blur-3xl opacity-60" />
+							<div className="relative">
+								<ProfileAvatarSection
+									displayName={profile.displayName}
+									avatarUrl={isEditing ? editData.avatarUrl : profile.avatarUrl}
+									isEditing={isEditing}
+									onEdit={() => setIsEditing(true)}
+									onCancel={handleCancelEdit}
+									onSave={handleSave}
+									onImageUpload={handleImageUpload}
+									onDicebearSelect={handleDicebearSelect}
+									saving={saving}
+								/>
+							</div>
+						</div>
+
+						<div className="mt-10 text-center space-y-3">
+							<p className="text-[13px] tracking-wide text-zinc-500 dark:text-zinc-500 font-medium">
 								@{profile.usernamey}
 							</p>
+
 							{isEditing ? (
 								<input
 									value={String(editData.displayName ?? '')}
@@ -249,60 +256,89 @@ export const ProfilePanel: React.FC<ProfilePanelProps> = ({ profile, onUpdate })
 										setEditData({ ...editData, displayName: e.target.value })
 									}
 									placeholder="Display name"
-									className="
-                    w-50 p-1 text-md font-semibold text-neutral-900 dark:text-neutral-100 text-center lg:text-left
-                    px-2 py-1 rounded-md bg-neutral-50/50 dark:bg-neutral-800/50
-                    ring-2 ring-neutral-200/30 dark:ring-neutral-700/40 focus:ring-neutral-300/50 dark:focus:ring-neutral-600/50
-                    outline-none transition-all
-                  "
+									className="text-4xl font-semibold tracking-tight text-center text-zinc-900 dark:text-zinc-100
+                              bg-transparent border-b-2 border-zinc-200 dark:border-zinc-600
+                              focus:border-zinc-800/60 dark:focus:border-zinc-100/50
+                              outline-none transition-all px-6 py-2 placeholder:text-zinc-300"
 								/>
 							) : (
-								<h2 className="text-xl font-semibold text-neutral-900 dark:text-neutral-100">
+								<h1 className="text-4xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">
 									{profile.displayName}
-								</h2>
+								</h1>
 							)}
 						</div>
 
-						<ProfileStats kudos={profile.kudos ?? 0} status={profile.status} />
-
-						{/* Tags Display */}
-						<div className="flex flex-wrap gap-2 justify-center lg:justify-start">
-							{(profile.tags ?? []).slice(0, 10).map((tag, i) => {
-								const colorSet = TAG_COLORS[i % TAG_COLORS.length];
-								return (
-									<span
-										key={i}
-										className={`
-											inline-flex items-center gap-2 pl-3 pr-3 py-1
-											rounded-xl ${colorSet.bg} ${colorSet.text} ${colorSet.ring}
-											dark:${colorSet.bg} dark:${colorSet.text} dark:${colorSet.ring}
-											text-sm font-medium tracking-tight
-											transition-all duration-200 ease-out ${colorSet.hover}
-											dark:hover:shadow-lg dark:hover:shadow-black/10
-										`}
-									>
-										<RiPriceTag3Line className="w-3.5 h-3.5 opacity-60" />
-										{tag}
-									</span>
-								);
-							})}
-							{(profile.tags ?? []).length === 0 && (
-								<div className="flex items-center gap-1.5 text-neutral-400 dark:text-neutral-500">
-									<IoSparkles className="w-4 h-4 opacity-30" />
-									<span className="text-sm">No tags yet</span>
-								</div>
-							)}
+						<div className="mt-8">
+							<ProfileStats kudos={profile.kudos ?? 0} status={profile.status} />
 						</div>
 					</div>
+				</div>
+			</div>
 
-					{/* Right Column - Detailed Info */}
-					<div className="lg:col-span-2 space-y-6">
-						{/* About */}
-						<div>
-							<label className="flex items-center gap-2 text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-3">
-								<HiOutlineInformationCircle className="w-5 h-5 text-blue-500 dark:text-blue-400" />
-								About
-							</label>
+			{/* Main Content */}
+			<div className="max-w-5xl mx-auto px-6 pb-24">
+				<div className="grid lg:grid-cols-[280px_1fr] gap-12">
+					{/* Sidebar */}
+					<aside className="space-y-8">
+						{/* Mood Card */}
+						<div className="bg-white dark:bg-zinc-900/50 rounded-2xl border border-zinc-200/60 dark:border-zinc-800/60 p-6   ">
+							<div className="flex items-center gap-2 mb-4">
+								<div className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-500/10 to-orange-500/10 dark:from-amber-500/20 dark:to-orange-500/20 flex items-center justify-center">
+									<HiOutlineEmojiHappy className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+								</div>
+								<h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+									Mood
+								</h3>
+							</div>
+							{isEditing ? (
+								<MoodOptions
+									value={String(editData.mood ?? '')}
+									onChange={(val) => setEditData({ ...editData, mood: val })}
+								/>
+							) : (
+								<p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+									{profile.mood || 'Not set'}
+								</p>
+							)}
+						</div>
+
+						{/* Status Card */}
+						<div className="bg-white dark:bg-zinc-900/50 rounded-2xl border border-zinc-200/60 dark:border-zinc-800/60 p-6   ">
+							<div className="flex items-center gap-2 mb-4">
+								<div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500/10 to-cyan-500/10 dark:from-blue-500/20 dark:to-cyan-500/20 flex items-center justify-center">
+									<HiOutlineHashtag className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+								</div>
+								<h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+									Status
+								</h3>
+							</div>
+							{isEditing ? (
+								<FireInput
+									value={String(editData.status ?? '')}
+									onChange={(e) => setEditData({ ...editData, status: e.target.value })}
+									placeholder="What's your status?"
+									size="sm"
+								/>
+							) : (
+								<p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+									{profile.status || 'No status'}
+								</p>
+							)}
+						</div>
+					</aside>
+
+					{/* Main Content Area */}
+					<main className="space-y-8">
+						{/* About Section */}
+						<section className="bg-white dark:bg-zinc-900/50 rounded-2xl border border-zinc-200/60 dark:border-zinc-800/60 p-8 ">
+							<div className="flex items-center gap-3 mb-6">
+								<div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500/10 to-green-500/10 dark:from-emerald-500/20 dark:to-green-500/20 flex items-center justify-center">
+									<HiOutlineInformationCircle className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+								</div>
+								<h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100">
+									About
+								</h2>
+							</div>
 							{isEditing ? (
 								<FireArea
 									value={String(editData.about ?? '')}
@@ -311,89 +347,62 @@ export const ProfilePanel: React.FC<ProfilePanelProps> = ({ profile, onUpdate })
 									rows={4}
 								/>
 							) : (
-								<div className="px-4 py-3 rounded-lg bg-neutral-50/50 dark:bg-neutral-950/50 ring-2 ring-neutral-100/50 dark:ring-neutral-800/50 text-sm text-neutral-700 dark:text-neutral-300">
+								<p className="text-[15px] text-zinc-600 dark:text-zinc-400 leading-relaxed">
 									{profile.about || 'No bio yet'}
-								</div>
+								</p>
 							)}
-						</div>
+						</section>
 
-						{/* Mood & Status */}
-						<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-							<div>
-								<label className="flex items-center gap-2 text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-3">
-									<HiOutlineEmojiHappy className="w-5 h-5 text-amber-500 dark:text-amber-400" />
-									Mood
-								</label>
-								{isEditing ? (
-									<MoodOptions
-										value={String(editData.mood ?? '')}
-										onChange={(val) => setEditData({ ...editData, mood: val })}
-									/>
-								) : (
-									<div className="px-4 py-3 rounded-lg bg-neutral-50/50 dark:bg-neutral-950/50 ring-2 ring-neutral-100/50 dark:ring-neutral-800/50 text-sm text-neutral-700 dark:text-neutral-300">
-										{profile.mood || 'No mood set'}
+						{/* Tags Section */}
+						<section className="bg-white dark:bg-zinc-900/50 rounded-2xl border border-zinc-200/60 dark:border-zinc-800/60 p-8   ">
+							<div className="flex items-center justify-between mb-6">
+								<div className="flex items-center gap-3">
+									<div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500/10 to-pink-500/10 dark:from-purple-500/20 dark:to-pink-500/20 flex items-center justify-center">
+										<HiOutlineTag className="w-5 h-5 text-purple-600 dark:text-purple-400" />
 									</div>
-								)}
-							</div>
-
-							<div>
-								<label className="flex items-center gap-2 text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-3">
-									<HiOutlineHashtag className="w-5 h-5 text-blue-500 dark:text-blue-400" />
-									Status
-								</label>
-								{isEditing ? (
-									<FireInput
-										value={String(editData.status ?? '')}
-										onChange={(e) => setEditData({ ...editData, status: e.target.value })}
-										placeholder="What's your status?"
-										className="w-full"
-									/>
-								) : (
-									<div className="px-4 py-3 rounded-lg bg-neutral-50/50 dark:bg-neutral-950/50 ring-2 ring-neutral-100/50 dark:ring-neutral-800/50 text-sm text-neutral-700 dark:text-neutral-300">
-										{profile.status || 'No status'}
-									</div>
-								)}
-							</div>
-						</div>
-
-						{/* Tags */}
-						<div>
-							<label className="flex items-center gap-2 text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-3">
-								<HiOutlineTag className="w-5 h-5 text-pink-500 dark:text-pink-400" />
-								Tags
-								<span className="text-xs text-neutral-500 dark:text-neutral-400">
-									({(editData.tags ?? []).length}/12)
+									<h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100">
+										Tags
+									</h2>
+								</div>
+								<span className="text-sm text-zinc-500 dark:text-zinc-500 font-medium">
+									{(editData.tags ?? []).length}/12
 								</span>
-							</label>
+							</div>
 							<TagInput
 								value={editData.tags ?? []}
 								onChange={(next) => setEditData({ ...editData, tags: next })}
-								placeholder="Add a tag..."
+								placeholder="e.g. React, Design, Photography"
 								max={12}
 								editable={isEditing}
 							/>
-						</div>
+						</section>
 
-						{/* Quirks */}
-						<div>
-							<label className="flex items-center gap-2 text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-3">
-								<HiOutlineStar className="w-5 h-5 text-violet-500 dark:text-violet-400" />
-								Quirks
-								<span className="text-xs text-neutral-500 dark:text-neutral-400">
-									({(editData.quirks ?? []).length}/6)
+						{/* Quirks Section */}
+						<section className="bg-white dark:bg-zinc-900/50 rounded-2xl border border-zinc-200/60 dark:border-zinc-800/60 p-8   ">
+							<div className="flex items-center justify-between mb-6">
+								<div className="flex items-center gap-3">
+									<div className="w-10 h-10 rounded-xl bg-gradient-to-br from-rose-500/10 to-red-500/10 dark:from-rose-500/20 dark:to-red-500/20 flex items-center justify-center">
+										<HiOutlineStar className="w-5 h-5 text-rose-600 dark:text-rose-400" />
+									</div>
+									<h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100">
+										Quirks
+									</h2>
+								</div>
+								<span className="text-sm text-zinc-500 dark:text-zinc-500 font-medium">
+									{(editData.quirks ?? []).length}/6
 								</span>
-							</label>
-							<TagInput
+							</div>
+							<QuirkInput
 								value={editData.quirks ?? []}
 								onChange={(next) => setEditData({ ...editData, quirks: next })}
-								placeholder="Add a quirk..."
+								placeholder="e.g. Night Owl, Coffee Addict"
 								max={6}
 								editable={isEditing}
 							/>
-						</div>
+						</section>
 
-						{/* Action Buttons */}
-						<div className="flex gap-3 pt-4">
+						{/* Action Footer */}
+						<div className="flex gap-3 pt-2">
 							{isEditing ? (
 								<>
 									<FireButton
@@ -401,25 +410,20 @@ export const ProfilePanel: React.FC<ProfilePanelProps> = ({ profile, onUpdate })
 										variant="default"
 										disabled={saving}
 										loading={saving}
-										className="min-w-[120px]"
 									>
 										Save changes
 									</FireButton>
-									<FireButton onClick={handleCancelEdit} variant="outline">
+									<FireButton onClick={handleCancelEdit} variant="outline" destructive>
 										Cancel
 									</FireButton>
 								</>
 							) : (
-								<FireButton
-									onClick={() => setIsEditing(true)}
-									variant="default"
-									className="min-w-[120px]"
-								>
+								<FireButton onClick={() => setIsEditing(true)} variant="default">
 									Edit profile
 								</FireButton>
 							)}
 						</div>
-					</div>
+					</main>
 				</div>
 			</div>
 		</div>

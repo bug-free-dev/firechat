@@ -36,7 +36,7 @@ const ReactionsPicker: React.FC<ReactionPickerProps> = ({
 			style={style}
 			role="dialog"
 			aria-label="Reaction picker"
-			className="fc-slide-in-left rounded-lg"
+			className="fc-slide-in-left rounded-xl"
 		>
 			{REACTION_EMOJIS.map((emoji) => (
 				<button

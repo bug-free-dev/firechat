@@ -1,23 +1,24 @@
 'use client';
 
 import { useState } from 'react';
+import { HiOutlineStar } from 'react-icons/hi';
 import { IoAdd, IoClose } from 'react-icons/io5';
-import { RiPriceTag3Line } from 'react-icons/ri';
 
-import { FireButton, FireInput, TAG_COLORS } from '@/app/components/UI';
+import { FireButton, FireInput, QUIRK_COLORS } from '@/app/components/UI';
 
-type TagInputProps = {
+type QuirkInputProps = {
 	value: string[];
-	onChange: (tags: string[]) => void;
+	onChange: (quirks: string[]) => void;
 	placeholder?: string;
 	max?: number;
 	editable: boolean;
 };
-export const TagInput: React.FC<TagInputProps> = ({
+
+export const QuirkInput: React.FC<QuirkInputProps> = ({
 	value,
 	onChange,
-	placeholder = 'Add a tag...',
-	max = 12,
+	placeholder = 'Add a quirk...',
+	max = 6,
 	editable,
 }) => {
 	const [input, setInput] = useState('');
@@ -45,11 +46,11 @@ export const TagInput: React.FC<TagInputProps> = ({
 
 	return (
 		<div className="space-y-6">
-			{/* Tags Display */}
+			{/* Quirks Display */}
 			{value.length > 0 ? (
 				<div className="flex flex-wrap gap-2">
-					{value.map((tag, index) => {
-						const colorSet = TAG_COLORS[index % TAG_COLORS.length];
+					{value.map((quirk, index) => {
+						const colorSet = QUIRK_COLORS[index % QUIRK_COLORS.length];
 						return (
 							<span
 								key={index}
@@ -60,13 +61,13 @@ export const TagInput: React.FC<TagInputProps> = ({
                   transition-all duration-200 ${colorSet.hover}
                 `}
 							>
-								<RiPriceTag3Line className="w-3.5 h-3.5 opacity-70" />
-								<span>{tag}</span>
+								<HiOutlineStar className="w-3.5 h-3.5 opacity-70" />
+								<span>{quirk}</span>
 								{editable && (
 									<button
 										onClick={() => handleRemove(index)}
 										className="ml-0.5 p-0.5 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
-										aria-label={`Remove ${tag}`}
+										aria-label={`Remove ${quirk}`}
 									>
 										<IoClose className="w-3.5 h-3.5" />
 									</button>
@@ -77,7 +78,7 @@ export const TagInput: React.FC<TagInputProps> = ({
 				</div>
 			) : (
 				!editable && (
-					<p className="text-sm text-neutral-400 dark:text-neutral-600">No tags yet</p>
+					<p className="text-sm text-neutral-400 dark:text-neutral-600">No quirks yet</p>
 				)
 			)}
 
@@ -112,8 +113,8 @@ export const TagInput: React.FC<TagInputProps> = ({
 								{value.length} / {max}
 							</span>
 							{value.length >= max && (
-								<span className="text-amber-600 dark:text-amber-500 font-medium">
-									Maximum reached
+								<span className="text-purple-600 dark:text-purple-400 font-medium">
+									All quirks added
 								</span>
 							)}
 						</div>
@@ -121,7 +122,7 @@ export const TagInput: React.FC<TagInputProps> = ({
 							<div
 								className={`h-full transition-all duration-300 ${
 									value.length >= max
-										? 'bg-amber-500'
+										? 'bg-purple-500'
 										: 'bg-neutral-900 dark:bg-neutral-100'
 								}`}
 								style={{ width: `${progress}%` }}

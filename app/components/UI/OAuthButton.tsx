@@ -27,7 +27,7 @@ export const OAuthButton: React.FC<OAuthButtonProps> = ({
 
 	const base = `
     inline-flex items-center justify-center gap-2
-    rounded-lg border border-neutral-200 bg-white
+    rounded-xl border border-neutral-200 bg-white
     px-5 py-2.5 text-sm font-medium text-neutral-700
     transition-colors duration-200 ease-in-out
     hover:bg-neutral-50

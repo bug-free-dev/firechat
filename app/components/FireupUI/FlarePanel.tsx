@@ -55,10 +55,10 @@ export default function FlarePanel() {
 				{features.map((feature) => (
 					<div
 						key={feature.title}
-						className="p-3 rounded-lg bg-white dark:bg-neutral-950 border border-neutral-100 dark:border-neutral-700/40 text-left group transition duration-300 ease-in-out hover:bg-neutral-50 dark:hover:bg-neutral-700/50"
+						className="p-3 rounded-xl bg-white dark:bg-neutral-950 border border-neutral-100 dark:border-neutral-700/40 text-left group transition duration-300 ease-in-out hover:bg-neutral-50 dark:hover:bg-neutral-700/50"
 					>
 						<div className="flex flex-col sm:flex-row items-center gap-3 justify-center">
-							<div className="p-2 rounded-lg transition-colors duration-300 group-hover:bg-white/10 dark:group-hover:bg-neutral-700/10">
+							<div className="p-2 rounded-xl transition-colors duration-300 group-hover:bg-white/10 dark:group-hover:bg-neutral-700/10">
 								{feature.icon}
 							</div>
 
@@ -76,7 +76,7 @@ export default function FlarePanel() {
 			</div>
 
 			{/* Pro tip */}
-			<div className="text-center p-2 rounded-lg ring-2 ring-neutral-300/50 dark:ring-neutral-700/50">
+			<div className="text-center p-2 rounded-xl ring-2 ring-neutral-300/50 dark:ring-neutral-700/50">
 				<div className="text-xs text-neutral-700 dark:text-neutral-200 mb-3 flex items-center justify-center gap-2">
 					<BiRocket className="text-neutral-500 dark:text-neutral-300 w-4 h-4" />
 					<span className="font-medium">Pro tip</span>

@@ -131,7 +131,7 @@ export const KudosPanel: React.FC<KudosPanelProps> = ({
 
 					{/* Search + Send */}
 					<div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3 mt-3 sm:mt-0 w-full sm:w-auto">
-						<div className="flex items-center gap-2 rounded-lg px-2 py-1 w-full sm:w-auto">
+						<div className="flex items-center gap-2 rounded-xl px-2 py-1 w-full sm:w-auto">
 							<FiSearch className="text-neutral-500 dark:text-neutral-400" />
 							<FireInput
 								value={search}
@@ -156,7 +156,7 @@ export const KudosPanel: React.FC<KudosPanelProps> = ({
 				{/* Balance + stats */}
 				<div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
 					<div className="flex items-center gap-4">
-						<div className="rounded-lg flex items-center justify-center transition-all">
+						<div className="rounded-xl flex items-center justify-center transition-all">
 							<RiCoinsLine className="w-10 h-10 text-yellow-500 dark:text-yellow-400" />
 						</div>
 						<div>

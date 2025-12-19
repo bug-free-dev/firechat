@@ -177,7 +177,7 @@ export const createMarkdownComponents = (): Components => ({
 		</del>
 	),
 	pre: ({ children, ...props }: HTMLAttributes<HTMLPreElement>) => (
-		<pre className="overflow-x-auto my-3 rounded-lg p-1 text-sm leading-relaxed" {...props}>
+		<pre className="overflow-x-auto my-3 rounded-xl p-1 text-sm leading-relaxed" {...props}>
 			{children}
 		</pre>
 	),
@@ -196,7 +196,7 @@ export const createMarkdownComponents = (): Components => ({
 		}
 
 		return (
-			<code className={`font-mono text-sm rounded-lg ${className || ''}`} {...props}>
+			<code className={`font-mono text-sm rounded-xl ${className || ''}`} {...props}>
 				{children}
 			</code>
 		);

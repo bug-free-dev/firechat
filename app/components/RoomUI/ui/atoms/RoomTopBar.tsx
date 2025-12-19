@@ -153,15 +153,40 @@ const RoomTopBar: React.FC<RoomTopBarProps> = ({
 						)}
 
 						{/* Meta Info */}
-						<div className="mt-1 flex items-center flex-wrap gap-1.5 text-xs">
-							<span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-sky-50 dark:bg-sky-900/30 text-sky-700 dark:text-sky-200 border border-sky-200/50">
-								<FiUsers className="w-3 h-3" />
-								<span className="font-medium">{participantCount} alive</span>
+						<div className="mt-2 flex items-center flex-wrap gap-2 text-xs">
+							<span
+								className="
+         inline-flex items-center gap-1.5
+         px-3 py-1
+         rounded-full
+
+         bg-rose-50/70 dark:bg-rose-900/30
+         text-rose-700 dark:text-rose-200
+
+         ring-1 ring-rose-200/40 dark:ring-rose-800/40
+         backdrop-blur-sm
+      "
+							>
+								<FiUsers className="w-3.5 h-3.5 opacity-70" />
+								<span className="font-medium tracking-tight">{participantCount} alive</span>
 							</span>
+
 							{session.isLocked && (
-								<span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-cyan-50 dark:bg-cyan-900/30 text-cyan-700 dark:text-cyan-200 border border-cyan-200/50">
-									<FiLock className="w-3 h-3" />
-									<span className="font-medium">Locked</span>
+								<span
+									className="
+            inline-flex items-center gap-1.5
+            px-3 py-1
+            rounded-full
+
+            bg-pink-50/70 dark:bg-pink-900/30
+            text-pink-700 dark:text-pink-200
+
+            ring-1 ring-pink-200/40 dark:ring-pink-800/40
+            backdrop-blur-sm
+         "
+								>
+									<FiLock className="w-3.5 h-3.5 opacity-70" />
+									<span className="font-medium tracking-tight">Locked</span>
 								</span>
 							)}
 						</div>

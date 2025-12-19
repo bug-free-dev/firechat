@@ -307,7 +307,7 @@ export default function AuthForm({ activeTab, onTabChange }: Props) {
 						)}
 					</div>
 
-					<div className="text-xs text-neutral-500 dark:text-neutral-300 text-center mt-4 p-4 bg-neutral-50/80 dark:bg-neutral-800/60 rounded-lg border border-neutral-100 dark:border-neutral-700/40">
+					<div className="text-xs text-neutral-500 dark:text-neutral-300 text-center mt-4 p-4 bg-neutral-50/80 dark:bg-neutral-800/60 rounded-xl border border-neutral-100 dark:border-neutral-700/40">
 						{activeTab === 'signup' ? (
 							<span>
 								By creating an account you agree to be kind and keep the chat chill.

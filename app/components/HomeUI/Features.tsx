@@ -38,7 +38,7 @@ export function FeaturesSection() {
 						const Icon = feature.icon;
 						return (
 							<div key={idx} className="flex items-start gap-4">
-								<div className="flex-shrink-0 w-10 h-10 rounded-lg bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center transition-colors duration-300">
+								<div className="flex-shrink-0 w-10 h-10 rounded-xl bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center transition-colors duration-300">
 									<Icon className="w-5 h-5 text-neutral-900 dark:text-neutral-100" />
 								</div>
 								<div>

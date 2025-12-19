@@ -212,7 +212,7 @@ export const SessionCard: React.FC<SessionCardProps> = ({
 						</FireButton>
 
 						{menuOpen && (
-							<div className="absolute right-0 mt-2 w-45 bg-white dark:bg-neutral-950 rounded-lg shadow-lg dark:shadow-sm border border-neutral-200 dark:border-neutral-700/40 z-20 p-1.5">
+							<div className="absolute right-0 mt-2 w-45 bg-white dark:bg-neutral-950 rounded-xl shadow-lg dark:shadow-sm border border-neutral-200 dark:border-neutral-700/40 z-20 p-1.5">
 								{onEndSession && session.isActive && (
 									<FireButton
 										onClick={(e) => {

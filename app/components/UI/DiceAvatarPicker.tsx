@@ -47,7 +47,7 @@ export const DiceAvatarPicker: React.FC<Props> = ({ displayName = '', onSelect, 
 
 					<button
 						onClick={onClose}
-						className="p-1.5 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-lg transition-colors"
+						className="p-1.5 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-xl transition-colors"
 						aria-label="Close"
 						type="button"
 					>

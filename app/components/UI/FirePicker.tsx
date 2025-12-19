@@ -183,7 +183,7 @@ export const FirePicker: React.FC<PickerProps> = ({
 						</div>
 						<div className="h-px flex-1 bg-neutral-200 dark:bg-neutral-700/40" />
 					</div>
-					<div className="flex items-center gap-2 rounded-lg px-2 py-1 w-full sm:w-auto ">
+					<div className="flex items-center gap-2 rounded-xl px-2 py-1 w-full sm:w-auto ">
 						<FiSearch className="w-4 h-4 text-neutral-400 dark:text-neutral-500" />
 						<FireInput
 							value={query}
@@ -206,7 +206,7 @@ export const FirePicker: React.FC<PickerProps> = ({
 									<button
 										key={u.uid}
 										onClick={() => toggle(u)}
-										className={`truncate p-2 flex items-center gap-2 text-left rounded-lg ring-2 transition-all duration-200 ${
+										className={`truncate p-2 flex items-center gap-2 text-left rounded-xl ring-2 transition-all duration-200 ${
 											active
 												? 'ring-yellow-500 bg-yellow-50 dark:bg-yellow-900/30'
 												: 'ring-neutral-200 hover:ring-neutral-300 dark:ring-neutral-700/40 dark:hover:ring-neutral-600/40'

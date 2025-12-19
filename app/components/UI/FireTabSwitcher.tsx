@@ -50,7 +50,7 @@ export const FireTabSwitcher = <T extends string = string>({
 
 	const variantClasses = {
 		pills: 'rounded-xl',
-		rounded: 'rounded-lg',
+		rounded: 'rounded-xl',
 	};
 
 	const indicatorStyle = useMemo(() => {

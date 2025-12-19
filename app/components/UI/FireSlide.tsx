@@ -143,7 +143,7 @@ export const FireSlide: React.FC<FireSlideProps> = ({
 								type="button"
 								aria-label="Close dialog"
 								onClick={onClose}
-								className="flex-shrink-0 p-[5px] rounded-lg text-neutral-600 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white border border-neutral-200 dark:border-neutral-700 hover:border-neutral-300 dark:hover:border-neutral-500 bg-white dark:bg-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-rose-500/20 active:scale-95"
+								className="flex-shrink-0 p-[5px] rounded-xl text-neutral-600 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white border border-neutral-200 dark:border-neutral-700 hover:border-neutral-300 dark:hover:border-neutral-500 bg-white dark:bg-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-rose-500/20 active:scale-95"
 							>
 								<HiX className="w-3 h-3" />
 							</button>

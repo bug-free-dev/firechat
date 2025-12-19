@@ -8,20 +8,15 @@ import type { FireProfile, KudosResult, KudosTxn } from '@/app/lib/types';
 import { compare, create, toISO } from '@/app/lib/utils/time';
 
 /* <----- DOCUMENT MAPPING -----> */
-/**
- * Safely map Firestore document to KudosTxn with validation
- * Uses time.ts utilities for timestamp normalization
- */
+
 function mapKudosDoc(doc: QueryDocumentSnapshot): KudosTxn | null {
 	try {
 		const raw = doc.data();
 
-		// Validate required fields
 		if (!raw.from || !raw.to || typeof raw.amount !== 'number') {
 			return null;
 		}
 
-		// Normalize createdAt using time.ts
 		const createdAt = toISO(raw.createdAt) || create.nowISO();
 
 		return {
@@ -81,14 +76,14 @@ export async function getKudosHistoryAll(uid: string, limit = 15): Promise<Kudos
 				.orderBy('createdAt', 'desc')
 				.limit(limit)
 				.get()
-				.catch(() => null), // Graceful degradation
+				.catch(() => null),
 			adminDb
 				.collection('kudos')
 				.where('to', '==', uid)
 				.orderBy('createdAt', 'desc')
 				.limit(limit)
 				.get()
-				.catch(() => null), // Graceful degradation
+				.catch(() => null),
 		]);
 
 		const txns: KudosTxn[] = [];

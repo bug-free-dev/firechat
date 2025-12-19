@@ -47,7 +47,7 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
 	if (!mounted) {
 		return (
 			<div
-				className={`h-8 w-24 rounded-lg bg-neutral-100 dark:bg-neutral-950 animate-pulse ${className}`}
+				className={`h-8 w-24 rounded-xl bg-neutral-100 dark:bg-neutral-950 animate-pulse ${className}`}
 			/>
 		);
 	}

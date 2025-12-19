@@ -8,7 +8,7 @@ html {
 
 * {
 	box-sizing: border-box;
-	transition: var(--transition);
+	transition: var(--transition-fast);
 }
 
 body {
@@ -19,7 +19,6 @@ body {
 	font-weight: 500;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
-	transition: var(--transition);
 }
 
 p,
@@ -30,16 +29,6 @@ ol {
 
 p {
 	line-height: 1.7;
-}
-
-ul,
-ol {
-	padding-left: 1.5rem;
-}
-
-li {
-	margin-bottom: 0.5rem;
-	line-height: 1.6;
 }
 
 /* Tap highlight removal */

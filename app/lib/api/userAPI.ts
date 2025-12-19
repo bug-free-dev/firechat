@@ -20,22 +20,6 @@ export async function getAllUsers(): Promise<FireProfile[]> {
 }
 
 /**
- * Fetch a user profile by UID
- */
-export async function getUserProfileFromUid(uid: string): Promise<FireProfile | null> {
-	if (uid.length === 0) return null;
-
-	try {
-		const snap = await adminDb.collection('users').doc(uid).get();
-		if (!snap.exists) return null;
-
-		return snap.data() as FireProfile;
-	} catch {
-		return null;
-	}
-}
-
-/**
  * Update user profile (partial fields only)
  */
 export async function updateUserProfile(
@@ -58,46 +42,6 @@ export async function updateUserProfile(
 
 		await invalidateUser(uid).catch(() => {
 			// Silent fail - cache will self-heal
-		});
-
-		return true;
-	} catch {
-		return false;
-	}
-}
-
-/**
- * Touch lastSeen (fast ping, safe to call often)
- */
-export async function touchUserLastSeen(uid: string): Promise<void> {
-	if (uid.length === 0) return;
-	const userRef = adminDb.collection('users').doc(uid);
-	try {
-		await userRef.update({ lastSeen: FieldValue.serverTimestamp() });
-	} catch {
-		await userRef.set({ lastSeen: FieldValue.serverTimestamp() }, { merge: true });
-	}
-
-	await invalidateUser(uid).catch(() => {
-		// Silent fail
-	});
-}
-
-/**
- * Ban or unban a user
- */
-export async function setUserBan(uid: string, isBanned: boolean): Promise<boolean> {
-	if (uid.length === 0) return false;
-
-	try {
-		const userRef = adminDb.collection('users').doc(uid);
-		await userRef.update({
-			isBanned,
-			lastSeen: FieldValue.serverTimestamp(),
-		});
-
-		await invalidateUser(uid).catch(() => {
-			// Silent fail
 		});
 
 		return true;
@@ -223,25 +167,6 @@ export async function getMinimalProfileFromIdToken(
 		return profile;
 	} catch {
 		return null;
-	}
-}
-
-/**
- * Check if user exists and is not banned
- * @param uid - Firebase UID
- * @returns true if user exists and not banned
- */
-export async function isUserActive(uid: string): Promise<boolean> {
-	if (uid.length === 0 || typeof uid !== 'string') return false;
-
-	try {
-		const snap = await adminDb.collection('users').doc(uid).get();
-		if (!snap.exists) return false;
-
-		const data = snap.data() as Partial<FireProfile> | undefined;
-		return !(data?.isBanned ?? false);
-	} catch {
-		return false;
 	}
 }
 

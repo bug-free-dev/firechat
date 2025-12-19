@@ -172,7 +172,7 @@ export function Launchy({
 						</div>
 
 						<div className="mt-8 space-y-3 overflow-hidden">
-							<div className="text-xs text-zinc-500 dark:text-neutral-400 flex items-center gap-2 justify-center bg-zinc-50/70 dark:bg-neutral-800/50 p-2 rounded-lg">
+							<div className="text-xs text-zinc-500 dark:text-neutral-400 flex items-center gap-2 justify-center bg-zinc-50/70 dark:bg-neutral-800/50 p-2 rounded-xl">
 								<RiInformationLine className="w-4 h-4" />
 								<span>This is a preview of your public profile.</span>
 							</div>
@@ -218,7 +218,7 @@ export function Launchy({
 								</div>
 							</div>
 
-							<div className="text-xs text-zinc-400 dark:text-neutral-500 flex items-center gap-2 justify-center bg-transparent p-0 rounded-lg">
+							<div className="text-xs text-zinc-400 dark:text-neutral-500 flex items-center gap-2 justify-center bg-transparent p-0 rounded-xl">
 								<span>Cannot show identifier due to privacy reasons.</span>
 							</div>
 						</div>

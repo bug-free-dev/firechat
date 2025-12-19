@@ -32,7 +32,7 @@ export const FireButton = React.forwardRef<HTMLButtonElement, FireButtonProps>(
 	) => {
 		const base = `
 			group relative inline-flex items-center justify-center
-			font-medium rounded-lg
+			font-medium rounded-xl
 			transition-all duration-150
 			focus:outline-none focus:ring-2 focus:ring-offset-2
 			disabled:pointer-events-none disabled:opacity-50
@@ -50,22 +50,22 @@ export const FireButton = React.forwardRef<HTMLButtonElement, FireButtonProps>(
 			if (destructive) {
 				const destructiveVariants: Record<FireVariant, string> = {
 					default: `
-						bg-red-600 dark:bg-red-500 text-white
+						bg-red-500 dark:bg-red-600/90 text-white
 						hover:bg-red-700 dark:hover:bg-red-600
-						focus:ring-red-600 dark:focus:ring-red-500
+						focus:ring-red-600/80 dark:focus:ring-red-500/80
 						focus:ring-offset-white dark:focus:ring-offset-neutral-950
 						shadow-sm
 					`,
 					secondary: `
 						bg-red-50 dark:bg-red-950 text-red-900 dark:text-red-50
-						border-2 border-red-200/40 dark:border-red-800
+						border border-red-200/40 dark:border-red-800/50
 						hover:bg-red-100 dark:hover:bg-red-900
 						focus:ring-red-600 dark:focus:ring-red-500
 						focus:ring-offset-white dark:focus:ring-offset-neutral-950
 					`,
 					outline: `
 						bg-transparent text-red-600 dark:text-red-500
-						border-2 border-red-300 dark:border-red-700
+						border border-red-300/80 dark:border-red-700/50
 						hover:bg-red-50 dark:hover:bg-red-950
 						focus:ring-red-600 dark:focus:ring-red-500
 						focus:ring-offset-white dark:focus:ring-offset-neutral-950

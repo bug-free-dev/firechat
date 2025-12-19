@@ -42,7 +42,7 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({ onLogout, onDelete
 				ref={menuBtnRef}
 				onClick={() => setMenuOpen((s) => !s)}
 				className="
-          absolute top-6 right-6 p-2 rounded-lg
+          absolute top-6 right-6 p-2 rounded-xl
           hover:bg-neutral-100 dark:hover:bg-neutral-800/50 
           transition-colors
         "
@@ -71,7 +71,7 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({ onLogout, onDelete
             absolute top-16 right-6 w-48 
             bg-white dark:bg-neutral-950 
             border border-neutral-200 dark:border-neutral-700/40 
-            rounded-lg shadow-lg dark:shadow-2xl dark:shadow-black/20 
+            rounded-xl shadow-lg dark:shadow-2xl dark:shadow-black/20 
             overflow-hidden z-50
           "
 				>

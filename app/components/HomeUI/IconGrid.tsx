@@ -71,7 +71,7 @@ export function IconGrid() {
 							}}
 						>
 							<div className="relative group">
-								<div className="absolute inset-0 bg-neutral-100 dark:bg-neutral-800 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+								<div className="absolute inset-0 bg-neutral-100 dark:bg-neutral-800 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
 								<Icon className="w-7 h-7 sm:w-8 sm:h-8 text-neutral-400 dark:text-neutral-600 group-hover:text-neutral-900 dark:group-hover:text-neutral-100 transition-colors duration-200 relative z-10" />
 							</div>
 						</div>

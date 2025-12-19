@@ -590,7 +590,6 @@ export async function inviteUsersToSession(params: {
 }): Promise<ServerResult<{ invitedCount: number; skippedCount: number }>> {
 	const { sessionId, toUids, fromUid, sessionTitle, customMessage } = params;
 
-	// Input validation
 	if (!adminRTDB) {
 		return { ok: false, error: 'RTDB_UNAVAILABLE' };
 	}
@@ -605,7 +604,6 @@ export async function inviteUsersToSession(params: {
 	}
 
 	try {
-		// Phase 1: Read and validate session state (single read)
 		const sessionSnap = await adminRTDB.ref(`liveSessions/${sessionId}`).get();
 		if (!sessionSnap.exists()) {
 			return { ok: false, error: 'SESSION_NOT_FOUND' };
@@ -625,29 +623,24 @@ export async function inviteUsersToSession(params: {
 			return { ok: false, error: 'SESSION_INACTIVE' };
 		}
 
-		// Phase 2: Deduplicate and validate users
 		const existingParticipants = new Set(Object.keys(sessionData.participants ?? {}));
 		const existingInvited = new Set(Object.keys(sessionData.invited ?? {}));
 		const validUsers: string[] = [];
 		const skipped: string[] = [];
 
-		// Deduplicate input
 		const uniqueToUids = Array.from(new Set(toUids.filter(Boolean)));
 
 		for (const uid of uniqueToUids) {
-			// Skip self-invite
 			if (uid === fromUid) {
 				skipped.push(uid);
 				continue;
 			}
 
-			// Skip already participant
 			if (existingParticipants.has(uid)) {
 				skipped.push(uid);
 				continue;
 			}
 
-			// Skip already invited
 			if (existingInvited.has(uid)) {
 				skipped.push(uid);
 				continue;
@@ -669,7 +662,6 @@ export async function inviteUsersToSession(params: {
 			};
 		}
 
-		// Phase 3: Fetch profiles for valid users (parallel)
 		const profileMap = new Map<string, { displayName: string; avatarUrl?: string | null }>();
 		await Promise.all(
 			validUsers.map(async (uid) => {
@@ -689,7 +681,6 @@ export async function inviteUsersToSession(params: {
 			})
 		);
 
-		// Final filter: only users with valid profiles
 		const usersToInvite = validUsers.filter((uid) => profileMap.has(uid));
 
 		if (usersToInvite.length === 0) {
@@ -700,11 +691,9 @@ export async function inviteUsersToSession(params: {
 			};
 		}
 
-		// Phase 4: Build atomic transaction payload
 		const now = create.nowISO();
 		const updates: Record<string, unknown> = {};
 
-		// Add invited/ nodes
 		for (const uid of usersToInvite) {
 			const profile = profileMap.get(uid)!;
 			updates[`liveSessions/${sessionId}/invited/${uid}`] = {
@@ -714,7 +703,6 @@ export async function inviteUsersToSession(params: {
 			};
 		}
 
-		// Add inbox notifications
 		for (const uid of usersToInvite) {
 			const threadKey = `invite_session_${sessionId}`;
 			const item: InboxInviteItem = {
@@ -731,7 +719,6 @@ export async function inviteUsersToSession(params: {
 		// Update session metadata
 		updates[`liveSessions/${sessionId}/metadata/updatedAt`] = now;
 
-		// Phase 5: Atomic write (single transaction)
 		await adminRTDB.ref().update(updates);
 
 		return {
