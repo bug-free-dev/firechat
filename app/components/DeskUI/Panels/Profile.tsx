@@ -245,21 +245,18 @@ export const ProfilePanel: React.FC<ProfilePanelProps> = ({ profile, onUpdate })
 						</div>
 
 						<div className="mt-10 text-center space-y-3">
-							<p className="text-[13px] tracking-wide text-zinc-500 dark:text-zinc-500 font-medium">
+							<p className="text-md tracking-wide text-zinc-500 dark:text-zinc-500 font-medium">
 								@{profile.usernamey}
 							</p>
 
 							{isEditing ? (
-								<input
+								<FireInput
 									value={String(editData.displayName ?? '')}
 									onChange={(e) =>
 										setEditData({ ...editData, displayName: e.target.value })
 									}
 									placeholder="Display name"
-									className="text-4xl font-semibold tracking-tight text-center text-zinc-900 dark:text-zinc-100
-                              bg-transparent border-b-2 border-zinc-200 dark:border-zinc-600
-                              focus:border-zinc-800/60 dark:focus:border-zinc-100/50
-                              outline-none transition-all px-6 py-2 placeholder:text-zinc-300"
+									size="md"
 								/>
 							) : (
 								<h1 className="text-4xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">

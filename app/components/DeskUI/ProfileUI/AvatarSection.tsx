@@ -59,7 +59,7 @@ export const ProfileAvatarSection: React.FC<ProfileAvatarSectionProps> = ({
 		<>
 			<div className="relative group">
 				<div className="relative inline-block">
-					<div className="rounded-full overflow-hidden ring-4 ring-neutral-100/50 dark:ring-neutral-800/50">
+					<div className="rounded-full overflow-hidden ring-4 ring-zinc-100 dark:ring-zinc-800/50">
 						<FireAvatar seed={displayName} src={avatarUrl} size={200} background="#fafafa" />
 					</div>
 
