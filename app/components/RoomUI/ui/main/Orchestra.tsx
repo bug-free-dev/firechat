@@ -307,9 +307,8 @@ const Orchestra: React.FC<OrchestraProps> = memo(
 
 				try {
 					await onUpdateMetadata(sessionIdRef.current, updates);
-					toast.success('Session updated');
 				} catch {
-					toast.error('Failed to update session');
+				     
 				}
 			},
 			[onUpdateMetadata]
